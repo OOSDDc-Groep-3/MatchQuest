@@ -11,6 +11,7 @@ Thank you for your interest in contributing! We welcome contributions including 
 * [Making Contributions](#making-contributions)
 * [Pull Requests](#pull-requests)
 * [Commit Guidelines](#commit-guidelines)
+* [AI Usage Guidelines](#AI-Usage-Guidelines)
 * [Reporting Issues](#reporting-issues)
 
 ## Code of Conduct
@@ -96,6 +97,11 @@ docs: update README with installation instructions
 ```
 
 Commit each time you add a working piece of code that runs without errors.
+
+## AI Usage Guidelines
+ Een taak wordt als ‘af’ beschouwd als deze voldoet aan de gestelde eisen en volledig gecontroleerd is. 
+ Werk dat bijdraagt aan het project mag ondersteund worden door AI, mits het resultaat is nagekeken, begrepen en toegelicht kan worden aan teamleden. 
+ Om inconsistenties te voorkomen, worden bij het gebruik van AI voor programmeerwerk altijd vooraf afspraken gemaakt over aanpak en integratie. Bij het gebruik van AI moet je ook het door AI gemaakte  werk controleren en kunnen uitleggen.
 
 ## Reporting Issues
 

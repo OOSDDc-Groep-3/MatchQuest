@@ -1,138 +1,174 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MatchQuest.App.MainPage">
+             x:Class="MatchQuest.App.MainPage"
+             BackgroundColor="#232A34">
 
-    <!--
-      Pseudocode / Plan (detailed):
-      - Wrap the existing right-column content (the `VerticalStackLayout`) inside a `Border` control.
-      - Move the existing padding from `VerticalStackLayout` to the `Border.Padding` so spacing is applied inside the border.
-      - Configure the `Border` with:
-        - `Stroke` color for the border line (e.g., #CCCCCC to match list item borders).
-        - `StrokeThickness` (e.g., 1) to make the border visible.
-        - `CornerRadius` (e.g., 8) for a rounded border look.
-        - `BackgroundColor` set to Transparent to avoid changing existing visuals.
-      - Keep the inner `VerticalStackLayout` content unchanged except removing its `Padding` to avoid double-padding.
-      - Ensure `Grid.Column="1"` is applied to the `Border` so layout remains the same.
-      - Preserve all existing handlers, names, semantic properties, and styles.
-    -->
+    <Grid RowDefinitions="*" ColumnDefinitions="0.4*,0.8*">
 
-    <ScrollView>
-        <Grid HorizontalOptions="Fill" VerticalOptions="Fill" Padding="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.5*" />
-                <ColumnDefinition Width="2.5*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- Left column ~1/4: Chatlist -->
-            <CollectionView
-                Grid.Column="0"
-                SelectionMode="Single"
-                HorizontalOptions="Fill"
-                VerticalOptions="Start">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
-                </CollectionView.ItemsLayout>
-
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            Padding="1"
-                            Stroke="#C0ffee"
-                            StrokeThickness="4"
-                            BackgroundColor="Transparent">
-                            <Label Text="{Binding .}"
-                                   FontSize="35"
-                                   VerticalOptions="Center" />
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-
-                <CollectionView.ItemsSource>
-                    <x:Array Type="{x:Type x:String}">
-                        <x:String>Match 1</x:String>
-                        <x:String>Match 2</x:String>
-                        <x:String>Match 3</x:String>
-                        <x:String>Match 4</x:String>
-                        <x:String>Match 5</x:String>
-                        <x:String>Match 6</x:String>
-                        <x:String>Match 7</x:String>
-                        <x:String>Match 8</x:String>
-                        <x:String>Match 9</x:String>
-                        <x:String>Match 11</x:String>
-                        <x:String>Match 11</x:String>
-                        <x:String>Match 11</x:String>
-                        <x:String>Match 11</x:String>
-                    </x:Array>
-                </CollectionView.ItemsSource>
-            </CollectionView>
-
-            <!-- Right column ~3/4: bordered container wrapping existing content -->
-            <Border
-                Grid.Column="1"
-                Stroke="#C0ffee"
-                StrokeThickness="3"
-                BackgroundColor="Transparent"
-                Padding="0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="175"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout
-                    
-                    BackgroundColor="Transparent"
-                    Spacing="70">
-                    <Image
-                        Source="https://icon-library.com/images/blank-person-icon/blank-person-icon-14.jpg"
-                        HeightRequest="300"
-                        LengthRe
-                        Aspect="AspectFit"
-                        HorizontalOptions="Fill"
-                        SemanticProperties.Description="dot net bot in a submarine number ten" />
-
-                    <Label
-                        Text="Hello, World!"
-                        Style="{StaticResource Headline}"
-                        SemanticProperties.HeadingLevel="Level1" />
-
-                    <Label
-                        Text="Welcome to &#10;.NET Multi-platform App UI"
-                        Style="{StaticResource SubHeadline}"
-                        SemanticProperties.HeadingLevel="Level2"
-                        SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
-
-                    <!-- Download images.png voor like en deslike buttons -->
-                    <HorizontalStackLayout
-                        Spacing="130"
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center">
-
-                        <ImageButton
-                            x:Name="DeslikeBtn"
-                            Source="https://purepng.com/public/uploads/large/red-dislike-symbol-emoji-pc5.png"
-                            SemanticProperties.Hint="Counts the number of times you click"
-                            SemanticProperties.Description="Dislike"
-                            Clicked="OnCounterClicked"
-                            HeightRequest="60"
-                            WidthRequest="60"
-                            CornerRadius="30"
-                            Padding="0"
-                            BackgroundColor="Transparent" />
-
-                        <ImageButton
-                            x:Name="LikeBtn"
-                            Source="https://cdn.creazilla.com/icons/3268993/round-green-thumbs-up-like-button-icon-lg.png"
-                            SemanticProperties.Hint="Counts the number of times you click"
-                            SemanticProperties.Description="Like"
-                            Clicked="OnCounterClicked"
-                            HeightRequest="60"
-                            WidthRequest="60"
-                            CornerRadius="30"
-                            Padding="0"
-                            BackgroundColor="Transparent" />
+        <!-- Sidebar (Matches List) -->
+        <Border Grid.Column="0"
+               Margin="0"
+               BackgroundColor="#312932"
+               Stroke="#C0ffee"
+               StrokeThickness="1"
+               >
+            <VerticalStackLayout>
+                <!-- Logo and Matches header -->
+                <HorizontalStackLayout Margin="0,10,0,0" Spacing="0">
+                    <Image Source="matchquest.png" WidthRequest="80" HeightRequest="80"/>
+                    <Label Text="Matches"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="#C0ffee"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <!-- Match 1: Kees -->
+                <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                    <Image Grid.Column="0"
+                       Source="defaultavatar.png"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       Aspect="AspectFill"
+                       BackgroundColor="Azure" />
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Kees" FontSize="16" FontAttributes="Bold" TextColor="#C0ffee"/>
+                        <Label Text="Looking forward to play..." FontSize="12" TextColor="White"/>
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="End" VerticalOptions="Center">
+                        <Frame Padding="0"
+                           WidthRequest="18" HeightRequest="18"
+                           CornerRadius="9"
+                           BackgroundColor="#C0ffee"
+                           BorderColor="#232A34"
+                           VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="3" FontSize="10" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+                        <Image Source="messagedelivered.png"
+                           WidthRequest="18" HeightRequest="18"
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
                     </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-        </Grid>
-    </ScrollView>
+                </Grid>
 
+                <!-- Match 2: Juan -->
+                <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                    <Image Grid.Column="0"
+                       Source="defaultavatar.png"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       Aspect="AspectFill"
+                       BackgroundColor="Azure" />
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Juan" FontSize="16" FontAttributes="Bold" TextColor="#C0ffee"/>
+                        <Label Text="You've changed my life!" FontSize="12" TextColor="White"/>
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="End" VerticalOptions="Center">
+                        <Frame Padding="0"
+                           WidthRequest="18" HeightRequest="18"
+                           CornerRadius="9"
+                           BackgroundColor="#C0ffee"
+                           BorderColor="#232A34"
+                           VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="1" FontSize="10" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+                        <Image Source="messageseen.png"
+                            WidthRequest="18" HeightRequest="18"
+                            VerticalOptions="Center" HorizontalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <!-- Match 3: Britney -->
+                <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                    <Image Grid.Column="0"
+                       Source="defaultavatar.png"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       Aspect="AspectFill"
+                       BackgroundColor="Azure" />
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Britney" FontSize="16" FontAttributes="Bold" TextColor="#C0ffee"/>
+                        <Label Text="Hey! Do you have OF?" FontSize="12" TextColor="White"/>
+                        <Label Text="Britney closed the chat" FontSize="10" TextColor="PaleVioletRed"/>
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="End" VerticalOptions="Center">
+
+                        <Image Source="messagesent.png"
+                           WidthRequest="18" HeightRequest="18"
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <!-- Match 4: Jasmine -->
+                <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                    <Image Grid.Column="0"
+                       Source="defaultavatar.png"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       Aspect="AspectFill"
+                       BackgroundColor="Azure" />
+                    <VerticalStackLayout Grid.Column="1">
+                        <Label Text="Jasmine" FontSize="16" FontAttributes="Bold" TextColor="#C0ffee"/>
+                        <Label Text="Do you like chess?" FontSize="12" TextColor="White"/>
+                    </VerticalStackLayout>
+                    <HorizontalStackLayout Grid.Column="2" Spacing="4" HorizontalOptions="End" VerticalOptions="Center">
+                        <Frame Padding="0"
+                           WidthRequest="18" HeightRequest="18"
+                           CornerRadius="9"
+                           BackgroundColor="#C0ffee"
+                           BorderColor="#232A34"
+                           VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="2" FontSize="10" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+                        <Image Source="messagedelivered.png"
+                           WidthRequest="18" HeightRequest="18"
+                           VerticalOptions="Center" HorizontalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Grid>
+
+            </VerticalStackLayout>
+
+
+        </Border>
+
+        <!-- Right column: Profile Card UI with placeholder image -->
+        <Border Grid.Column="1"
+                Margin="0"
+                Padding="60"
+                Stroke="#C0ffee"
+                StrokeThickness="1"
+                BackgroundColor="#332A34"
+                >
+
+            <VerticalStackLayout>
+                <HorizontalStackLayout Spacing="30" HorizontalOptions="End">
+                    <ImageButton Source="settings.png" BackgroundColor="#C0ffee" CornerRadius="28"  WidthRequest="32" HeightRequest="32"/>
+                </HorizontalStackLayout>
+                
+                <Image Source="showcaseprofile.png" HeightRequest="250" WidthRequest="250" Margin="0,0,0,8" HorizontalOptions="Center"/>
+                <Label Text="Britney, 27" FontSize="22" FontAttributes="Bold" TextColor="#C0ffee" HorizontalOptions="Start"/>
+                <Label Text="Zwolle" FontSize="16" TextColor="#C0ffee" HorizontalOptions="Start" Margin="0,3"/>
+                <Label Text="Catan, Chess" FontSize="15" TextColor="#C0ffee" Margin="0,3" HorizontalOptions="Start"/>
+                
+                <ScrollView HeightRequest="120">
+                    <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut urna volutpat, elementum metus id, bibendum lacus. Cras sodales elit arcu, ut sodales ipsum molestie sit amet. Curabitur commodo non eros in pretium. Fusce ornare purus sodales metus venenatis, at pulvinar erat porta. Vestibulum rhoncus ante sed placerat viverra. Donec finibus tortor eu velit eleifend tincidunt. Suspendisse et mi a neque euismod blandit vitae id justo. Suspendisse fermentum fringilla augue, auctor vulputate arcu pharetra vehicula. Sed porta massa nec finibus viverra. Sed elementum tellus vel lacus vestibulum, eget venenatis enim aliquam."
+                           FontSize="14" TextColor="White" HorizontalOptions="Center" BackgroundColor="#332033"/>
+                </ScrollView>
+                
+                <HorizontalStackLayout Spacing="150" HorizontalOptions="Center">
+                    <ImageButton Source="dislike.png"
+                                 CornerRadius="28"
+                                 WidthRequest="44"
+                                 HeightRequest="44"/>
+
+                    <ImageButton Source="like.png"
+                                 CornerRadius="28"
+                                 WidthRequest="44"
+                                 HeightRequest="44"/>
+                </HorizontalStackLayout>
+                
+                
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
 </ContentPage>

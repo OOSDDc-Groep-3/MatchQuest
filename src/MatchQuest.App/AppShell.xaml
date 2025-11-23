@@ -7,8 +7,7 @@
     Title="MatchQuest.App">
 
     <ShellContent
-        Title="Matches"
-        Icon="appicon.png"
+        Icon="matchquest.png"
         ContentTemplate="{DataTemplate local:MainPage}"
         Route="MainPage" />
 

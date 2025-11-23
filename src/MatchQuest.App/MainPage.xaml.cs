@@ -9,15 +9,17 @@ public partial class MainPage : ContentPage
         InitializeComponent();
     }
 
-    private void OnCounterClicked(object? sender, EventArgs e)
+    private void OnCounterClicked(object sender, EventArgs e)
     {
         count++;
 
-        if (count == 1)
-            CounterBtn.Text = $"Clicked {count} time";
-        else
-            CounterBtn.Text = $"Clicked {count} times";
+        // Optional: act on the specific button clicked
+        if (sender is ImageButton btn)
+        {
+            // simple feedback
+            btn.Opacity = 0.8;
+        }
 
-        SemanticScreenReader.Announce(CounterBtn.Text);
+        SemanticScreenReader.Announce($"Clicked {count} time{(count == 1 ? "" : "s")}");
     }
 }

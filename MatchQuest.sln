@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchQuest.App", "src\MatchQuest.App\MatchQuest.App.csproj", "{A4A53E81-A2B6-468C-B0C8-83AD6F2A0937}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatchQuest.Migrations", "src\MatchQuest.Migrations\MatchQuest.Migrations.csproj", "{AB593018-1552-4779-8E92-1FB375DEDBD2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{A4A53E81-A2B6-468C-B0C8-83AD6F2A0937}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A4A53E81-A2B6-468C-B0C8-83AD6F2A0937}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A4A53E81-A2B6-468C-B0C8-83AD6F2A0937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB593018-1552-4779-8E92-1FB375DEDBD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB593018-1552-4779-8E92-1FB375DEDBD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB593018-1552-4779-8E92-1FB375DEDBD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB593018-1552-4779-8E92-1FB375DEDBD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

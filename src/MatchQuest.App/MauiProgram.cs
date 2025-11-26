@@ -1,4 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MatchQuest.App.ViewModels;
+using MatchQuest.App.Views;
+using MatchQuest.Core.Data.Repositories;
+using MatchQuest.Core.Interfaces.Repositories;
+using MatchQuest.Core.Interfaces.Services;
+using MatchQuest.Core.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 
 namespace MatchQuest.App;
@@ -12,13 +18,22 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("Rubik-VariableFont_wght.tff", "RubikRegular");
+                fonts.AddFont("Rubik-Italic-VariableFont_wght.tff", "RubikItalic");
             });
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        builder.Services.AddSingleton<IAuthService, AuthService>();
+        builder.Services.AddSingleton<IClientService, ClientService>();
+
+        builder.Services.AddSingleton<IClientRepository, ClientRepository>();
+        builder.Services.AddSingleton<GlobalViewModel>();
+
+        builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationViewModel>();
+        builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationPersonalInfoViewModel>();
         //Fixed app launch screensize & lock screensize
 
 #if WINDOWS

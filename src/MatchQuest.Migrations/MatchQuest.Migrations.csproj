@@ -25,4 +25,17 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="MainPage.xaml.cs">
+        <SubType>Code</SubType>
+        <DependentUpon>%(Filename)</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="MainPage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </None>
+    </ItemGroup>
+
 </Project>

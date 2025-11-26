@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MatchQuest.Core.Data\MatchQuest.Core.Data.csproj" />
+    <ProjectReference Include="..\MatchQuest.Migrations\MatchQuest.Migrations.csproj" />
+  </ItemGroup>
+
+</Project>

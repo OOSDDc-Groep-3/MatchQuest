@@ -1,16 +1,15 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MatchQuest.App.ViewModels;
+using MatchQuest.App.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MatchQuest.App;
 
 public partial class App : Application
 {
-    public App()
+    public App(LoginViewModel viewModel)
     {
         InitializeComponent();
-    }
-
-    protected override Window CreateWindow(IActivationState? activationState)
-    {
-        return new Window(new AppShell());
+        MainPage = new LoginView(viewModel);
     }
 }
+

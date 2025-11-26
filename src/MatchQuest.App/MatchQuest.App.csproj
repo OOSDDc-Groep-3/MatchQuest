@@ -22,7 +22,7 @@
     <ApplicationTitle>MatchQuest.App</ApplicationTitle>
 
     <!-- App Identifier -->
-    <ApplicationId>com.companyname.matchquest.app</ApplicationId>
+    <ApplicationId>nl.windesheim.matchquest</ApplicationId>
 
     <!-- Versions -->
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -68,6 +68,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
+      <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationView.xaml.cs">
+      <DependentUpon>RegistrationView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <MauiXaml Update="Views\RegistrationPersonalInfoView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\RegistrationView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\LoginView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

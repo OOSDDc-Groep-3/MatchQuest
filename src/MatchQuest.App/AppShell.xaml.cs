@@ -8,6 +8,8 @@ namespace MatchQuest.App
         {
             InitializeComponent();
             Routing.RegisterRoute("Login", typeof(LoginView));
+            Routing.RegisterRoute("Register", typeof(RegistrationView));
+            Routing.RegisterRoute("RegisterPersonalInfo", typeof(RegistrationPersonalInfoView));
         }
     }
 }

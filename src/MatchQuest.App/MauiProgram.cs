@@ -17,8 +17,8 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("Rubik-VariableFont_wght.tff", "RubikRegular");
+                fonts.AddFont("Rubik-Italic-VariableFont_wght.tff", "RubikItalic");
             });
 
 #if DEBUG
@@ -31,6 +31,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<GlobalViewModel>();
 
         builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationViewModel>();
+        builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationPersonalInfoViewModel>();
 
         return builder.Build();
     }

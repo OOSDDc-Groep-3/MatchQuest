@@ -1,9 +1,13 @@
-﻿namespace MatchQuest.App;
+﻿using MatchQuest.App.Views;
 
-public partial class AppShell : Shell
+namespace MatchQuest.App
 {
-    public AppShell()
+    public partial class AppShell : Shell
     {
-        InitializeComponent();
+        public AppShell()
+        {
+            InitializeComponent();
+            Routing.RegisterRoute("Login", typeof(LoginView));
+        }
     }
 }

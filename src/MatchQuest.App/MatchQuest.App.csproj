@@ -66,10 +66,8 @@
 
     <ItemGroup>
       <None Remove="Resources\Images\dislike-button-icon.png" />
-      <None Remove="Resources\Images\dislike.png" />
       <None Remove="Resources\Images\dislikebuttonicon.png" />
       <None Remove="Resources\Images\like-button-icon.png" />
-      <None Remove="Resources\Images\like.png" />
       <None Remove="Resources\Images\likebuttonicon.png" />
       <None Remove="Resources\Images\settings.png" />
       <None Remove="Resources\Images\settingsicon.png" />

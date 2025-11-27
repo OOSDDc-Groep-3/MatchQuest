@@ -10,6 +10,7 @@ namespace MatchQuest.App
             Routing.RegisterRoute("Login", typeof(LoginView));
             Routing.RegisterRoute("Register", typeof(RegistrationView));
             Routing.RegisterRoute("RegisterPersonalInfo", typeof(RegistrationPersonalInfoView));
+            Routing.RegisterRoute("Home", typeof(HomeView));
         }
     }
 }

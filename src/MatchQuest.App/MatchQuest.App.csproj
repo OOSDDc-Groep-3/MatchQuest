@@ -68,6 +68,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
       <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
     </Compile>
@@ -87,5 +90,28 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
   </ItemGroup>
+  
+    <ItemGroup>
+      <MauiImage Remove="Resources\Images\dislike-button-icon.png" />
+      <MauiImage Remove="Resources\Images\dislikebuttonicon.png" />
+      <MauiImage Remove="Resources\Images\like-button-icon.png" />
+      <MauiImage Remove="Resources\Images\likebuttonicon.png" />
+      <MauiImage Remove="Resources\Images\settingsicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\Images\dislike-button-icon.png" />
+      <None Remove="Resources\Images\dislikebuttonicon.png" />
+      <None Remove="Resources\Images\like-button-icon.png" />
+      <None Remove="Resources\Images\likebuttonicon.png" />
+      <None Remove="Resources\Images\settings.png" />
+      <None Remove="Resources\Images\settingsicon.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+    </ItemGroup>
 
 </Project>

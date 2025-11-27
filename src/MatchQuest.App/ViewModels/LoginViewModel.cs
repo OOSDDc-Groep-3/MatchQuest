@@ -29,7 +29,7 @@ namespace MatchQuest.App.ViewModels
         }
 
         [RelayCommand]
-        private void Login()
+        private async Task Login()
         {
             Client? authenticatedClient = _authService.Login(Email, Password);
             if (authenticatedClient != null)
@@ -51,6 +51,22 @@ namespace MatchQuest.App.ViewModels
             {
                 LoginMessage = "Ongeldige inloggegevens.";
             }
+
+            if (Shell.Current is null)
+            {
+                if (Application.Current?.MainPage is not AppShell)
+                {
+                    Application.Current!.MainPage = new AppShell();
+                    // give the UI a moment to attach the Shell
+                    await Task.Yield();
+                }
+            }
+
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync("Home");
+            }
+
         }
 
         [RelayCommand]

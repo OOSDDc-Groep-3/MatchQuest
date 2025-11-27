@@ -68,6 +68,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
       <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
     </Compile>

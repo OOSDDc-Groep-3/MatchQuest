@@ -34,6 +34,7 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationViewModel>();
         builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationPersonalInfoViewModel>();
+        builder.Services.AddTransient<HomeView>().AddTransient<HomeViewModel>();
         //Fixed app launch screensize & lock screensize
 
 #if WINDOWS

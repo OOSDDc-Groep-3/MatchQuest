@@ -3,20 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
              x:Class="MatchQuest.App.Views.RegistrationView"
-             x:DataType="vm:RegistrationViewModel">
+             x:DataType="vm:RegistrationViewModel"
+             BackgroundImageSource="background.png"
+             BackgroundColor="Transparent">
 
-    <StackLayout Spacing="10" Padding="20" VerticalOptions="Center">
-        <Label Text="REGISTER" FontAttributes="Bold" TextColor="#c0ffee" FontSize="32" VerticalOptions="Center" HorizontalOptions="Center" />
+    <Grid RowDefinitions="*" ColumnDefinitions="*">
+        <BoxView Margin="0"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 Color="#202022"
+                 Opacity="0.7"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill"
+                 InputTransparent="True" />
 
-        <Label Text="E-mail" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,5,0,0"  />
-        <Entry Placeholder="Email" BackgroundColor="#C6C2C2" Text="{Binding Email}" Keyboard="Email"  />
+        <Border Margin="40"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Background="#202022"
+                Opacity="0.8"
+                Stroke="#c0ffee"
+                StrokeShape="RoundRectangle 30"
+                StrokeThickness="3"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                InputTransparent="True" />
+        
+        <Image Margin="-1200,-700,-50,-50" Source="matchquest.png" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="250" HeightRequest="250"/>
 
-        <Label Text="Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,5,0,0"  />
-        <Entry Placeholder="Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+        <StackLayout Spacing="10" Padding="450,-100,450,450" VerticalOptions="Center">
 
-        <Label Text="Confirm Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,5,0,0"  />
-        <Entry Placeholder="Confirm Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+            <Label Text="REGISTER" Margin="0,0,0,100" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
 
-        <Button BackgroundColor="#c0ffee" FontAttributes="Bold" TextColor="#383535" Text="Confirm" Command="{Binding ConfirmCommand}" Margin="0,39,0,0"  />
-    </StackLayout>
+            <Label Text="E-mail" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
+            <Entry Placeholder="Email" BackgroundColor="#C6C2C2" Text="{Binding Email}" Keyboard="Email"  />
+
+            <Label Text="Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
+            <Entry Placeholder="Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+
+            <Label Text="Confirm Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
+            <Entry Placeholder="Confirm Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+
+            <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Next" Command="{Binding ConfirmCommand}" Margin="0,39,0,0"  />
+        </StackLayout>
+    </Grid>
 </ContentPage>

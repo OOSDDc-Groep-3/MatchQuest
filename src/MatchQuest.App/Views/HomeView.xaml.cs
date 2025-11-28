@@ -9,4 +9,10 @@ public partial class HomeView : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+    
+    private async void SettingsButton_Clicked(object sender, EventArgs e)
+    {
+        // Navigeer naar UserProfile pagina
+        await Navigation.PushAsync(new UserProfile(new UserProfileViewModel()));
+    }
 }

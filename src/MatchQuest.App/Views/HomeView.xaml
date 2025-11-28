@@ -261,7 +261,9 @@
                                  WidthRequest="32"
                                  HeightRequest="32"
                                  HorizontalOptions="End"
-                                 VerticalOptions="Start" />
+                                 VerticalOptions="Start"
+                                 Clicked="SettingsButton_Clicked"
+                                 />
                 </HorizontalStackLayout>
 
                 <Border Margin="120"

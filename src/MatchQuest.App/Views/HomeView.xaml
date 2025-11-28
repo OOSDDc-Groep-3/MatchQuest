@@ -127,7 +127,6 @@
                                             </Border.StrokeShape>
                                             <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
-                                        <Image Source="messagedelivered.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="#C0ffee" />
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Grid>
@@ -163,7 +162,6 @@
                                             </Border.StrokeShape>
                                             <Label Text="1" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
-                                        <Image Source="messageseen.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="#C0ffee" />
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Grid>
@@ -200,7 +198,6 @@
                                             </Border.StrokeShape>
                                             <Label Text="1" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
-                                        <Image Source="messagesent.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center" BackgroundColor="#C0ffee" />
                                     </HorizontalStackLayout>
                                 </VerticalStackLayout>
                             </Grid>
@@ -226,9 +223,9 @@
 
             <Grid>
                 <HorizontalStackLayout Spacing="18" HorizontalOptions="End" Padding="20" VerticalOptions="Start">
-                    <Picker x:Name="MyMatchesFilter" Title="Suggested Match Filter" TitleColor="{StaticResource AccentColor}" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
+                    <Picker x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
                         <Picker.Items>
-                            <x:String>All Matches</x:String>
+                            <x:String>Filter</x:String>
                             <x:String>New</x:String>
                             <x:String>Favorites</x:String>
                             <x:String>Nearby</x:String>

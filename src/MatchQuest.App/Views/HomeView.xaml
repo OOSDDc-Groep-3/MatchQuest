@@ -89,7 +89,7 @@
 
                 <!-- Scrollable list -->
                 <ScrollView>
-                    <VerticalStackLayout Padding="8" Spacing="0" VerticalOptions="FillAndExpand">
+                    <VerticalStackLayout Padding="8" Spacing="0">
 
                         <!-- Contact: Kees -->
                         <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />

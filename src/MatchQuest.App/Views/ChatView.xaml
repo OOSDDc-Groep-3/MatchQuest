@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="MatchQuest.App.Views.HomeView"
+             x:Class="MatchQuest.App.Views.ChatView"
              BackgroundImageSource="background.png"
              BackgroundColor="Transparent">
 
@@ -95,7 +95,7 @@
                         <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
                         <Border x:Name="KeesButton" Style="{StaticResource ContactBorderStyle}">
                             <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
+                                <TapGestureRecognizer Command="{Binding OpenMatchCommand}" CommandParameter="Kees" NumberOfTapsRequired="1" />
                             </Border.GestureRecognizers>
 
                             <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
@@ -136,9 +136,6 @@
 
                         <!-- Contact: Britney -->
                         <Border Style="{StaticResource ContactBorderStyle}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
-                            </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
                                 <Image Grid.Column="0"
                                        Source="showcaseprofile.png"
@@ -206,142 +203,5 @@
 
             </VerticalStackLayout>
         </Border>
-
-        <!-- Right column: Profile Card (unchanged structure, tightened spacing where helpful) -->
-        <Border Grid.Column="1"
-                Margin="0"
-                Stroke="{StaticResource AccentColor}"
-                StrokeThickness="2"
-                BackgroundColor="Transparent">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0" />
-            </Border.StrokeShape>
-
-            <Grid>
-                <HorizontalStackLayout Spacing="18" HorizontalOptions="End" Padding="20" VerticalOptions="Start">
-                    <Picker x:Name="NewMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
-                        <Picker.Items>
-                            <x:String>Suggested Matches Filter</x:String>
-                            <x:String>New</x:String>
-                            <x:String>Favorites</x:String>
-                            <x:String>Nearby</x:String>
-                            <x:String>Action</x:String>
-                            <x:String>Adventure</x:String>
-                            <x:String>Action-adventure</x:String>
-                            <x:String>Role-playing (RPG)</x:String>
-                            <x:String>Shooter (FPS / TPS)</x:String>
-                            <x:String>Fighting</x:String>
-                            <x:String>Platformer</x:String>
-                            <x:String>Strategy (RTS, turn-based, 4X)</x:String>
-                            <x:String>Simulation</x:String>
-                            <x:String>Sports</x:String>
-                            <x:String>Racing</x:String>
-                            <x:String>Puzzle</x:String>
-                            <x:String>Stealth</x:String>
-                            <x:String>Survival</x:String>
-                            <x:String>Horror</x:String>
-                            <x:String>Sandbox / Open-world</x:String>
-                            <x:String>Massively Multiplayer Online (MMO / MMORPG)</x:String>
-                            <x:String>Battle Royale</x:String>
-                            <x:String>Party / Casual</x:String>
-                        </Picker.Items>
-                    </Picker>
-
-                    <ImageButton x:Name="SettingsButton"
-                                 Source="settings.png"
-                                 BackgroundColor="{StaticResource AccentColor}"
-                                 CornerRadius="28"
-                                 WidthRequest="32"
-                                 HeightRequest="32"
-                                 HorizontalOptions="End"
-                                 VerticalOptions="Start"
-                                 Clicked="SettingsButton_Clicked"
-                                 />
-                </HorizontalStackLayout>
-
-                <Border Margin="120"
-                        Stroke="{StaticResource CardStroke}"
-                        StrokeThickness="2"
-                        BackgroundColor="Transparent">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="28" />
-                    </Border.StrokeShape>
-
-                    <ScrollView Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
-                        <VerticalStackLayout Spacing="8" Padding="12" BackgroundColor="Transparent">
-                            <Image Source="showcaseprofile.png" HeightRequest="250" WidthRequest="250" Margin="0,0,0,8" HorizontalOptions="Center" Aspect="AspectFill">
-                                <Image.Clip>
-                                    <EllipseGeometry Center="125,125" RadiusX="125" RadiusY="125" />
-                                </Image.Clip>
-                            </Image>
-                            <HorizontalStackLayout Spacing="250"> 
-                                <Label Text="Britney, 27" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />
-                            <Label Text="Zwolle" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
-                                </HorizontalStackLayout>
-                            <Label Text="Catan, Chess" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" Margin="0,3" HorizontalOptions="Start" />
-                            <BoxView Style="{StaticResource SeparatorStyle}" />
-
-                            <Border BackgroundColor="#192126" Padding="12" HorizontalOptions="Fill">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="10" />
-                                </Border.StrokeShape>
-                                <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut urna volutpat, elementum metus id, bibendum lacus. Cras sodales elit arcu, ut sodales ipsum molestie sit amet. Curabitur commodo non eros in pretium. Fusce ornare purus sodales metus venenatis, at pulvinar erat porta. Vestibulum rhoncus ante sed placerat viverra. Donec finibus tortor eu velit eleifend tincidunt. Suspendisse et mi a neque euismod blandit vitae id justo. Suspendisse fermentum fringilla augue, auctor vulputate arcu pharetra vehicula. Sed porta massa nec finibus viverra. Sed elementum tellus vel lacus vestibulum, eget venenatis enim aliquam."
-                                       FontSize="14" TextColor="White" HorizontalOptions="Center" BackgroundColor="Transparent" />
-                            </Border>
-                            <BoxView Style="{StaticResource SeparatorStyle}" />
-                            
-                            <!-- Games Collection: shows game image and name; displays placeholder text when empty -->
-                            <CollectionView ItemsSource="{Binding Games}"
-                                            SelectionMode="None"
-                                            ItemsLayout="VerticalList"
-                                            HeightRequest="120"
-                                            HorizontalOptions="Fill">
-                                <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BackgroundColor="{StaticResource OverlayColor}" Padding="6" Margin="6" StrokeThickness="0">
-                                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="84">
-                                                <Image Source="{Binding Image}"
-                                                       WidthRequest="72"
-                                                       HeightRequest="72"
-                                                       Aspect="AspectFill">
-                                                    <Image.Clip>
-                                                        <EllipseGeometry Center="36,36" RadiusX="36" RadiusY="36" />
-                                                    </Image.Clip>
-                                                </Image>
-                                                <Label Text="{Binding Name}"
-                                                       FontSize="12"
-                                                       LineBreakMode="TailTruncation"
-                                                       MaxLines="1"
-                                                       HorizontalOptions="Center"
-                                                       TextColor="{StaticResource AccentColor}" />
-                                            </VerticalStackLayout>
-                                        </Border>
-                                    </DataTemplate>
-                                </CollectionView.ItemTemplate>
-
-                                <CollectionView.EmptyView>
-                                    <VerticalStackLayout Padding="12" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <Label Text="No games have been added yet!"
-                                               FontSize="18"
-                                               FontAttributes="Bold"
-                                               TextColor="{StaticResource SecondaryText}"
-                                               HorizontalOptions="Center"
-                                               HorizontalTextAlignment="Center"
-                                               LineBreakMode="WordWrap" />
-                                    </VerticalStackLayout>
-                                </CollectionView.EmptyView>
-                            </CollectionView>
-
-                        </VerticalStackLayout>
-                    </ScrollView>
-                </Border>
-
-                <HorizontalStackLayout Grid.Column="0" Spacing="150" HorizontalOptions="Center" VerticalOptions="End" TranslationY="-90" BackgroundColor="Transparent" InputTransparent="True">
-                    <ImageButton Source="dislike.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />
-                    <ImageButton Source="like.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />
-                </HorizontalStackLayout>
-            </Grid>
-        </Border>
-
     </Grid>
 </ContentPage>

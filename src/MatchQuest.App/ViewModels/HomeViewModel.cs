@@ -1,9 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MatchQuest.App;
-using MatchQuest.Core.Interfaces.Services;
-using MatchQuest.Core.Models;
-using Microsoft.Maui.ApplicationModel;
+using MatchQuest.App.Views;
 using Microsoft.Maui.Controls;
 using System.Threading.Tasks;
 
@@ -11,39 +8,57 @@ namespace MatchQuest.App.ViewModels
 {
     public partial class HomeViewModel : BaseViewModel
     {
-        private readonly GlobalViewModel _global;
-
-        public HomeViewModel(GlobalViewModel global)
-        {
-            _global = global;
-        }
-
-        [ObservableProperty]
-        private string email = "user3@mail.com";
-
-        [ObservableProperty]
-        private string password = "user3";
-
-        [ObservableProperty]
-        private string loginMessage;
-
         [RelayCommand]
-        private async Task Settings()
+        private async Task OpenSettings()
         {
-
+            // Ensure Shell is available. Prefer opening a Window with AppShell instead of Application.MainPage (obsolete).
             if (Shell.Current is null)
             {
-                if (Application.Current?.MainPage is not AppShell)
+                if (Application.Current is not null)
                 {
-                    Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
-                    await Task.Yield();
+                    if (Application.Current.Windows.Count == 0)
+                    {
+                        Application.Current.OpenWindow(new Window(new AppShell()));
+                        await Task.Yield();
+                    }
+                    else
+                    {
+                        Application.Current.Windows[0].Page = new AppShell();
+                        await Task.Yield();
+                    }
                 }
             }
 
             if (Shell.Current is not null)
             {
-                await Shell.Current.GoToAsync("Register");
+                await Shell.Current.GoToAsync("Settings");
+            }
+        }
+
+        [RelayCommand]
+        private async Task OpenChat()
+        {
+            // Ensure Shell is available before navigation.
+            if (Shell.Current is null)
+            {
+                if (Application.Current is not null)
+                {
+                    if (Application.Current.Windows.Count == 0)
+                    {
+                        Application.Current.OpenWindow(new Window(new AppShell()));
+                        await Task.Yield();
+                    }
+                    else
+                    {
+                        Application.Current.Windows[0].Page = new AppShell();
+                        await Task.Yield();
+                    }
+                }
+            }
+
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync(nameof(ChatView));
             }
         }
     }

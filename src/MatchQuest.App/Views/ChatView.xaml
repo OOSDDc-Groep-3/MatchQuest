@@ -282,13 +282,12 @@
         </Border>
 
         <!-- Input area -->
-        <Grid Grid.Column="1" Grid.Row="2" Padding="20" ColumnDefinitions="*,Auto" VerticalOptions="End">
+        <Grid Grid.Column="1" Grid.Row="2" Padding="20" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="10">
             <Border>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
-                <Grid>
-                    <!-- Replaced Label with Entry so user can type -->
+                <Grid BackgroundColor="#192126">
                     <Entry x:Name="MessageEntry"
                            Text="{Binding MessageText, Mode=TwoWay}"
                            Placeholder="Type a message..."
@@ -296,15 +295,16 @@
                            TextColor="{StaticResource SecondaryText}"
                            VerticalOptions="Center"
                            ReturnType="Send"
+                           BackgroundColor="Transparent"
                            />
                 </Grid>
             </Border>
 
             <ImageButton Grid.Column="1"
                          Source="sendicon.png"
-                         BackgroundColor="{StaticResource AccentColor}"
-                         WidthRequest="50"
-                         HeightRequest="50"
+                         BackgroundColor="Transparent"
+                         WidthRequest="35"
+                         HeightRequest="55"
                          CornerRadius="14"
                          HorizontalOptions="Center"
                          VerticalOptions="Center"

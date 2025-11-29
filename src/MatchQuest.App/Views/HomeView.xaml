@@ -75,13 +75,13 @@
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
-            <VerticalStackLayout Padding="8" Spacing="0">
+            <VerticalStackLayout Padding="0" Spacing="0">
 
                 <!-- Header -->
-                <HorizontalStackLayout Margin="0,6,0,6" Spacing="8" VerticalOptions="Center">
+                <HorizontalStackLayout Margin="0,6,30,6" Spacing="-26" VerticalOptions="Center" HorizontalOptions="Center">
                     <Image Source="matchquest.png" WidthRequest="80" HeightRequest="80" />
-                    <Label Text="Matches"
-                           FontSize="28"
+                    <Label Text="atches"
+                           FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AccentColor}"
                            VerticalOptions="Center" />

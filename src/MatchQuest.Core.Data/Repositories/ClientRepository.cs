@@ -1,5 +1,8 @@
 ﻿using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
+using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Diagnostics;
 
 namespace MatchQuest.Core.Data.Repositories
 {

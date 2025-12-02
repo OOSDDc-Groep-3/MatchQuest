@@ -4,7 +4,7 @@ namespace MatchQuest.App.Views;
 
 public partial class ChatView : ContentPage
 {
-    public ChatView(HomeViewModel viewModel)
+    public ChatView(ChatViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

@@ -31,55 +31,43 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Login()
         {
-            Client? authenticatedClient = _authService.Login(Email, Password);
+            // Authenticate client
+            User? authenticatedClient = _authService.Login(Email, Password);
             if (authenticatedClient != null)
             {
-                LoginMessage = $"Welkom {authenticatedClient.Name}!";
+                LoginMessage = $"Welcome {authenticatedClient.Name}!";
                 _global.Client = authenticatedClient;
 
-                // Prefer Shell-based navigation instead of replacing MainPage.
-                // Ensure AppShell is set as MainPage in App.xaml.cs / MauiProgram.
+                // Ensure AppShell is attached
                 if (Application.Current?.MainPage is not AppShell)
                 {
                     Application.Current!.MainPage = new AppShell();
-                }
-
-                // Navigate to a post-login page (example route: "Home") if needed:
-                // _ = Shell.Current?.GoToAsync("Home");
-            }
-            else
-            {
-                LoginMessage = "Ongeldige inloggegevens.";
-            }
-
-            if (Shell.Current is null)
-            {
-                if (Application.Current?.MainPage is not AppShell)
-                {
-                    Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
                     await Task.Yield();
                 }
+
+                // Navigate to Home only when authentication succeeded
+                if (Shell.Current is not null)
+                {
+                    await Shell.Current.GoToAsync("Home");
+                }
+
+                return;
             }
 
-            if (Shell.Current is not null)
-            {
-                await Shell.Current.GoToAsync("Home");
-            }
-
+            // Authentication failed — do not navigate
+            LoginMessage = "Invalid login credentials.";
         }
 
         [RelayCommand]
         private async Task Register()
         {
-                // Navigate to the registered "Register" route using Shell.
+            // Navigate to the registered "Register" route using Shell.
             // If Shell.Current is not available yet, ensure AppShell is attached.
             if (Shell.Current is null)
             {
                 if (Application.Current?.MainPage is not AppShell)
                 {
                     Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
                     await Task.Yield();
                 }
             }

@@ -26,16 +26,15 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         builder.Services.AddSingleton<IAuthService, AuthService>();
-        builder.Services.AddSingleton<IClientService, ClientService>();
+        builder.Services.AddSingleton<IUserService, UserService>();
 
-        builder.Services.AddSingleton<IClientRepository, ClientRepository>();
+        builder.Services.AddSingleton<IUserRepository, UserRepository>();
         builder.Services.AddSingleton<GlobalViewModel>();
 
         builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationViewModel>();
-        builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationPersonalInfoViewModel>();
+        builder.Services.AddTransient<RegistrationPersonalInfoView>().AddTransient<RegistrationPersonalInfoViewModel>();
         builder.Services.AddTransient<HomeView>().AddTransient<HomeViewModel>();
-        //Fixed app launch screensize & lock screensize
 
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>

@@ -33,18 +33,20 @@
 
         <StackLayout Spacing="10" Padding="450,-100,450,450" VerticalOptions="Center">
 
-            <Label Text="REGISTER" Margin="0,0,0,100" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
+            <Label Text="REGISTER" Margin="0,10,0,50" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
 
             <Label Text="E-mail" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
-            <Entry Placeholder="Email" BackgroundColor="#C6C2C2" Text="{Binding Email}" Keyboard="Email"  />
+            <Entry Placeholder="Email" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding NewEmail}" Keyboard="Email"  />
 
             <Label Text="Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
-            <Entry Placeholder="Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+            <Entry Placeholder="Password" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding NewPassword}" IsPassword="True"  />
 
             <Label Text="Confirm Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
-            <Entry Placeholder="Confirm Password" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+            <Entry Placeholder="Confirm Password" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding NewConfirmPassword}" IsPassword="True"  />
+            
+            <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
 
-            <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Next" Command="{Binding ConfirmCommand}" Margin="0,39,0,0"  />
+            <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Next" Command="{Binding NextCommand}" Margin="0,100,0,0"  />
         </StackLayout>
     </Grid>
 </ContentPage>

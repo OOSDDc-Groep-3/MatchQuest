@@ -2,7 +2,7 @@
 
 namespace MatchQuest.Core.Models
 {
-    public partial class Client : Model
+    public partial class User : Model
     {
         public string EmailAddress { get; set; }
         public string Password { get; set; }
@@ -14,14 +14,14 @@ namespace MatchQuest.Core.Models
         public string? ProfilePicture { get; set; }
         public bool IsActive { get; set; } = true;
 
-        public Client(int id, string name, string emailAddress, string password) : base(id, name)
+        public User(int id, string name, string emailAddress, string password) : base(id, name)
         {
             EmailAddress = emailAddress;
             Password = password;
         }
 
         // Optional full constructor to populate all columns from DB
-        public Client(int id, string name, string emailAddress, string password,
+        public User(int id, string name, string emailAddress, string password,
             DateTime? birthDate, string? region, string? bio, string? profilePicture, bool isActive) : base(id, name)
         {
             EmailAddress = emailAddress;

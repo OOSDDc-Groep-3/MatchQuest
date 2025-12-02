@@ -38,7 +38,7 @@
             <Entry Placeholder="Email" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding Email}" Keyboard="Email"  />
 
             <Label Text="Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,5,0,0"  />
-            <Entry Placeholder="Password" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
+            <Entry Placeholder="Password" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding Password}" IsPassword="True"  />
 
             <Button BackgroundColor="#c0ffee" FontAttributes="Bold" TextColor="#383535" Text="Login" FontSize="20" Command="{Binding LoginCommand}" Margin="0,50,0,0" Padding="0,0,0,0" />
 

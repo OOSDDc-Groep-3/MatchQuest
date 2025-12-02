@@ -31,7 +31,8 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Login()
         {
-            Client? authenticatedClient = _authService.Login(Email, Password);
+            // Authenticate client
+            User? authenticatedClient = _authService.Login(Email, Password);
             if (authenticatedClient != null)
             {
                 LoginMessage = $"Welcome {authenticatedClient.Name}!";
@@ -41,7 +42,6 @@ namespace MatchQuest.App.ViewModels
                 if (Application.Current?.MainPage is not AppShell)
                 {
                     Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
                     await Task.Yield();
                 }
 
@@ -68,7 +68,6 @@ namespace MatchQuest.App.ViewModels
                 if (Application.Current?.MainPage is not AppShell)
                 {
                     Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
                     await Task.Yield();
                 }
             }

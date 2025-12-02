@@ -5,6 +5,6 @@ namespace MatchQuest.Core.Interfaces.Services
 {
     public interface IAuthService
     {
-        Client? Login(string email, string password);
+        User? Login(string email, string password);
     }
 }

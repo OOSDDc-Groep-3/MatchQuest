@@ -5,23 +5,29 @@
     xmlns:system="clr-namespace:System;assembly=netstandard"
     x:Class="MatchQuest.App.Views.UserProfile"
     Title="UserProfile"
-    
-    >
-    
+    BackgroundImageSource="background.png"
+    BackgroundColor="Transparent">
 
     <Grid RowDefinitions="*" ColumnDefinitions="0.4*,0.8*">
+
+        <!-- Semi-transparante overlay over de achtergrond -->
+        <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Color="Black"
+                 Opacity="0.5"
+                 InputTransparent="True" />
 
         <!-- SIDEBAR -->
         <Border Grid.Column="0"
                 Stroke="#C0ffee"
-                StrokeThickness="1">
+                StrokeThickness="2"
+                BackgroundColor="#202022"
+                Opacity="0.85">
 
-            <Grid RowDefinitions="Auto,*,Auto" Padding="5" RowSpacing="5">
-
-                <!-- Logo + Title -->
-                <HorizontalStackLayout Spacing="10" Grid.Row="0">
+            <Grid RowDefinitions="Auto,*,Auto" Padding="10" RowSpacing="10">
+                <!-- Logo + Titel -->
+                <HorizontalStackLayout Spacing="10" Grid.Row="0" Padding="10">
                     <Image Source="matchquest.png"
-                           WidthRequest="200" HeightRequest="200"/>
+                           WidthRequest="180" HeightRequest="180"/>
                     <Label Text="Settings"
                            FontFamily="RubikRegular"
                            TextColor="#C0ffee"
@@ -31,50 +37,53 @@
                 </HorizontalStackLayout>
 
                 <!-- Nav buttons -->
-                <VerticalStackLayout Grid.Row="1" Spacing="0">
+                <VerticalStackLayout Grid.Row="1" Spacing="5" Padding="5">
                     <Button Text="MY PROFILE"
                             FontFamily="RubikRegular"
-                            FontSize="30"
+                            FontSize="28"
                             TextColor="#C0ffee"
                             FontAttributes="Bold"
                             HeightRequest="100"
                             WidthRequest="500"
                             CornerRadius="0"
                             BorderColor="#C0ffee"
-                            BorderWidth="2"/>
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
 
                     <Button Text="MY ACCOUNT"
                             FontFamily="RubikRegular"
-                            FontSize="30"
-                            TextColor="#C0ffee"
-                            FontAttributes="Bold"
-                            HeightRequest="100"   
-                            WidthRequest="500"
-                            CornerRadius="0"
-                            BorderColor="#C0ffee"
-                            BorderWidth="2"/>
-
-                    <Button Text="ADMIN"
-                            FontFamily="RubikRegular"
-                            FontSize="30"
+                            FontSize="28"
                             TextColor="#C0ffee"
                             FontAttributes="Bold"
                             HeightRequest="100"
                             WidthRequest="500"
                             CornerRadius="0"
                             BorderColor="#C0ffee"
-                            BorderWidth="2"/>
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
+
+                    <Button Text="ADMIN"
+                            FontFamily="RubikRegular"
+                            FontSize="28"
+                            TextColor="#C0ffee"
+                            FontAttributes="Bold"
+                            HeightRequest="100"
+                            WidthRequest="500"
+                            CornerRadius="0"
+                            BorderColor="#C0ffee"
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
                 </VerticalStackLayout>
 
                 <!-- Logout button onderaan -->
                 <Button Text="LOG OUT"
                         Grid.Row="2"
                         FontFamily="RubikRegular"
-                        FontSize="30"
+                        FontSize="28"
                         BackgroundColor="Red"
                         TextColor="White"
                         FontAttributes="Bold"
-                        HeightRequest="100"
+                        HeightRequest="80"
                         WidthRequest="500"
                         CornerRadius="0"
                         BorderColor="#C0ffee"
@@ -87,8 +96,9 @@
                 Margin="0"
                 Padding="40"
                 Stroke="#C0ffee"
-                StrokeThickness="1"
-                BackgroundColor="#332A34">
+                StrokeThickness="2"
+                BackgroundColor="#332A34"
+                Opacity="0.85">
 
             <ScrollView>
                 <VerticalStackLayout Spacing="25">
@@ -116,6 +126,8 @@
                             BackgroundColor="#C0ffee"
                             TextColor="Black"
                             CornerRadius="12"
+                            WidthRequest="200"
+                            HeightRequest="50"
                             HorizontalOptions="Center"/>
 
                     <!-- FORMULIER VELDEN -->

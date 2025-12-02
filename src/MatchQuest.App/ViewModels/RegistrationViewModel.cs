@@ -1,4 +1,6 @@
-﻿
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
@@ -12,38 +14,64 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
 
         [ObservableProperty]
-        private string email = "";
+        private string newEmail = "";
 
         [ObservableProperty]
-        private string password = "";
+        private string newPassword = "";
+
+        [ObservableProperty]
+        private string newConfirmPassword = "";
 
         [ObservableProperty]
         private string loginMessage;
 
         public RegistrationViewModel(IAuthService authService, GlobalViewModel global)
-        { //_authService = App.Services.GetServices<IAuthService>().FirstOrDefault();
+        {
             _authService = authService;
             _global = global;
         }
 
         [RelayCommand]
-        private async Task Confirm()
+        private async Task Next()
         {
-            // Navigate to the registered "RegisterPersonalInfo" route using Shell.
-            // If Shell.Current is not available yet, ensure AppShell is attached.
-            if (Shell.Current is null)
+            Debug.WriteLine($"RegistrationViewModel.Next: Enter - Email='{newEmail}', Password set?={(string.IsNullOrEmpty(newPassword) ? "no" : "yes")}");
+            try
             {
-                if (Application.Current?.MainPage is not AppShell)
+                // Save initial credentials to global client so the next screen can complete registration
+                _global.Client = new Client(0, string.Empty, newEmail?.Trim() ?? string.Empty, newPassword ?? string.Empty);
+                Debug.WriteLine("RegistrationViewModel.Next: _global.Client assigned.");
+
+                if (Debugger.IsAttached)
                 {
-                    Application.Current!.MainPage = new AppShell();
-                    // give the UI a moment to attach the Shell
-                    await Task.Yield();
+                    Debug.WriteLine("RegistrationViewModel.Next: Debugger is attached - breaking.");
+                    Debugger.Break();
+                }
+
+                // Navigate to the registered "RegisterPersonalInfo" route using Shell.
+                if (Shell.Current is null)
+                {
+                    Debug.WriteLine("RegistrationViewModel.Next: Shell.Current is null - ensuring AppShell is attached.");
+                    if (Application.Current?.MainPage is not AppShell)
+                    {
+                        Application.Current!.MainPage = new AppShell();
+                        await Task.Yield();
+                    }
+                }
+
+                if (Shell.Current is not null)
+                {
+                    Debug.WriteLine("RegistrationViewModel.Next: Navigating to RegisterPersonalInfo.");
+                    await Shell.Current.GoToAsync("RegisterPersonalInfo");
                 }
             }
-
-            if (Shell.Current is not null)
+            catch (Exception ex)
             {
-                await Shell.Current.GoToAsync("RegisterPersonalInfo");
+                Debug.WriteLine($"RegistrationViewModel.Next: Exception: {ex}");
+                LoginMessage = "Unexpected error during navigation.";
+            }
+            finally
+            {
+                Debug.WriteLine("RegistrationViewModel.Next: Exit.");
             }
         }
     }

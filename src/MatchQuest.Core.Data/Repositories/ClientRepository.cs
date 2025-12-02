@@ -15,6 +15,7 @@ namespace MatchQuest.Core.Data.Repositories
 
         public ClientRepository()
         {
+            Debug.WriteLine("ClientRepository: ctor - loading clients from DB.");
             // Load from DB; fall back only when an error occurs (LoadFromDb returns null).
             var dbClients = LoadFromDb();
 
@@ -22,8 +23,9 @@ namespace MatchQuest.Core.Data.Repositories
             if (dbClients != null)
             {
                 clientList = dbClients;
+                Debug.WriteLine($"ClientRepository: ctor - loaded {clientList.Count} clients from DB.");
                 if (clientList.Count == 0)
-                return;
+                    return;
             }
 
             // Seeded clients as a fallback
@@ -34,24 +36,85 @@ namespace MatchQuest.Core.Data.Repositories
                 new Client(2, "H.H. Hermans", "user2@mail.com", "dOk+X+wt+MA9uIniRGKDFg==.QLvy72hdG8nWj1FyL75KoKeu4DUgu5B/HAHqTD2UFLU="),
                 admin
             };
+            Debug.WriteLine("ClientRepository: ctor - using seeded clients.");
         }
 
         // Get client by email address (case-insensitive)
         public Client? Get(string email)
         {
+            Debug.WriteLine($"ClientRepository.Get(email): Searching for '{email}'");
             if (string.IsNullOrWhiteSpace(email)) return null;
-            return clientList.FirstOrDefault(c => c.EmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase));
+            var found = clientList.FirstOrDefault(c => c.EmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase));
+            Debug.WriteLine($"ClientRepository.Get(email): found? {(found == null ? "no" : "yes (id=" + found.Id + ")")}");
+            return found;
         }
 
         // Get client by ID
         public Client? Get(int id)
         {
+            Debug.WriteLine($"ClientRepository.Get(id): Searching for id={id}");
             if (id <= 0) return null;
-            return clientList.FirstOrDefault(c => c.Id == id);
+            var found = clientList.FirstOrDefault(c => c.Id == id);
+            Debug.WriteLine($"ClientRepository.Get(id): found? {(found == null ? "no" : "yes (email=" + found.EmailAddress + ")")}");
+            return found;
         }
 
         // Get all clients
         public List<Client> GetAll() => new(clientList);
+
+        // Insert a client into the DB and return created client with assigned id
+        public Client? Add(Client client)
+        {
+            Debug.WriteLine($"ClientRepository.Add: Enter - email='{client?.EmailAddress}'");
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+                if (string.IsNullOrWhiteSpace(connectionString))
+                {
+                    Debug.WriteLine("ClientRepository.Add: No connection string found.");
+                    return null;
+                }
+
+                const string sql = @"INSERT INTO `users` (`email`, `password`, `name`, `birth_date`, `region`, `bio`, `profile_picture`, `role`, `is_active`)
+                                     VALUES (@email, @password, @name, @birth_date, @region, @bio, @profile_picture, @role, @is_active);";
+
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+
+                cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
+                cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
+                cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
+                cmd.Parameters.AddWithValue("@birth_date", client.BirthDate.HasValue ? (object)client.BirthDate.Value.Date : DBNull.Value);
+                cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
+                cmd.Parameters.AddWithValue("@bio", client.Bio ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@role", (int)client.Role);
+                cmd.Parameters.AddWithValue("@is_active", client.IsActive);
+
+                cmd.ExecuteNonQuery();
+                var newId = (int)cmd.LastInsertedId;
+
+                var created = new Client(newId, client.Name, client.EmailAddress, client.Password)
+                {
+                    BirthDate = client.BirthDate,
+                    Region = client.Region,
+                    Bio = client.Bio,
+                    ProfilePicture = client.ProfilePicture,
+                    IsActive = client.IsActive,
+                    Role = client.Role
+                };
+
+                clientList.Add(created);
+                Debug.WriteLine($"ClientRepository.Add: Inserted user id={newId} email={created.EmailAddress}");
+                return created;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ClientRepository.Add: Exception: {ex}");
+                return null;
+            }
+        }
 
         // Load clients from the database
         private List<Client>? LoadFromDb()
@@ -64,11 +127,13 @@ namespace MatchQuest.Core.Data.Repositories
                 // Check if connection string is valid else return null
                 if (string.IsNullOrWhiteSpace(connectionString))
                 {
+                    Debug.WriteLine("ClientRepository.LoadFromDb: No connection string.");
                     return null;
                 }
 
                 // SQL query to select all clients
                 const string sql = "SELECT `user_id`, `name`, `email`, `password`, `role`, `birth_date`, `region`, `bio`, `profile_picture`, `is_active` FROM `users` ORDER BY `user_id`;";
+
 
                 // Result list
                 var result = new List<Client>();
@@ -85,7 +150,6 @@ namespace MatchQuest.Core.Data.Repositories
                     return null;
                 }
 
-                // Execute SQL command
                 using var cmd = new MySqlCommand(sql, conn);
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())

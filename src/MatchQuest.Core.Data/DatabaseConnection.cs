@@ -12,10 +12,11 @@ namespace MatchQuest.Core.Data
         public DatabaseConnection()
         {
             // Use the config key that contains your MySQL connection string (appsettings.json uses "DefaultConnection")
-            connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
-            if (string.IsNullOrWhiteSpace(connectionString))
+            var connStr = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+            if (string.IsNullOrWhiteSpace(connStr))
                 throw new InvalidOperationException("MySQL connection string not found in configuration (key: DefaultConnection).");
 
+            connectionString = connStr;
             Connection = new MySqlConnection(connectionString);
         }
 
@@ -27,15 +28,6 @@ namespace MatchQuest.Core.Data
         protected void CloseConnection()
         {
             if (Connection.State != ConnectionState.Closed) Connection.Close();
-        }
-
-        public void CreateTable(string commandText)
-        {
-            OpenConnection();
-            using (var command = new MySqlCommand(commandText, Connection))
-            {
-                command.ExecuteNonQuery();
-            }
         }
 
         public void InsertMultipleWithTransaction(List<string> linesToInsert)

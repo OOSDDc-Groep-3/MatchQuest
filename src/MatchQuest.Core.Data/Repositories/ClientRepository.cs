@@ -15,22 +15,19 @@ namespace MatchQuest.Core.Data.Repositories
 
         public ClientRepository()
         {
-            // Try to load clients from database; fall back to seeded list only if an error occurred (LoadFromDb returned null).
+            // Load from DB; fall back only when an error occurs (LoadFromDb returns null).
             var dbClients = LoadFromDb();
+
+            // If dbClients is null, an error occurred; fall back to seeded clients.
             if (dbClients != null)
             {
-                // Use DB result (even if empty). This avoids silently using fallback when DB table is simply empty.
                 clientList = dbClients;
                 if (clientList.Count == 0)
-                    Debug.WriteLine("ClientRepository: Users table returned 0 rows.");
                 return;
             }
 
-            Debug.WriteLine("ClientRepository: Falling back to seeded clients.");
-
-            var admin = new Client(3, "A.J. Kwak", "user3@mail.com", "sxnIcZdYt8wC8MYWcQVQjQ==.FKd5Z/jwxPv3a63lX+uvQ0+P7EuNYZybvkmdhbnkIHA=");
-            admin.Role = Role.Admin;
-
+            // Seeded clients as a fallback
+            var admin = new Client(3, "A.J. Kwak", "user3@mail.com", "sxnIcZdYt8wC8MYWcQVQjQ==.FKd5Z/jwxPv3a63lX+uvQ0+P7EuNYZybvkmdhbnkIHA=") { Role = Role.Admin };
             clientList = new List<Client>
             {
                 new Client(1, "M.J. Curie", "user1@mail.com", "IunRhDKa+fWo8+4/Qfj7Pg==.kDxZnUQHCZun6gLIE6d9oeULLRIuRmxmH2QKJv2IM08="),
@@ -39,42 +36,44 @@ namespace MatchQuest.Core.Data.Repositories
             };
         }
 
+        // Get client by email address (case-insensitive)
         public Client? Get(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return null;
             return clientList.FirstOrDefault(c => c.EmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase));
         }
 
+        // Get client by ID
         public Client? Get(int id)
         {
             if (id <= 0) return null;
             return clientList.FirstOrDefault(c => c.Id == id);
         }
 
-        public List<Client> GetAll()
-        {
-            return new List<Client>(clientList);
-        }
+        // Get all clients
+        public List<Client> GetAll() => new(clientList);
 
+        // Load clients from the database
         private List<Client>? LoadFromDb()
         {
             try
             {
+                // Get connection string
                 var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
-                Debug.WriteLine($"ClientRepository: DefaultConnection found? {!string.IsNullOrWhiteSpace(connectionString)}");
+
+                // Check if connection string is valid else return null
                 if (string.IsNullOrWhiteSpace(connectionString))
                 {
-                    Debug.WriteLine("ClientRepository: DefaultConnection not found in configuration.");
                     return null;
                 }
 
-                const string sql = @"
-SELECT `User_Id`, `Name`, `Email`, `Password`, `Role`, `birth_date`, `region`, `bio`, `profile_picture`, `is_active`
-FROM `Users`
-ORDER BY `User_Id`;";
+                // SQL query to select all clients
+                const string sql = "SELECT `user_id`, `name`, `email`, `password`, `role`, `birth_date`, `region`, `bio`, `profile_picture`, `is_active` FROM `users` ORDER BY `user_id`;";
 
+                // Result list
                 var result = new List<Client>();
 
+                // Open DB connection
                 using var conn = new MySqlConnection(connectionString);
                 try
                 {
@@ -86,91 +85,37 @@ ORDER BY `User_Id`;";
                     return null;
                 }
 
+                // Execute SQL command
                 using var cmd = new MySqlCommand(sql, conn);
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    // Helper locals to try alternative column names
-                    int? GetInt(params string[] names)
+                    var idOrd = reader.GetOrdinal("user_id");
+                    var nameOrd = reader.GetOrdinal("name");
+                    var emailOrd = reader.GetOrdinal("email");
+                    var passwordOrd = reader.GetOrdinal("password");
+                    var roleOrd = reader.GetOrdinal("role");
+                    var birthOrd = reader.GetOrdinal("birth_date");
+                    var regionOrd = reader.GetOrdinal("region");
+                    var bioOrd = reader.GetOrdinal("bio");
+                    var picOrd = reader.GetOrdinal("profile_picture");
+                    var activeOrd = reader.GetOrdinal("is_active");
+
+                    var id = reader.IsDBNull(idOrd) ? 0 : reader.GetInt32(idOrd);
+                    var name = reader.IsDBNull(nameOrd) ? string.Empty : reader.GetString(nameOrd);
+                    var email = reader.IsDBNull(emailOrd) ? string.Empty : reader.GetString(emailOrd);
+                    var password = reader.IsDBNull(passwordOrd) ? string.Empty : reader.GetString(passwordOrd);
+                    var roleInt = reader.IsDBNull(roleOrd) ? 0 : reader.GetInt32(roleOrd);
+                    DateTime? birthDate = reader.IsDBNull(birthOrd) ? null : reader.GetDateTime(birthOrd);
+                    var region = reader.IsDBNull(regionOrd) ? null : reader.GetString(regionOrd);
+                    var bio = reader.IsDBNull(bioOrd) ? null : reader.GetString(bioOrd);
+                    var profilePicture = reader.IsDBNull(picOrd) ? null : reader.GetString(picOrd);
+                    var isActive = reader.IsDBNull(activeOrd) ? true : reader.GetBoolean(activeOrd);
+
+                    var client = new Client(id, name, email, password, birthDate, region, bio, profilePicture, isActive)
                     {
-                        foreach (var n in names)
-                        {
-                            try
-                            {
-                                var ord = reader.GetOrdinal(n);
-                                if (!reader.IsDBNull(ord)) return reader.GetInt32(ord);
-                            }
-                            catch (IndexOutOfRangeException) { /* try next */ }
-                        }
-                        return null;
-                    }
-
-                    string? GetString(params string[] names)
-                    {
-                        foreach (var n in names)
-                        {
-                            try
-                            {
-                                var ord = reader.GetOrdinal(n);
-                                if (!reader.IsDBNull(ord)) return reader.GetString(ord);
-                            }
-                            catch (IndexOutOfRangeException) { /* try next */ }
-                        }
-                        return null;
-                    }
-
-                    DateTime? GetDate(params string[] names)
-                    {
-                        foreach (var n in names)
-                        {
-                            try
-                            {
-                                var ord = reader.GetOrdinal(n);
-                                if (!reader.IsDBNull(ord)) return reader.GetDateTime(ord);
-                            }
-                            catch (IndexOutOfRangeException) { /* try next */ }
-                        }
-                        return null;
-                    }
-
-                    bool? GetBool(params string[] names)
-                    {
-                        foreach (var n in names)
-                        {
-                            try
-                            {
-                                var ord = reader.GetOrdinal(n);
-                                if (!reader.IsDBNull(ord)) return reader.GetBoolean(ord);
-                            }
-                            catch (IndexOutOfRangeException) { /* try next */ }
-                        }
-                        return null;
-                    }
-
-                    var id = GetInt("User_Id", "Id", "user_id") ?? 0;
-                    var name = GetString("Name") ?? string.Empty;
-                    // DB sometimes has column Email or EmailAddress — handle both
-                    var email = GetString("Email", "EmailAddress") ?? string.Empty;
-                    var password = GetString("Password") ?? string.Empty;
-
-                    var birthDate = GetDate("birth_date");
-                    var region = GetString("region");
-                    var bio = GetString("bio");
-                    var profilePicture = GetString("profile_picture");
-                    var isActive = GetBool("is_active") ?? true;
-
-                    var roleInt = GetInt("Role") ?? 0;
-
-                    var client = new Client(id, name, email, password, birthDate, region, bio, profilePicture, isActive);
-
-                    if (Enum.IsDefined(typeof(Role), (ushort)roleInt))
-                    {
-                        client.Role = (Role)roleInt;
-                    }
-                    else
-                    {
-                        client.Role = Role.None;
-                    }
+                        Role = Enum.IsDefined(typeof(Role), (ushort)roleInt) ? (Role)roleInt : Role.None
+                    };
 
                     result.Add(client);
                 }

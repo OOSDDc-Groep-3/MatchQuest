@@ -308,8 +308,7 @@
                          CornerRadius="14"
                          HorizontalOptions="Center"
                          VerticalOptions="Center"
-                         Command="{Binding SendMessageCommand}"
-                         CommandParameter="{Binding Text, Source={x:Reference MessageEntry}}" />
+                         Command="{Binding SendMessageCommand}"/>
         </Grid>
 
     </Grid>

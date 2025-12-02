@@ -75,21 +75,20 @@
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
-            <VerticalStackLayout Padding="0" Spacing="0">
+            <Grid Padding="0" RowDefinitions="Auto,*,Auto">
 
                 <!-- Header -->
-                <HorizontalStackLayout Margin="0,6,30,6" Spacing="-26" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Image Source="matchquest.png" WidthRequest="80" HeightRequest="80" />
-                    <Label Text="atches"
+                <HorizontalStackLayout Grid.Row="0" Margin="0,24,32,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Image Source="matchquest.png" WidthRequest="100" HeightRequest="160" />
+                    <Label Text="ATCHES"
                            FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AccentColor}"
                            VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Scrollable list -->
-                <ScrollView>
-                    <VerticalStackLayout Padding="8" Spacing="0">
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Padding="8" Spacing="32">
 
                         <!-- Contact: Kees -->
                         <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
@@ -171,12 +170,177 @@
                             </Grid>
                         </Border>
 
+                        <!-- Contact: Kees -->
+                        <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
+                        <Border x:Name="FeesButton" Style="{StaticResource ContactBorderStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                <!-- Avatar -->
+                                <Image Grid.Column="0"
+                                       Source="showcaseprofile.png"
+                                       WidthRequest="{StaticResource AvatarSize}"
+                                       HeightRequest="{StaticResource AvatarSize}"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Name and preview -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+
+                                <!-- Time and status -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
+                                    <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                        <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <BoxView Style="{StaticResource SeparatorStyle}" />
+                        <!-- Contact: Kees -->
+                        <Border x:Name="deesButton" Style="{StaticResource ContactBorderStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                <!-- Avatar -->
+                                <Image Grid.Column="0"
+                                       Source="showcaseprofile.png"
+                                       WidthRequest="{StaticResource AvatarSize}"
+                                       HeightRequest="{StaticResource AvatarSize}"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Name and preview -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+
+                                <!-- Time and status -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
+                                    <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                        <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Contact: Kees -->
+                        <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
+                        <Border x:Name="AeesButton" Style="{StaticResource ContactBorderStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                <!-- Avatar -->
+                                <Image Grid.Column="0"
+                                       Source="showcaseprofile.png"
+                                       WidthRequest="{StaticResource AvatarSize}"
+                                       HeightRequest="{StaticResource AvatarSize}"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Name and preview -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+
+                                <!-- Time and status -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
+                                    <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                        <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Contact: Kees -->
+                        <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
+                        <Border x:Name="ReesButton" Style="{StaticResource ContactBorderStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenChatCommand}"/>
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+                                <!-- Avatar -->
+                                <Image Grid.Column="0"
+                                       Source="showcaseprofile.png"
+                                       WidthRequest="{StaticResource AvatarSize}"
+                                       HeightRequest="{StaticResource AvatarSize}"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <!-- Name and preview -->
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+
+                                <!-- Time and status -->
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
+                                    <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                        <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="10" />
+                                            </Border.StrokeShape>
+                                            <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
                         <BoxView Style="{StaticResource SeparatorStyle}" />
 
                     </VerticalStackLayout>
                 </ScrollView>
-
-                <Picker x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" VerticalOptions="End">
+                
+                <!-- Picker remains in the bottom row so it is always visible -->
+                <Picker Grid.Row="2" x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" Margin="31">
                     <Picker.Items>
                         <x:String>My Matches Filter</x:String>
                         <x:String>New</x:String>
@@ -204,7 +368,7 @@
                     </Picker.Items>
                 </Picker>
 
-            </VerticalStackLayout>
+            </Grid>
         </Border>
 
         <!-- Right column: Profile Card (unchanged structure, tightened spacing where helpful) -->

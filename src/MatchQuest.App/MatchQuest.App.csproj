@@ -71,6 +71,9 @@
     <Compile Update="Views\HomeView.xaml.cs">
       <DependentUpon>HomeView.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\ChatView.xaml.cs">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
       <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
     </Compile>
@@ -80,6 +83,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="Views\ChatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Views\RegistrationPersonalInfoView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

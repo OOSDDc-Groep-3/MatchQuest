@@ -2,6 +2,7 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MatchQuest.App"
+             xmlns:conv="clr-namespace:MatchQuest.App.Converters"
              x:Class="MatchQuest.App.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -9,6 +10,9 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Register converter globally -->
+            <conv:EqualityToBoolConverter x:Key="EqualityToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

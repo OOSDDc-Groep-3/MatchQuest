@@ -11,8 +11,10 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Register converter globally -->
-            <conv:EqualityToBoolConverter x:Key="EqualityToBoolConverter" />
+            <!-- Register converters globally -->
+            <conv:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <conv:InverseBooleanConverter x:Key="InverseBool" />
+            <!-- alternate key if used elsewhere -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

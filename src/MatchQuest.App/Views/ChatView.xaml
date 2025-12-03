@@ -224,7 +224,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid>
                                     <!-- Outbound (right) -->
-                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding Sender, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=999}">
+                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsOutbound}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
                                             <Border BackgroundColor="#C0ffee" Padding="12" StrokeThickness="0">
                                                 <Border.StrokeShape>
@@ -240,7 +240,7 @@
                                         </StackLayout>
                                     </Grid>
                                     <!-- Inbound (left) -->
-                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding Sender, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=!999}">
+                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
                                             <Image Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
              xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="MatchQuest.App.Views.ChatView"
+             x:DataType="vm:ChatViewModel"
              BackgroundImageSource="background.png"
              BackgroundColor="Transparent">
 
@@ -210,106 +211,70 @@
             </Border.StrokeShape>
 
             <Grid>
-                <ScrollView x:Name="MessagesScroll" Orientation="Vertical">
-                    <VerticalStackLayout Spacing="12" Padding="18">
-
-                        <!-- Outbound message (right) -->
-                        <Grid ColumnDefinitions="*,Auto" HorizontalOptions="Fill">
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
-                                <Border Style="{StaticResource OutboundBubble}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="14,14,14,4" />
-                                    </Border.StrokeShape>
-                                    <Label Text="Lorem ipsum dolor sit amet, adipiscing elit." TextColor="Black" LineBreakMode="WordWrap" />
-                                </Border>
-
-                                <!-- avatar right -->
-                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="End">
-                                    <Image.Clip>
-                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
-                                    </Image.Clip>
-                                </Image>
-                            </StackLayout>
-                        </Grid>
-
-                        <!-- Inbound message (left) -->
-                        <Grid ColumnDefinitions="Auto,*" HorizontalOptions="Fill">
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
-                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="Start">
-                                    <Image.Clip>
-                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
-                                    </Image.Clip>
-                                </Image>
-
+                <!-- CollectionView bound to Messages -->
+                <CollectionView x:Name="MessagesCollection"
+                                ItemsSource="{Binding Messages}"
+                                SelectionMode="None"
+                                VerticalOptions="Fill">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Message">
+                            <Grid Padding="8" ColumnDefinitions="*,Auto">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
                                 <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <StackLayout Orientation="Horizontal" Spacing="0" HorizontalOptions="Start">
-                                        <Border Style="{StaticResource InboundBubble}">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="14,14,4,14" />
-                                            </Border.StrokeShape>
-                                            <Label Text="Lorem ipsum dolor sit amet, adipiscing elit." TextColor="{StaticResource SecondaryText}" LineBreakMode="WordWrap" />
-                                        </Border>
-                                    </StackLayout>
+                                    <!-- Outbound (right) -->
+                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding Sender, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=999}">
+                                        <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
+                                            <Border BackgroundColor="#C0ffee" Padding="12" StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding MessageText}" TextColor="Black" LineBreakMode="WordWrap" />
+                                            </Border>
+                                            <Image Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
+                                                </Image.Clip>
+                                            </Image>
+                                        </StackLayout>
+                                    </Grid>
+                                    <!-- Inbound (left) -->
+                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding Sender, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=!999}">
+                                        <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
+                                            <Image Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
+                                                </Image.Clip>
+                                            </Image>
+                                            <Border BackgroundColor="#001E1E1E" Stroke="#A4D5C7" StrokeThickness="1.5" Padding="12">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="14" />
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding MessageText}" TextColor="#DADADA" LineBreakMode="WordWrap" />
+                                            </Border>
+                                        </StackLayout>
+                                    </Grid>
                                 </Grid>
-                            </StackLayout>
-                        </Grid>
-
-                        <!-- Another outbound message -->
-                        <Grid ColumnDefinitions="*,Auto" HorizontalOptions="Fill">
-                            <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
-                                <Border Style="{StaticResource OutboundBubble}">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="14,14,14,4" />
-                                    </Border.StrokeShape>
-                                    <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor." TextColor="Black" LineBreakMode="WordWrap" />
-                                </Border>
-
-                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="End">
-                                    <Image.Clip>
-                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
-                                    </Image.Clip>
-                                </Image>
-                            </StackLayout>
-                        </Grid>
-
-                    </VerticalStackLayout>
-                </ScrollView>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
             </Grid>
         </Border>
 
-        <!-- Input area -->
+        <!-- Input area (binds to viewmodel SendMessage) -->
         <Grid Grid.Column="1" Grid.Row="2" Padding="20" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="10">
             <Border>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <Grid BackgroundColor="#192126">
-                    <Entry x:Name="MessageEntry"
-                           Text="{Binding MessageText, Mode=TwoWay}"
-                           Placeholder="Type a message..."
-                           PlaceholderColor="{StaticResource SecondaryText}"
-                           TextColor="{StaticResource SecondaryText}"
-                           VerticalOptions="Center"
-                           ReturnType="Send"
-                           BackgroundColor="Transparent"
-                           />
+                    <Entry Text="{Binding MessageText, Mode=TwoWay}" Placeholder="Type a message..." PlaceholderColor="#DADADA" TextColor="#DADADA" VerticalOptions="Center" ReturnType="Send" BackgroundColor="Transparent" />
                 </Grid>
             </Border>
 
-            <ImageButton Grid.Column="1"
-                         Source="sendicon.png"
-                         BackgroundColor="Transparent"
-                         WidthRequest="35"
-                         HeightRequest="55"
-                         CornerRadius="14"
-                         HorizontalOptions="Center"
-                         VerticalOptions="Center"
-                         Command="{Binding SendMessageCommand}"/>
+            <ImageButton Grid.Column="1" Source="sendicon.png" BackgroundColor="Transparent" WidthRequest="35" HeightRequest="55" CornerRadius="14" Command="{Binding SendMessageCommand}" />
         </Grid>
-
     </Grid>
 </ContentPage>

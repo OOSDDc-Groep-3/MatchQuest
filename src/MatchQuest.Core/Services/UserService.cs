@@ -9,27 +9,27 @@ namespace MatchQuest.Core.Services
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _clientRepository;
-        public UserService(IUserRepository clientRepository)
+        private readonly IUserRepository _userRepository;
+        public UserService(IUserRepository userRepository)
         {
-            _clientRepository = clientRepository;
+            _userRepository = userRepository;
         }
 
         public User? Get(string email)
         {
-            var result = _clientRepository.Get(email);
+            var result = _userRepository.Get(email);
             return result;
         }
 
         public User? Get(int id)
         {
-            var result = _clientRepository.Get(id);
+            var result = _userRepository.Get(id);
             return result;
         }
 
         public List<User> GetAll()
         {
-            var clients = _clientRepository.GetAll();
+            var clients = _userRepository.GetAll();
             return clients;
         }
 
@@ -37,7 +37,7 @@ namespace MatchQuest.Core.Services
         {
             try
             {
-                var created = _clientRepository.Add(client);
+                var created = _userRepository.Add(client);
                 return created;
             }
             catch (Exception ex)

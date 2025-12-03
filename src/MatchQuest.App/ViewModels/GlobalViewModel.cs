@@ -1,9 +1,19 @@
-﻿using MatchQuest.Core.Models;
+﻿using System;
+using System.Diagnostics;
+using MatchQuest.Core.Models;
 
 namespace MatchQuest.App.ViewModels
 {
     public partial class GlobalViewModel : BaseViewModel
     {
-        public Client Client { get; set; }
+        private User _client;
+        public User Client
+        {
+            get => _client;
+            set
+            {
+                _client = value;
+            }
+        }
     }
 }

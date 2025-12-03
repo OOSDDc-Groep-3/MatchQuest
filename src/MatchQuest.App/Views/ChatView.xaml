@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
+             x:Class="MatchQuest.App.Views.ChatView"
+             BackgroundImageSource="background.png"
+             BackgroundColor="Transparent">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Colors -->
+            <Color x:Key="AccentColor">#C0ffee</Color>
+            <Color x:Key="OverlayColor">#E91E1E1E</Color>
+            <Color x:Key="SecondaryText">#DADADA</Color>
+            <Color x:Key="TimestampColor">#B0B0B0</Color>
+            <Color x:Key="CardStroke">#A4D5C7</Color>
+            <Color x:Key="BubbleInboundBg">#001E1E1E</Color>
+            <Color x:Key="BubbleOutboundBg">#C0ffee</Color>
+            <Color x:Key="BubbleInboundStroke">#A4D5C7</Color>
+
+            <!-- Sizes -->
+            <x:Double x:Key="AvatarSize">48</x:Double>
+            <x:Double x:Key="AvatarRadius">24</x:Double>
+
+            <!-- Styles -->
+            <Style x:Key="SeparatorStyle" TargetType="BoxView">
+                <Setter Property="HeightRequest" Value="1" />
+                <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="Margin" Value="0,6,6,0" />
+            </Style>
+
+            <Style x:Key="ContactBorderStyle" TargetType="Border">
+                <Setter Property="Margin" Value="0,6,0,0" />
+                <Setter Property="Padding" Value="8" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="StrokeThickness" Value="0" />
+            </Style>
+
+            <Style x:Key="NameLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="{StaticResource AccentColor}" />
+            </Style>
+
+            <Style x:Key="PreviewLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="13" />
+                <Setter Property="TextColor" Value="{StaticResource SecondaryText}" />
+                <Setter Property="LineBreakMode" Value="TailTruncation" />
+                <Setter Property="MaxLines" Value="1" />
+            </Style>
+
+            <Style x:Key="TimestampLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="11" />
+                <Setter Property="TextColor" Value="{StaticResource TimestampColor}" />
+                <Setter Property="HorizontalOptions" Value="End" />
+            </Style>
+
+            <!-- Message bubble styles -->
+            <Style x:Key="InboundBubble" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource BubbleInboundBg}" />
+                <Setter Property="Stroke" Value="{StaticResource BubbleInboundStroke}" />
+                <Setter Property="StrokeThickness" Value="1.5" />
+                <Setter Property="Padding" Value="12" />
+            </Style>
+
+            <Style x:Key="OutboundBubble" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="{StaticResource BubbleOutboundBg}" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Padding" Value="12" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="0.38*,0.62*">
+
+        <!-- Full-page semi-opaque overlay so background image reads darker -->
+        <BoxView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
+                 Color="{StaticResource OverlayColor}"
+                 HorizontalOptions="Fill" VerticalOptions="Fill"
+                 InputTransparent="True" />
+
+        <!-- Left: Matches list (sidebar) -->
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                Margin="0"
+                BackgroundColor="Transparent"
+                Stroke="{StaticResource AccentColor}"
+                StrokeThickness="2">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0" />
+            </Border.StrokeShape>
+
+            <VerticalStackLayout Padding="0" Spacing="0">
+
+                <!-- Header -->
+                <Grid Padding="12" ColumnDefinitions="Auto,*">
+                    <Image Source="matchquest.png" WidthRequest="64" HeightRequest="64" VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Text="MATCHES"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource AccentColor}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Start"
+                           Margin="8,0,0,0"/>
+                </Grid>
+
+                <!-- Scrollable contact list -->
+                <ScrollView>
+                    <VerticalStackLayout Padding="8" Spacing="0">
+
+                        <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
+                        <Border x:Name="KeesButton" Style="{StaticResource ContactBorderStyle}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenMatchCommand}" CommandParameter="Kees" NumberOfTapsRequired="1" />
+                            </Border.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Image Grid.Column="0"
+                                       Source="showcaseprofile.png"
+                                       WidthRequest="{StaticResource AvatarSize}"
+                                       HeightRequest="{StaticResource AvatarSize}"
+                                       Aspect="AspectFill"
+                                       VerticalOptions="Center">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
+                                    <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="10" />
+                                        </Border.StrokeShape>
+                                        <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <BoxView Style="{StaticResource SeparatorStyle}" />
+
+                        <!-- Additional contacts (shortened for brevity) -->
+                        <Border Style="{StaticResource ContactBorderStyle}">
+                            <Grid ColumnDefinitions="Auto,*,Auto">
+                                <Image Grid.Column="0" Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
+                                    <Label Text="Britney" Style="{StaticResource NameLabelStyle}" />
+                                    <Label Text="Hey! Do you have OF?" Style="{StaticResource PreviewLabelStyle}" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
+                                    <Label Text="Yesterday" Style="{StaticResource TimestampLabelStyle}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <BoxView Style="{StaticResource SeparatorStyle}" />
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Filter picker at bottom -->
+                <HorizontalStackLayout Padding="12" VerticalOptions="End">
+                    <Picker x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
+                        <Picker.Items>
+                            <x:String>Filter</x:String>
+                            <x:String>New</x:String>
+                            <x:String>Favorites</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Right: Chat area header -->
+        <Grid Grid.Column="1" Grid.Row="0" Padding="32" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+            <Image Source="back.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center" />
+            <Label Grid.Column="1" Text="KEES" FontSize="32" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" VerticalOptions="Center" HorizontalOptions="Start" />
+            <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
+                <Picker x:Name="NewMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="140">
+                    <Picker.Items>
+                        <x:String>FILTER</x:String>
+                    </Picker.Items>
+                </Picker>
+                <ImageButton Source="settings.png" BackgroundColor="{StaticResource AccentColor}" CornerRadius="28" WidthRequest="32" HeightRequest="32" />
+            </HorizontalStackLayout>
+
+            <!-- header divider -->
+            <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,90,0,0" />
+        </Grid>
+
+        <!-- Right: Chat messages card -->
+        <Border Grid.Column="1" Grid.Row="1" Margin="32,12,32,12"
+                BackgroundColor="Transparent">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+
+            <Grid>
+                <ScrollView x:Name="MessagesScroll" Orientation="Vertical">
+                    <VerticalStackLayout Spacing="12" Padding="18">
+
+                        <!-- Outbound message (right) -->
+                        <Grid ColumnDefinitions="*,Auto" HorizontalOptions="Fill">
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
+                                <Border Style="{StaticResource OutboundBubble}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14,14,14,4" />
+                                    </Border.StrokeShape>
+                                    <Label Text="Lorem ipsum dolor sit amet, adipiscing elit." TextColor="Black" LineBreakMode="WordWrap" />
+                                </Border>
+
+                                <!-- avatar right -->
+                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="End">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Inbound message (left) -->
+                        <Grid ColumnDefinitions="Auto,*" HorizontalOptions="Fill">
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
+                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="Start">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackLayout Orientation="Horizontal" Spacing="0" HorizontalOptions="Start">
+                                        <Border Style="{StaticResource InboundBubble}">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="14,14,4,14" />
+                                            </Border.StrokeShape>
+                                            <Label Text="Lorem ipsum dolor sit amet, adipiscing elit." TextColor="{StaticResource SecondaryText}" LineBreakMode="WordWrap" />
+                                        </Border>
+                                    </StackLayout>
+                                </Grid>
+                            </StackLayout>
+                        </Grid>
+
+                        <!-- Another outbound message -->
+                        <Grid ColumnDefinitions="*,Auto" HorizontalOptions="Fill">
+                            <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
+                                <Border Style="{StaticResource OutboundBubble}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="14,14,14,4" />
+                                    </Border.StrokeShape>
+                                    <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor." TextColor="Black" LineBreakMode="WordWrap" />
+                                </Border>
+
+                                <Image Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill" VerticalOptions="End">
+                                    <Image.Clip>
+                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
+                                    </Image.Clip>
+                                </Image>
+                            </StackLayout>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Grid>
+        </Border>
+
+        <!-- Input area -->
+        <Grid Grid.Column="1" Grid.Row="2" Padding="20" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="10">
+            <Border>
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <Grid BackgroundColor="#192126">
+                    <Entry x:Name="MessageEntry"
+                           Text="{Binding MessageText, Mode=TwoWay}"
+                           Placeholder="Type a message..."
+                           PlaceholderColor="{StaticResource SecondaryText}"
+                           TextColor="{StaticResource SecondaryText}"
+                           VerticalOptions="Center"
+                           ReturnType="Send"
+                           BackgroundColor="Transparent"
+                           />
+                </Grid>
+            </Border>
+
+            <ImageButton Grid.Column="1"
+                         Source="sendicon.png"
+                         BackgroundColor="Transparent"
+                         WidthRequest="35"
+                         HeightRequest="55"
+                         CornerRadius="14"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center"
+                         Command="{Binding SendMessageCommand}"/>
+        </Grid>
+
+    </Grid>
+</ContentPage>

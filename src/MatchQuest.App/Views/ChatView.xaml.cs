@@ -45,7 +45,7 @@ public partial class ChatView : ContentPage
         }
     }
 
-    private async Task WaitForCollectionViewLayoutAsync(int timeoutMs = 1500)
+    private async Task WaitForCollectionViewLayoutAsync(int timeoutMs = 2500)
     {
         if (_collectionViewMeasured) return;
 
@@ -98,6 +98,21 @@ public partial class ChatView : ContentPage
             await Task.Delay(120).ConfigureAwait(false);
             await ScrollToBottomAsync().ConfigureAwait(false);
         });
+    }
+
+    private void MessageEntry_Completed(object? sender, EventArgs e)
+    {
+        // When user presses Enter/Send on the keyboard, invoke the VM command.
+        if (BindingContext is ChatViewModel vm && vm.SendMessageCommand != null && vm.SendMessageCommand.CanExecute(null))
+        {
+            vm.SendMessageCommand.Execute(null);
+        }
+
+        // Remove keyboard focus so Enter doesn't re-open it on some platforms.
+        if (sender is Microsoft.Maui.Controls.Entry entry)
+        {
+            entry.Unfocus();
+        }
     }
 
     protected override void OnDisappearing()

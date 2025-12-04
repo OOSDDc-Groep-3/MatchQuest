@@ -8,5 +8,6 @@ namespace MatchQuest.Core.Interfaces.Repositories
         public User? Get(int id);
         public List<User> GetAll();
         public User? Add(User client);
+        List<User> GetUsersWithMatchingGameType(int userId);
     }
 }

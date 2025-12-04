@@ -16,6 +16,7 @@ namespace MatchQuest.App.ViewModels
     {
         private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
+        private readonly IUserService _userService;
         private readonly System.Timers.Timer _pollTimer;
         private readonly ChatRepository _chatRepo;
 
@@ -29,11 +30,13 @@ namespace MatchQuest.App.ViewModels
         public ObservableCollection<Message> Messages { get; } = new();
 
         [ObservableProperty] private string messageText = string.Empty;
+        [ObservableProperty] private string partnerName = string.Empty; // UI-bound partner name
 
-        public ChatViewModel(IAuthService authService, GlobalViewModel global)
+        public ChatViewModel(IAuthService authService, GlobalViewModel global, IUserService userService)
         {
             _authService = authService;
             _global = global;
+            _userService = userService;
             _chatRepo = new ChatRepository();
 
             // Load/create chat and messages from DB
@@ -54,6 +57,14 @@ namespace MatchQuest.App.ViewModels
             {
                 ChatId = 0;
                 return;
+            }
+
+            // set partner name by resolving other participant from matches and users table
+            var otherUserId = _chatRepo.GetOtherUserIdForMatch(matchId, CurrentUserId);
+            if (otherUserId > 0)
+            {
+                var other = _userService.Get(otherUserId);
+                PartnerName = other?.Name ?? string.Empty;
             }
 
             // Ensure a chat exists for this match and get its id

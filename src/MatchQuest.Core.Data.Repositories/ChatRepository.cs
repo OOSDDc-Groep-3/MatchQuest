@@ -151,4 +151,35 @@ public class ChatRepository : DatabaseConnection
 
         return (found != null && found != DBNull.Value) ? Convert.ToInt32(found) : 0;
     }
+
+    /// <summary>
+    /// Return the other participant user_id for the given match_id.
+    /// Returns 0 when not found or when other user cannot be determined.
+    /// </summary>
+    public int GetOtherUserIdForMatch(int matchId, int currentUserId)
+    {
+        OpenConnection();
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"SELECT user1_id, user2_id
+                            FROM matches
+                            WHERE match_id = @matchId
+                            LIMIT 1;";
+        cmd.Parameters.AddWithValue("@matchId", matchId);
+
+        using var rdr = cmd.ExecuteReader();
+        if (!rdr.Read())
+        {
+            CloseConnection();
+            return 0;
+        }
+
+        var user1 = rdr.IsDBNull(rdr.GetOrdinal("user1_id")) ? 0 : rdr.GetInt32("user1_id");
+        var user2 = rdr.IsDBNull(rdr.GetOrdinal("user2_id")) ? 0 : rdr.GetInt32("user2_id");
+        CloseConnection();
+
+        if (currentUserId == 0) return 0;
+        if (user1 == currentUserId) return user2;
+        if (user2 == currentUserId) return user1;
+        return 0;
+    }
 }

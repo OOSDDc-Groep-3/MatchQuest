@@ -181,4 +181,38 @@ public class ChatRepository : DatabaseConnection
         CloseConnection();
         return result;
     }
+
+    // Add this method to ChatRepository to resolve the missing method error.
+    public int GetOtherUserIdForMatch(int matchId, int currentUserId)
+    {
+        // Example implementation: assumes a table "Matches" with columns "User1Id" and "User2Id"
+        // and that matchId is a valid match in the database.
+        OpenConnection();
+        try
+        {
+            using (var cmd = Connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT User1_Id, User2_Id FROM Matches WHERE match_id = @matchId";
+                cmd.Parameters.AddWithValue("@matchId", matchId);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        int user1Id = reader.GetInt32(0);
+                        int user2Id = reader.GetInt32(1);
+                        if (user1Id == currentUserId)
+                            return user2Id;
+                        if (user2Id == currentUserId)
+                            return user1Id;
+                    }
+                }
+            }
+        }
+        finally
+        {
+            CloseConnection();
+        }
+        return 0; // Not found or currentUserId not part of match
+    }
 }

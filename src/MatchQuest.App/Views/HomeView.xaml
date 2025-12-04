@@ -3,8 +3,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
              x:Class="MatchQuest.App.Views.HomeView"
              x:DataType="vm:HomeViewModel"
+             x:Name="HomePage"
              BackgroundImageSource="background.png"
              BackgroundColor="Transparent">
 
@@ -114,9 +116,17 @@
                                         ItemsUpdatingScrollMode="KeepScrollOffset">
                             
                             <CollectionView.ItemTemplate>
-                                <DataTemplate>
+                                <!-- Added x:DataType and TapGesture to use strongly-typed bindings and call the VM command -->
+                                <DataTemplate x:DataType="models:User">
                                     <!-- Visible card (high contrast) so labels are readable over background image -->
                                     <Border Margin="4" Padding="24" BackgroundColor="Transparent" StrokeThickness="1" Stroke="#C0ffee">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding BindingContext.OpenChatForCommand, Source={x:Reference HomePage}}"
+                                                CommandParameter="{Binding .}"
+                                                NumberOfTapsRequired="1" />
+                                        </Border.GestureRecognizers>
+
                                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                                             <Image Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}"
                                                    WidthRequest="{StaticResource AvatarSize}"
@@ -130,6 +140,7 @@
                                             </Image>
 
                                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Spacing="4">
+                                                <!-- Use strongly-typed binding to Name -->
                                                 <Label Text="{Binding Name, FallbackValue='Unknown'}" Style="{StaticResource NameLabelStyle}" TextColor="#C0ffee" />
                                             </VerticalStackLayout> 
 

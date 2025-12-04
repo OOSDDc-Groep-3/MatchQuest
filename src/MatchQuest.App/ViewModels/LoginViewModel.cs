@@ -1,11 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
-using MatchQuest.Core.Models;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.ApplicationModel;
-using System.Threading.Tasks;
-
 namespace MatchQuest.App.ViewModels
 {
     public partial class LoginViewModel : BaseViewModel
@@ -14,17 +9,17 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
 
         [ObservableProperty]
-        private string email = "user3@mail.com";
+        private string _email = "jemama@mama.com";
 
         [ObservableProperty]
-        private string password = "user3";
+        private string _password = "test123";
 
         [ObservableProperty]
-        private string loginMessage;
+        private string _loginMessage;
 
         public LoginViewModel(IAuthService authService, GlobalViewModel global)
         {
-            _authService = authService;
+            _authService = authService; 
             _global = global;
         }
 
@@ -32,7 +27,7 @@ namespace MatchQuest.App.ViewModels
         private async Task Login()
         {
             // Authenticate client
-            User? authenticatedClient = _authService.Login(Email, Password);
+            var authenticatedClient = _authService.Login(Email, Password);
             if (authenticatedClient != null)
             {
                 LoginMessage = $"Welcome {authenticatedClient.Name}!";

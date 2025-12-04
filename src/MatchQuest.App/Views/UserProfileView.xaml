@@ -131,35 +131,38 @@
                             HorizontalOptions="Center"/>
 
                     <!-- FORMULIER VELDEN -->
-                    <Label Text="First name" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry Placeholder="Enter first name...."
+                    <Label Text="name" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <Entry 
+                           Text="{Binding Name}"
+                           Placeholder="Enter your name..."
                            FontFamily="RubikRegular"
                            TextColor="White"
                            PlaceholderColor="Gray"
                            BackgroundColor="#312932"/>
 
-                    <Label Text="Last name" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry Placeholder="Enter last name...."
-                           FontFamily="RubikRegular"
-                           TextColor="White"
-                           PlaceholderColor="Gray"
-                           BackgroundColor="#312932"/>
+                    
 
                     <Label Text="Date of birth" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <DatePicker MaximumDate="{x:Static system:DateTime.Now}"
+                    <DatePicker 
+                                Date="{Binding BirthDate}"
+                                MaximumDate="{x:Static system:DateTime.Now}"
                                 FontFamily="RubikRegular"
                                 TextColor="White"
                                 BackgroundColor="#312932"/>
 
                     <Label Text="City" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry Placeholder="Enter city...."
+                    <Entry
+                           Text="{Binding Region}"
+                           Placeholder="Enter city...."
                            FontFamily="RubikRegular"
                            TextColor="White"
                            PlaceholderColor="Gray"
                            BackgroundColor="#312932"/>
 
                     <Label Text="Biography" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Editor Placeholder="Enter biography...."
+                    <Editor 
+                            Text = "{Binding Biography}"
+                            Placeholder="Enter biography...."
                             FontFamily="RubikRegular"
                             BackgroundColor="#312932"
                             TextColor="White"

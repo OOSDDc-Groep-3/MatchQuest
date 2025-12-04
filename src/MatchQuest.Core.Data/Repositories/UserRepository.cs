@@ -1,59 +1,96 @@
-﻿using MatchQuest.Core.Interfaces.Repositories;
+﻿using System.Data;
+using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
 using MatchQuest.Core.Data.Helpers;
 using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
 namespace MatchQuest.Core.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly List<User> clientList;
-
-        public UserRepository()
-        {
-            // Load from DB; fall back only when an error occurs (LoadFromDb returns null).
-            var dbClients = LoadFromDb();
-
-            // If dbClients is null, an error occurred; fall back to seeded clients.
-            if (dbClients != null)
-            {
-                clientList = dbClients;
-                if (clientList.Count == 0)
-                    return;
-            }
-
-            // Seeded clients as a fallback
-            var admin = new User(3, "A.J. Kwak", "user3@mail.com", "sxnIcZdYt8wC8MYWcQVQjQ==.FKd5Z/jwxPv3a63lX+uvQ0+P7EuNYZybvkmdhbnkIHA=") { Role = Role.Admin };
-            clientList = new List<User>
-            {
-                new User(1, "M.J. Curie", "user1@mail.com", "IunRhDKa+fWo8+4/Qfj7Pg==.kDxZnUQHCZun6gLIE6d9oeULLRIuRmxmH2QKJv2IM08="),
-                new User(2, "H.H. Hermans", "user2@mail.com", "dOk+X+wt+MA9uIniRGKDFg==.QLvy72hdG8nWj1FyL75KoKeu4DUgu5B/HAHqTD2UFLU="),
-                admin
-            };
-        }
+        public UserRepository() { }
 
         // Get client by email address (case-insensitive)
         public User? Get(string email)
         {
-            if (string.IsNullOrWhiteSpace(email)) return null;
-            var found = clientList.FirstOrDefault(c => c.EmailAddress.Equals(email, StringComparison.OrdinalIgnoreCase));
-            return found;
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+                var sql = @"Select * from users where email = @email;";
+                
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@email", email);
+                
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    return MapUser(reader);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         // Get client by ID
         public User? Get(int id)
         {
-            if (id <= 0) return null;
-            var found = clientList.FirstOrDefault(c => c.Id == id);
-            return found;
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+                var sql = @"Select * from users where user_id = @id;";
+                
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    return MapUser(reader);
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         // Get all clients
-        public List<User> GetAll() => new(clientList);
+        public List<User> GetAll()
+        {
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+                var qry = "select * from users";
+                
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(qry, conn);
+                using var reader = cmd.ExecuteReader();
+                var clients = new List<User>();
+                while (reader.Read())
+                {
+                    var client = MapUser(reader);
+                    if (client != null) clients.Add(client);
+                }
+                
+                return clients;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
 
         // Insert a client into the DB and return created client with assigned id
         public User? Add(User client)
@@ -61,12 +98,8 @@ namespace MatchQuest.Core.Data.Repositories
             try
             {
                 var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
-                if (string.IsNullOrWhiteSpace(connectionString))
-                {
-                    return null;
-                }
 
-                const string sql = @"INSERT INTO `users` (`email`, `password`, `name`, `birth_date`, `region`, `bio`, `profile_picture`, `role`, `is_active`)
+                var sql = @"INSERT INTO `users` (`email`, `password`, `name`, `birth_date`, `region`, `bio`, `profile_picture`, `role`, `is_active`)
                                      VALUES (@email, @password, @name, @birth_date, @region, @bio, @profile_picture, @role, @is_active);";
 
                 using var conn = new MySqlConnection(connectionString);
@@ -86,18 +119,7 @@ namespace MatchQuest.Core.Data.Repositories
                 cmd.ExecuteNonQuery();
                 var newId = (int)cmd.LastInsertedId;
 
-                var created = new User(newId, client.Name, client.EmailAddress, client.Password)
-                {
-                    BirthDate = client.BirthDate,
-                    Region = client.Region,
-                    Bio = client.Bio,
-                    ProfilePicture = client.ProfilePicture,
-                    IsActive = client.IsActive,
-                    Role = client.Role
-                };
-
-                clientList.Add(created);
-                return created;
+                return Get(newId);
             }
             catch (Exception ex)
             {
@@ -105,77 +127,69 @@ namespace MatchQuest.Core.Data.Repositories
             }
         }
 
-        // Load clients from the database
-        private List<User>? LoadFromDb()
+        public List<User> GetUsersWithMatchingGameType(int userId)
         {
             try
             {
-                // Get connection string
                 var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
 
-                // Check if connection string is valid else return null
-                if (string.IsNullOrWhiteSpace(connectionString))
-                {
-                    return null;
-                }
-
-                // SQL query to select all clients
-                const string sql = "SELECT `user_id`, `name`, `email`, `password`, `role`, `birth_date`, `region`, `bio`, `profile_picture`, `is_active` FROM `users` ORDER BY `user_id`;";
-
-                // Result list
-                var result = new List<User>();
-
-                // Open DB connection
+                var sql = @"";
+                
                 using var conn = new MySqlConnection(connectionString);
-                try
-                {
-                    conn.Open();
-                }
-                catch (Exception exOpen)
-                {
-                    return null;
-                }
-
+                conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
+
+                var users = new List<User>();
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var idOrd = reader.GetOrdinal("user_id");
-                    var nameOrd = reader.GetOrdinal("name");
-                    var emailOrd = reader.GetOrdinal("email");
-                    var passwordOrd = reader.GetOrdinal("password");
-                    var roleOrd = reader.GetOrdinal("role");
-                    var birthOrd = reader.GetOrdinal("birth_date");
-                    var regionOrd = reader.GetOrdinal("region");
-                    var bioOrd = reader.GetOrdinal("bio");
-                    var picOrd = reader.GetOrdinal("profile_picture");
-                    var activeOrd = reader.GetOrdinal("is_active");
-
-                    var id = reader.IsDBNull(idOrd) ? 0 : reader.GetInt32(idOrd);
-                    var name = reader.IsDBNull(nameOrd) ? string.Empty : reader.GetString(nameOrd);
-                    var email = reader.IsDBNull(emailOrd) ? string.Empty : reader.GetString(emailOrd);
-                    var password = reader.IsDBNull(passwordOrd) ? string.Empty : reader.GetString(passwordOrd);
-                    var roleInt = reader.IsDBNull(roleOrd) ? 0 : reader.GetInt32(roleOrd);
-                    DateTime? birthDate = reader.IsDBNull(birthOrd) ? null : reader.GetDateTime(birthOrd);
-                    var region = reader.IsDBNull(regionOrd) ? null : reader.GetString(regionOrd);
-                    var bio = reader.IsDBNull(bioOrd) ? null : reader.GetString(bioOrd);
-                    var profilePicture = reader.IsDBNull(picOrd) ? null : reader.GetString(picOrd);
-                    var isActive = reader.IsDBNull(activeOrd) ? true : reader.GetBoolean(activeOrd);
-
-                    var client = new User(id, name, email, password, birthDate, region, bio, profilePicture, isActive)
+                    var user = MapUser(reader);
+                    if (user != null)
                     {
-                        Role = Enum.IsDefined(typeof(Role), (ushort)roleInt) ? (Role)roleInt : Role.None
-                    };
-
-                    result.Add(client);
+                        users.Add(user);
+                    }
                 }
-
-                return result;
+                return users;
             }
             catch (Exception ex)
             {
-                return null;
+                Debug.WriteLine($"UserRepository.GetUsersWithMatchingGameType: Exception: {ex}");
+                return new List<User>();
             }
+        }
+
+        private User? MapUser(MySqlDataReader reader)
+        {
+            var id = reader.GetInt32("user_id");
+            var name = reader.GetString("name");
+            var emailAddr = reader.GetString("email");
+            var password = reader.GetString("password");
+            var roleInt = reader.GetInt32("role");
+
+            DateTime? birthDate = reader.IsDBNull(reader.GetOrdinal("birth_date"))
+                ? null
+                : reader.GetDateTime("birth_date");
+
+            var region = reader.IsDBNull(reader.GetOrdinal("region"))
+                ? null
+                : reader.GetString("region");
+
+            var bio = reader.IsDBNull(reader.GetOrdinal("bio"))
+                ? null
+                : reader.GetString("bio");
+
+            var profilePicture = reader.IsDBNull(reader.GetOrdinal("profile_picture"))
+                ? null
+                : reader.GetString("profile_picture");
+
+            var isActive = reader.GetBoolean("is_active");
+
+            var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive)
+            {
+                Role = Enum.IsDefined(typeof(Role), (ushort)roleInt) ? (Role)roleInt : Role.None
+            };
+
+            return client;
         }
     }
 }

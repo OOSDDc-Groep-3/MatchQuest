@@ -6,14 +6,14 @@ namespace MatchQuest.Core.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly IClientService _clientService;
-        public AuthService(IClientService clientService)
+        private readonly IUserService _clientService;
+        public AuthService(IUserService clientService)
         {
             _clientService = clientService;
         }
-        public Client? Login(string email, string password)
+        public User? Login(string email, string password)
         {
-            Client? client = _clientService.Get(email);
+            User? client = _clientService.Get(email);
             if (client == null) return null;
             if (PasswordHelper.VerifyPassword(password, client.Password)) return client;
             return null;

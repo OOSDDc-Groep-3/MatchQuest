@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
              xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="MatchQuest.App.Views.ChatView"
+             x:DataType="vm:ChatViewModel"
              BackgroundImageSource="background.png"
              BackgroundColor="Transparent">
 
@@ -215,6 +216,11 @@
                                 ItemsSource="{Binding Messages}"
                                 SelectionMode="None"
                                 VerticalOptions="Fill">
+                    <!-- Make CollectionView measure all items so scrolling to end is accurate -->
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSizingStrategy="MeasureAllItems" />
+                    </CollectionView.ItemsLayout>
+
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Message">
                             <Grid Padding="8" ColumnDefinitions="*,Auto">
@@ -223,7 +229,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid>
                                     <!-- Outbound (right) -->
-                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsOutbound}">
+                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
                                             <Border BackgroundColor="#C0ffee" Padding="12" StrokeThickness="0">
                                                 <Border.StrokeShape>
@@ -239,7 +245,7 @@
                                         </StackLayout>
                                     </Grid>
                                     <!-- Inbound (left) -->
-                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
+                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
                                             <Image Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
@@ -262,35 +268,18 @@
             </Grid>
         </Border>
 
-        <!-- Input area -->
+        <!-- Input area (binds to viewmodel SendMessage) -->
         <Grid Grid.Column="1" Grid.Row="2" Padding="20" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="10">
             <Border>
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12" />
                 </Border.StrokeShape>
                 <Grid BackgroundColor="#192126">
-                    <Entry x:Name="MessageEntry"
-                           Text="{Binding MessageText, Mode=TwoWay}"
-                           Placeholder="Type a message..."
-                           PlaceholderColor="{StaticResource SecondaryText}"
-                           TextColor="{StaticResource SecondaryText}"
-                           VerticalOptions="Center"
-                           ReturnType="Send"
-                           BackgroundColor="Transparent"
-                           />
+                    <Entry Text="{Binding MessageText, Mode=TwoWay}" Placeholder="Type a message..." PlaceholderColor="#DADADA" TextColor="#DADADA" VerticalOptions="Center" ReturnType="Send" BackgroundColor="Transparent" />
                 </Grid>
             </Border>
 
-            <ImageButton Grid.Column="1"
-                         Source="sendicon.png"
-                         BackgroundColor="Transparent"
-                         WidthRequest="35"
-                         HeightRequest="55"
-                         CornerRadius="14"
-                         HorizontalOptions="Center"
-                         VerticalOptions="Center"
-                         Command="{Binding SendMessageCommand}"/>
+            <ImageButton Grid.Column="1" Source="sendicon.png" BackgroundColor="Transparent" WidthRequest="35" HeightRequest="55" CornerRadius="14" Command="{Binding SendMessageCommand}" />
         </Grid>
-
     </Grid>
 </ContentPage>

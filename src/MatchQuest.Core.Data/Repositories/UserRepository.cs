@@ -34,6 +34,7 @@ namespace MatchQuest.Core.Data.Repositories
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 return null;
             }
         }

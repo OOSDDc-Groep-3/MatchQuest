@@ -9,10 +9,10 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
 
         [ObservableProperty]
-        private string _email = "jemama@mama.com";
+        private string _email = "user2@mail.com";
 
         [ObservableProperty]
-        private string _password = "test123";
+        private string _password = "hallo";
 
         [ObservableProperty]
         private string _loginMessage;

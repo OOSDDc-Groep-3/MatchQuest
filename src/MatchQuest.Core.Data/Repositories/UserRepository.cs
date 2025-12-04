@@ -113,7 +113,8 @@ namespace MatchQuest.Core.Data.Repositories
                 cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
                 cmd.Parameters.AddWithValue("@bio", client.Bio ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@role", (int)client.Role);
+                // store role as string (migration created role as string)
+                cmd.Parameters.AddWithValue("@role", client.Role.ToString());
                 cmd.Parameters.AddWithValue("@is_active", client.IsActive);
 
                 cmd.ExecuteNonQuery();

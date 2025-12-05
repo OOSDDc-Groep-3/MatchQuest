@@ -7,7 +7,7 @@ namespace MatchQuest.Core.Models
         public string EmailAddress { get; set; }
         public string Password { get; set; }
         public Role Role { get; set; } = Role.None;
-        public DateTime? BirthDate { get; set; }
+        public DateOnly? BirthDate { get; set; }
         public List<Game> Games { get; set; } = new List<Game>();
         public List<Like> Likes { get; set; } = new List<Like>();
         public List<Match> Matches { get; set; } = new List<Match>();
@@ -24,7 +24,7 @@ namespace MatchQuest.Core.Models
 
         // Optional full constructor to populate all columns from DB
         public User(int id, string name, string emailAddress, string password,
-            DateTime? birthDate, string? region, string? bio, string? profilePicture, bool isActive) : base(id, name)
+            DateOnly? birthDate, string? region, string? bio, string? profilePicture, bool isActive) : base(id, name)
         {
             EmailAddress = emailAddress;
             Password = password;

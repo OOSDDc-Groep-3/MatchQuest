@@ -25,10 +25,15 @@ public static class MauiProgram
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
+        // repositories & services
         builder.Services.AddSingleton<IAuthService, AuthService>();
         builder.Services.AddSingleton<IUserService, UserService>();
 
+        
         builder.Services.AddSingleton<IUserRepository, UserRepository>();
+        builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
+        builder.Services.AddSingleton<IMatchService, MatchService>();
+
         builder.Services.AddSingleton<GlobalViewModel>();
 
         builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();

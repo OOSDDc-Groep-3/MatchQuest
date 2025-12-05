@@ -54,7 +54,7 @@ namespace MatchQuest.App.ViewModels
                 // Populate the global client with personal info
                 _global.Client.Name = $"{FirstName.Trim()} {LastName.Trim()}";
                 _global.Client.Region = string.IsNullOrWhiteSpace(Region) ? null : Region.Trim();
-                _global.Client.BirthDate = BirthDate.Date;
+                _global.Client.BirthDate = DateOnly.FromDateTime(BirthDate);
 
                 // Hash password before saving
                 var plainPassword = _global.Client.Password ?? string.Empty;

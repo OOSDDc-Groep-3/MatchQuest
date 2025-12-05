@@ -15,5 +15,13 @@ namespace MatchQuest.App.ViewModels
                 _client = value;
             }
         }
+
+        // Selected match (the other user) used for navigation into chat/profile
+        private User? _selectedMatch;
+        public User? SelectedMatch
+        {
+            get => _selectedMatch;
+            set => _selectedMatch = value;
+        }
     }
 }

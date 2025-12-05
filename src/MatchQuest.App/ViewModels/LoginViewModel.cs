@@ -1,6 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
+using MatchQuest.Core.Models;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.ApplicationModel;
+using System.Threading.Tasks;
+
 namespace MatchQuest.App.ViewModels
 {
     public partial class LoginViewModel : BaseViewModel
@@ -32,6 +37,9 @@ namespace MatchQuest.App.ViewModels
             {
                 LoginMessage = $"Welcome {authenticatedClient.Name}!";
                 _global.Client = authenticatedClient;
+
+                // Persist logged-in user id so app can restore session
+                Preferences.Set("current_user_id", authenticatedClient.Id);
 
                 // Ensure AppShell is attached
                 if (Application.Current?.MainPage is not AppShell)

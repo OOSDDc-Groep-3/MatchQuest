@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
@@ -44,6 +42,20 @@ namespace MatchQuest.Core.Services
             {
                 Debug.WriteLine($"ClientService.Create: Exception: {ex}");
                 return null;
+            }
+        }
+        
+        public List<User> GetUsersWithMatchingGameType(int userId)
+        {
+            try
+            {
+                var users = _userRepository.GetUsersWithMatchingGameType(userId);
+                return users;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UserService.GetUsersWithMatchingGameType: Exception: {ex}");
+                return new List<User>();
             }
         }
     }

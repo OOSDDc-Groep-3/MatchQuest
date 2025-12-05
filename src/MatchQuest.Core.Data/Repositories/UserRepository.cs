@@ -208,7 +208,7 @@ AND EXISTS ( -- check if users has already atleast 1 game type in common
 
             DateTime? birthDateTime = reader.IsDBNull(reader.GetOrdinal("birth_date"))
                 ? null
-                : reader.GetDateTime("birth_date")
+                : reader.GetDateTime("birth_date");
 
             var region = reader.IsDBNull(reader.GetOrdinal("region"))
                 ? null

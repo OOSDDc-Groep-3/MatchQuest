@@ -1,4 +1,5 @@
 using MatchQuest.Core.Models;
+using System.Diagnostics;
 
 namespace MatchQuest.Core.Helpers;
 
@@ -31,8 +32,11 @@ public class AlgorithmHelper
         matchingScore.Score += matchingGameTypes.Count * _matchingGameTypeScore;
         
         // Age gap score
-        matchingScore.Score += CalculateAgeGapScore(user.BirthDate, matcher.BirthDate);
-        
+        if (user.BirthDate.HasValue && matcher.BirthDate.HasValue)
+        {
+            matchingScore.Score += CalculateAgeGapScore(user.BirthDate.Value, matcher.BirthDate.Value);
+        }
+
         return matchingScore;
     }
 

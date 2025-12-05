@@ -12,4 +12,8 @@ public class Message
     // UI-only flag - set by the viewmodel so XAML can show left/right correctly.
     // Not persisted to DB.
     public bool IsOutbound { get; set; }
+
+    // UI-only: profile picture URL for the sender (populated by viewmodels).
+    // Not persisted to DB.
+    public string? ProfilePicture { get; set; }
 }

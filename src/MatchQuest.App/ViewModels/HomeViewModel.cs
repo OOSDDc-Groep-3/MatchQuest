@@ -3,9 +3,11 @@ using CommunityToolkit.Mvvm.Input;
 using MatchQuest.App.Views;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
+using MatchQuest.Core.Data.Repositories;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace MatchQuest.App.ViewModels
 {
@@ -14,6 +16,9 @@ namespace MatchQuest.App.ViewModels
         private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
         private readonly IMatchService _matchService;
+        private readonly ChatRepository _chatRepo;
+
+        private int CurrentUserId => _global?.Client?.Id ?? 0;
 
         public ObservableCollection<User> Matches { get; } = new ObservableCollection<User>();
 
@@ -22,6 +27,7 @@ namespace MatchQuest.App.ViewModels
             _authService = authService;
             _global = global;
             _matchService = matchService;
+            _chatRepo = new ChatRepository();
 
             LoadMatches();
         }
@@ -33,7 +39,30 @@ namespace MatchQuest.App.ViewModels
 
             var list = _matchService.GetAll(_global.Client.Id) ?? new System.Collections.Generic.List<User>();
             Matches.Clear();
-            foreach (var u in list) Matches.Add(u);
+
+            foreach (var u in list)
+            {
+                // Populate UI-only preview property with the last message (if any)
+                u.LastMessagePreview = GetLastMessagePreview(u);
+                Matches.Add(u);
+            }
+        }
+
+        private string? GetLastMessagePreview(User user)
+        {
+            if (user == null || CurrentUserId == 0) return null;
+
+            // Find the match row for the two users
+            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
+            if (matchId == 0) return null;
+
+            // Get or create chat for the match and fetch messages (repo returns ordered ASC)
+            var chatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
+            var msgs = _chatRepo.GetMessagesByChatId(chatId);
+            if (msgs == null || msgs.Count == 0) return null;
+
+            // Return the last message text
+            return msgs.Last().MessageText;
         }
 
         [RelayCommand]

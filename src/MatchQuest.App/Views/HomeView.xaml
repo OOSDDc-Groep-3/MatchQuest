@@ -87,10 +87,10 @@
 
             <Grid Padding="0" RowDefinitions="Auto,*,Auto">
 
+                <Image Margin="0,10,390,0" Source="matchquest.png" WidthRequest="150" HeightRequest="141" />
                 <!-- Header -->
                 <HorizontalStackLayout Grid.Row="0" Margin="0,24,32,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Image Source="matchquest.png" WidthRequest="100" HeightRequest="160" />
-                    <Label Text="ATCHES"
+                    <Label Text="MATCHES"
                            FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AccentColor}"
@@ -142,6 +142,12 @@
                                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Spacing="4">
                                                 <!-- Use strongly-typed binding to Name -->
                                                 <Label Text="{Binding Name, FallbackValue='Unknown'}" Style="{StaticResource NameLabelStyle}" TextColor="#C0ffee" />
+                                                <!-- Last-message preview shown under the name -->
+                                                <Label Text="{Binding LastMessagePreview, FallbackValue=''}"
+                                                       Style="{StaticResource PreviewLabelStyle}"
+                                                       TextColor="{StaticResource SecondaryText}"
+                                                       LineBreakMode="TailTruncation"
+                                                       MaxLines="1" />
                                             </VerticalStackLayout> 
 
                                         </HorizontalStackLayout>

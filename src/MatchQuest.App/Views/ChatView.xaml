@@ -23,15 +23,15 @@
             <Color x:Key="BubbleInboundStroke">#A4D5C7</Color>
 
             <!-- Sizes -->
-            <x:Double x:Key="AvatarSize">48</x:Double>
-            <x:Double x:Key="AvatarRadius">24</x:Double>
+            <x:Double x:Key="AvatarSize">80</x:Double>
+            <x:Double x:Key="AvatarRadius">80</x:Double>
 
             <!-- Styles -->
             <Style x:Key="SeparatorStyle" TargetType="BoxView">
                 <Setter Property="HeightRequest" Value="1" />
                 <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="Margin" Value="0,6,6,0" />
+                <Setter Property="Margin" Value="0,0,6,0" />
             </Style>
 
             <Style x:Key="ContactBorderStyle" TargetType="Border">
@@ -76,7 +76,7 @@
 
             <Style x:Key="OutboundBubble" TargetType="Border">
                 <Setter Property="BackgroundColor" Value="{StaticResource BubbleOutboundBg}" />
-                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="StrokeThickness" Value="1.5" />
                 <Setter Property="Padding" Value="12" />
             </Style>
         </ResourceDictionary>
@@ -96,18 +96,19 @@
                 Margin="0"
                 BackgroundColor="Transparent"
                 Stroke="{StaticResource AccentColor}"
-                StrokeThickness="2">
+                StrokeThickness="0.5">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
             <!-- Replaced VerticalStackLayout with Grid (same structure as HomeView) -->
             <Grid Padding="0" RowDefinitions="Auto,*,Auto">
+                <Image Margin="0,20,450,0" Source="matchquest.png" WidthRequest="150" HeightRequest="141" />
 
                 <!-- Header: larger high-contrast header like HomeView -->
-                <HorizontalStackLayout Grid.Row="0" Margin="0,24,32,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
-                    <Image Source="matchquest.png" WidthRequest="100" HeightRequest="160" />
-                    <Label Text="ATCHES"
+                <HorizontalStackLayout Grid.Row="0" Margin="0,34,12,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
+
+                    <Label Text="MATCHES"
                            FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AccentColor}"
@@ -115,8 +116,8 @@
                 </HorizontalStackLayout>
 
                 <!-- Matches collection (keeps binding to ChatViewModel.Matches and existing command usage) -->
-                <Grid Grid.Row="1" Padding="8">
-                    <VerticalStackLayout Spacing="8">
+                <Grid Grid.Row="1" Padding="30,8,30,0">
+                    <VerticalStackLayout Spacing="35">
                         <BoxView Style="{StaticResource SeparatorStyle}" />
 
                         <CollectionView x:Name="MatchesCollection"
@@ -129,7 +130,7 @@
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="models:User">
                                     <!-- Visible card (high contrast) so labels are readable over background image -->
-                                    <Border Margin="4" Padding="24" BackgroundColor="Transparent" StrokeThickness="1" Stroke="#C0ffee">
+                                    <Border Margin="0" Padding="24,24,24,24" BackgroundColor="#49192126"  StrokeThickness="1" Stroke="#C0ffee">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
                                                 Command="{Binding BindingContext.OpenMatchCommand, Source={x:Reference ChatPage}}"
@@ -144,13 +145,25 @@
                                                    Aspect="AspectFill"
                                                    HorizontalOptions="Start"
                                                    VerticalOptions="Center">
-                                                <Image.Clip>
-                                                    <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
-                                                </Image.Clip>
                                             </Image>
 
                                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Spacing="4">
-                                                <Label Text="{Binding Name, FallbackValue='Unknown'}" Style="{StaticResource NameLabelStyle}" />
+                                                <Label Text="{Binding Name, FallbackValue='Unknown'}" 
+                                                       Style="{StaticResource NameLabelStyle}" 
+                                                       FontSize="15"
+                                                       Margin="20,10,0,0"
+                                                       HorizontalOptions="Start"/>
+                                                <!-- Last-message preview shown under the name -->
+                                                <Label Text="{Binding LastMessagePreview, FallbackValue='No messages'}"
+                                                       Style="{StaticResource PreviewLabelStyle}"
+                                                       TextColor="{StaticResource SecondaryText}"
+                                                       FontAttributes="Italic"
+                                                       FontSize="14"
+                                                       LineBreakMode="TailTruncation"
+                                                       MaximumWidthRequest="400"
+                                                       Margin="20,10,0,0"
+                                                       MaxLines="1"
+                                                       HorizontalOptions="Start"/>
                                             </VerticalStackLayout>
 
                                         </HorizontalStackLayout>
@@ -186,8 +199,8 @@
         </Border>
 
         <!-- Right: Chat area header -->
-        <Grid Grid.Column="1" Grid.Row="0" Padding="32" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
-            <Image Source="back.png" WidthRequest="28" HeightRequest="28" VerticalOptions="Center" />
+        <Grid Grid.Column="1" Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+            <ImageButton Margin="10,5,20,10" Source="back.png" WidthRequest="38" HeightRequest="38" VerticalOptions="Center" Command="{Binding BackCommand}" />
             <Label Grid.Column="1" Text="{Binding PartnerName}" FontSize="32" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" VerticalOptions="Center" HorizontalOptions="Start" />
             <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
                 <Picker x:Name="NewMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="140">
@@ -195,20 +208,20 @@
                         <x:String>FILTER</x:String>
                     </Picker.Items>
                 </Picker>
-                <ImageButton Source="settings.png" BackgroundColor="{StaticResource AccentColor}" CornerRadius="28" WidthRequest="32" HeightRequest="32" />
+                <ImageButton Source="settings.png" CornerRadius="28" WidthRequest="32" HeightRequest="32" />
             </HorizontalStackLayout>
 
             <!-- header divider -->
-            <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,90,0,0" />
+            <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,148,0,0" />
         </Grid>
 
         <!-- Right: Chat messages card -->
         <Border Grid.Column="1" Grid.Row="1" Margin="32,12,32,12"
                 Stroke="#c0ffee"
-                StrokeThickness="1"
+                StrokeThickness="0.5"
                 Padding="20,20,20,20">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="20" />
+                <RoundRectangle CornerRadius="10" />
             </Border.StrokeShape>
 
             <Grid>
@@ -216,7 +229,9 @@
                 <CollectionView x:Name="MessagesCollection"
                                 ItemsSource="{Binding Messages}"
                                 SelectionMode="None"
-                                VerticalOptions="Fill">
+                                VerticalOptions="Fill"
+                                ItemSizingStrategy="MeasureAllItems"
+                                ItemsUpdatingScrollMode="KeepLastItemInView">
                     <!-- Make CollectionView measure all items so scrolling to end is accurate -->
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Vertical" />
@@ -230,7 +245,7 @@
                                 </Grid.RowDefinitions>
                                 <Grid>
                                     <!-- Outbound (right) -->
-                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
+                                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsOutbound}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="End" Spacing="8">
                                             <Border Margin="0,0,20,10" BackgroundColor="#C0ffee" Padding="12" StrokeThickness="1.5">
                                                 <Border.StrokeShape>
@@ -242,7 +257,7 @@
                                                        LineBreakMode="WordWrap"
                                                        MaximumWidthRequest="600"/>
                                             </Border>
-                                            <Image VerticalOptions="End" Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>
@@ -250,9 +265,9 @@
                                         </StackLayout>
                                     </Grid>
                                     <!-- Inbound (left) -->
-                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound}">
+                                    <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
-                                            <Image VerticalOptions="End" Source="showcaseprofile.png" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>
@@ -278,7 +293,7 @@
         </Border>
 
         <!-- Input area (binds to viewmodel SendMessage) -->
-        <Grid Grid.Column="1" Grid.Row="2" Padding="30" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="20">
+        <Grid Grid.Column="1" Grid.Row="2" Padding="30,40,40,40" ColumnDefinitions="*,Auto" VerticalOptions="End" ColumnSpacing="20">
             <Border Stroke="#c0ffee">
                 <Border.StrokeShape>
                     <RoundRectangle StrokeThickness="10" CornerRadius="12" />
@@ -301,7 +316,7 @@
                 </Grid>
             </Border>
 
-            <ImageButton Grid.Column="1" Source="sendicon.png" BackgroundColor="Transparent" WidthRequest="35" HeightRequest="55" CornerRadius="14" Command="{Binding SendMessageCommand}" />
+            <ImageButton Grid.Column="1" Margin="10,1,16,7" Source="sendicon.png" BackgroundColor="Transparent" WidthRequest="35" HeightRequest="55" CornerRadius="14" Command="{Binding SendMessageCommand}" />
         </Grid>
     </Grid>
 </ContentPage>

@@ -100,7 +100,7 @@ namespace MatchQuest.App.ViewModels
             Messages.Clear();
             foreach (var m in msgs)
             {
-                m.IsOutbound = (m.Sender == CurrentUserId);
+                m.IsOutbound = (m.SenderId == CurrentUserId);
                 Messages.Add(m);
             }
 
@@ -122,7 +122,7 @@ namespace MatchQuest.App.ViewModels
                 if (newMsgs == null || newMsgs.Count == 0) return;
 
                 foreach (var m in newMsgs)
-                    m.IsOutbound = (m.Sender == CurrentUserId);
+                    m.IsOutbound = (m.SenderId == CurrentUserId);
 
                 _lastMessageId = newMsgs.Max(m => m.Id);
 
@@ -167,7 +167,7 @@ namespace MatchQuest.App.ViewModels
             Messages.Clear();
             foreach (var m in msgs)
             {
-                m.IsOutbound = (m.Sender == CurrentUserId);
+                m.IsOutbound = (m.SenderId == CurrentUserId);
                 Messages.Add(m);
             }
 
@@ -194,7 +194,7 @@ namespace MatchQuest.App.ViewModels
             var msg = new Message
             {
                 ChatId = ChatId,
-                Sender = CurrentUserId,
+                SenderId = CurrentUserId,
                 MessageText = text,
                 CreatedAt = DateTime.UtcNow,
                 IsOutbound = true

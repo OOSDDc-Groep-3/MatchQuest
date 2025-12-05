@@ -53,7 +53,7 @@ public class ChatRepository : DatabaseConnection
             {
                 Id = rdr.GetInt32("message_id"),
                 ChatId = rdr.GetInt32("chat_id"),
-                Sender = rdr.GetInt32("sender_id"),
+                SenderId = rdr.GetInt32("sender_id"),
                 MessageText = rdr.GetString("message_text"),
                 CreatedAt = rdr.IsDBNull(rdr.GetOrdinal("created_at")) ? DateTime.MinValue : rdr.GetDateTime("created_at"),
             };
@@ -111,8 +111,8 @@ public class ChatRepository : DatabaseConnection
     public int InsertMessage(Message message)
     {
         // validate sender exists to satisfy FK constraint
-        if (!UserExists(message.Sender))
-            throw new InvalidOperationException($"Sender id {message.Sender} does not exist in users table. Message not inserted.");
+        if (!UserExists(message.SenderId))
+            throw new InvalidOperationException($"Sender id {message.SenderId} does not exist in users table. Message not inserted.");
 
         // validate chat exists
         if (!ChatExists(message.ChatId))
@@ -123,7 +123,7 @@ public class ChatRepository : DatabaseConnection
         cmd.CommandText = @"INSERT INTO messages (chat_id, sender_id, message_text, created_at)
                             VALUES (@chatId, @senderId, @text, @createdAt);";
         cmd.Parameters.AddWithValue("@chatId", message.ChatId);
-        cmd.Parameters.AddWithValue("@senderId", message.Sender);
+        cmd.Parameters.AddWithValue("@senderId", message.SenderId);
         cmd.Parameters.AddWithValue("@text", message.MessageText);
         cmd.Parameters.AddWithValue("@createdAt", message.CreatedAt == default ? DateTime.UtcNow : message.CreatedAt);
 

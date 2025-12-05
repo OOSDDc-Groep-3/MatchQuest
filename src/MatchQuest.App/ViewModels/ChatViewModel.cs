@@ -17,6 +17,7 @@ namespace MatchQuest.App.ViewModels
         private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
         private readonly IUserService _userService;
+        private readonly IMatchService _matchService;
         private readonly System.Timers.Timer _pollTimer;
         private readonly ChatRepository _chatRepo;
 
@@ -29,17 +30,24 @@ namespace MatchQuest.App.ViewModels
 
         public ObservableCollection<Message> Messages { get; } = new();
 
+        // Expose matches for the left sidebar (populated from IMatchService + GlobalViewModel)
+        public ObservableCollection<User> Matches { get; } = new();
+
         [ObservableProperty] private string messageText = string.Empty;
         [ObservableProperty] private string partnerName = string.Empty; // UI-bound partner name
 
-        public ChatViewModel(IAuthService authService, GlobalViewModel global, IUserService userService)
+        public ChatViewModel(IAuthService authService, GlobalViewModel global, IUserService userService, IMatchService matchService)
         {
             _authService = authService;
             _global = global;
             _userService = userService;
+            _matchService = matchService;
             _chatRepo = new ChatRepository();
 
-            // Load/create chat and messages from DB
+            // Load matches for the left sidebar
+            LoadMatches();
+
+            // Load/create chat and messages from DB for either the selected global match or fallback
             InitializeChatFromDatabase();
 
             // Poll DB for new messages every 4 seconds (tweak interval as needed)
@@ -48,14 +56,31 @@ namespace MatchQuest.App.ViewModels
             _pollTimer.Start();
         }
 
+        private void LoadMatches()
+        {
+            Matches.Clear();
+            if (_global?.Client == null) return;
+
+            var list = _matchService.GetAll(_global.Client.Id) ?? new System.Collections.Generic.List<User>();
+            foreach (var u in list) Matches.Add(u);
+        }
+
         private void InitializeChatFromDatabase()
         {
-            // find a match id that involves the current user
+            // If a match was previously selected in the global VM, prefer that
+            if (_global?.SelectedMatch is not null)
+            {
+                OpenChatForInternal(_global.SelectedMatch);
+                return;
+            }
+
+            // find a match id that involves the current user (fallback)
             var matchId = CurrentUserId == 0 ? 0 : _chatRepo.GetMatchIdForUser(CurrentUserId);
 
             if (matchId == 0)
             {
                 ChatId = 0;
+                PartnerName = string.Empty;
                 return;
             }
 
@@ -72,9 +97,10 @@ namespace MatchQuest.App.ViewModels
 
             // Load existing messages for this chat and populate ObservableCollection
             var msgs = _chatRepo.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
+            Messages.Clear();
             foreach (var m in msgs)
             {
-                m.IsOutbound = (m.Sender == CurrentUserId);
+                m.IsOutbound = (m.SenderId == CurrentUserId);
                 Messages.Add(m);
             }
 
@@ -87,11 +113,16 @@ namespace MatchQuest.App.ViewModels
             {
                 if (ChatId == 0) return;
 
-                var newMsgs = _chatRepo.GetMessagesAfter(ChatId, _lastMessageId);
+                var allMsgs = _chatRepo.GetMessagesByChatId(ChatId);
+                var newMsgs = allMsgs
+                    .Where(m => m.Id > _lastMessageId)
+                    .OrderBy(m => m.CreatedAt)
+                    .ToList();
+
                 if (newMsgs == null || newMsgs.Count == 0) return;
 
                 foreach (var m in newMsgs)
-                    m.IsOutbound = (m.Sender == CurrentUserId);
+                    m.IsOutbound = (m.SenderId == CurrentUserId);
 
                 _lastMessageId = newMsgs.Max(m => m.Id);
 
@@ -108,6 +139,50 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
+        // Internal helper used both by Initialize and by OpenMatchCommand
+        private void OpenChatForInternal(User user)
+        {
+            if (user is null || CurrentUserId == 0) return;
+
+            _global.SelectedMatch = user;
+
+            // find existing match row for these two users
+            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
+            if (matchId == 0)
+            {
+                // no match row found; leave ChatId 0 (optionally create match here if desired)
+                ChatId = 0;
+                PartnerName = user.Name ?? string.Empty;
+                Messages.Clear();
+                _lastMessageId = 0;
+                return;
+            }
+
+            // set partner name and ensure chat exists
+            PartnerName = user.Name ?? string.Empty;
+            ChatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
+
+            // load messages for this chat
+            var msgs = _chatRepo.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
+            Messages.Clear();
+            foreach (var m in msgs)
+            {
+                m.IsOutbound = (m.SenderId == CurrentUserId);
+                Messages.Add(m);
+            }
+
+            _lastMessageId = msgs.Any() ? msgs.Max(m => m.Id) : 0;
+        }
+
+        [RelayCommand]
+        private async Task OpenMatch(User? user)
+        {
+            if (user is null) return;
+
+            // run the internal logic on the UI thread to ensure observable updates are safe
+            await MainThread.InvokeOnMainThreadAsync(() => OpenChatForInternal(user));
+        }
+
         [RelayCommand]
         private async Task SendMessage()
         {
@@ -119,7 +194,7 @@ namespace MatchQuest.App.ViewModels
             var msg = new Message
             {
                 ChatId = ChatId,
-                Sender = CurrentUserId,
+                SenderId = CurrentUserId,
                 MessageText = text,
                 CreatedAt = DateTime.UtcNow,
                 IsOutbound = true

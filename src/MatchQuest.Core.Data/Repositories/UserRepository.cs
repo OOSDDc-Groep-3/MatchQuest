@@ -109,11 +109,12 @@ namespace MatchQuest.Core.Data.Repositories
                 cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
                 cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
                 cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
-                cmd.Parameters.AddWithValue("@birth_date", client.BirthDate.HasValue ? (object)client.BirthDate.Value.Date : DBNull.Value);
+                cmd.Parameters.AddWithValue("@birth_date", client.BirthDate.HasValue ? (object)client.BirthDate.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
                 cmd.Parameters.AddWithValue("@bio", client.Bio ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@role", (int)client.Role);
+                // store role as string (migration created role as string)
+                cmd.Parameters.AddWithValue("@role", client.Role.ToString());
                 cmd.Parameters.AddWithValue("@is_active", client.IsActive);
 
                 cmd.ExecuteNonQuery();
@@ -133,11 +134,50 @@ namespace MatchQuest.Core.Data.Repositories
             {
                 var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
 
-                var sql = @"";
+                var sql = @"
+SELECT
+    u.*,
+    -- CHECK if the user has liked the current user
+    CASE
+        WHEN EXISTS (
+            SELECT 1 FROM likes l
+            WHERE l.from_user_id = u.user_id
+              AND l.to_user_id = @CurrentUserId
+        ) THEN 1
+        ELSE 0
+        END AS has_liked_you
+FROM users u
+WHERE u.user_id != @CurrentUserId
+AND NOT EXISTS ( -- exclude existing matches
+    SELECT 1
+    FROM matches m
+    WHERE (m.user1_id = @CurrentUserId AND m.user2_id = u.user_id)
+       OR (m.user1_id = u.user_id AND m.user2_id = @CurrentUserId)
+)
+AND NOT EXISTS ( -- exclude users the user has already liked
+    SELECT 1
+    FROM likes l_sent
+    WHERE l_sent.from_user_id = @CurrentUserId
+    AND l_sent.to_user_id = u.user_id
+)
+AND EXISTS ( -- check if users has already atleast 1 game type in common
+    SELECT 1
+    FROM user_games ug_candidate
+             JOIN games g_candidate ON ug_candidate.game_id = g_candidate.game_id
+    WHERE ug_candidate.user_id = u.user_id
+      AND g_candidate.type IN (
+        -- Get list of current user game types
+        SELECT g_me.type
+        FROM user_games ug_me
+                 JOIN games g_me ON ug_me.game_id = g_me.game_id
+        WHERE ug_me.user_id = @CurrentUserId
+    )
+)";
                 
                 using var conn = new MySqlConnection(connectionString);
                 conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@CurrentUserId", userId);
 
                 var users = new List<User>();
                 using var reader = cmd.ExecuteReader();
@@ -166,7 +206,7 @@ namespace MatchQuest.Core.Data.Repositories
             var password = reader.GetString("password");
             var roleInt = reader.GetInt32("role");
 
-            DateTime? birthDate = reader.IsDBNull(reader.GetOrdinal("birth_date"))
+            DateTime? birthDateTime = reader.IsDBNull(reader.GetOrdinal("birth_date"))
                 ? null
                 : reader.GetDateTime("birth_date");
 
@@ -183,6 +223,10 @@ namespace MatchQuest.Core.Data.Repositories
                 : reader.GetString("profile_picture");
 
             var isActive = reader.GetBoolean("is_active");
+            
+            DateOnly? birthDate = birthDateTime.HasValue
+                ? DateOnly.FromDateTime(birthDateTime.Value)
+                : null;
 
             var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive)
             {

@@ -421,7 +421,7 @@
                                  HeightRequest="32"
                                  HorizontalOptions="End"
                                  VerticalOptions="Start"
-                                 Clicked="SettingsButton_Clicked"
+                                 Command="{Binding OpenSettingsCommand}"
                                  />
                 </HorizontalStackLayout>
 

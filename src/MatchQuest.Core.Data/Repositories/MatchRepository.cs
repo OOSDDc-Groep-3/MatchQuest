@@ -159,7 +159,7 @@ INNER JOIN matches m
                 int roleInt = 0;
                 try { roleInt = reader.IsDBNull(reader.GetOrdinal("role")) ? 0 : reader.GetInt32("role"); } catch { }
 
-                DateTime? birthDate = reader.IsDBNull(reader.GetOrdinal("birth_date"))
+                DateTime? birthDateTime = reader.IsDBNull(reader.GetOrdinal("birth_date"))
                     ? null
                     : reader.GetDateTime("birth_date");
 
@@ -176,6 +176,10 @@ INNER JOIN matches m
                     : reader.GetString("profile_picture");
 
                 var isActive = reader.IsDBNull(reader.GetOrdinal("is_active")) ? true : reader.GetBoolean("is_active");
+
+                DateOnly? birthDate = birthDateTime.HasValue
+                    ? DateOnly.FromDateTime(birthDateTime.Value)
+                    : null;
 
                 var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive)
                 {

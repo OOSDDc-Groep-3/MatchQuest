@@ -169,7 +169,6 @@ namespace MatchQuest.Core.Data.Repositories
                 
                 cmd.Parameters.AddWithValue("@role", (int)client.Role);
                 cmd.Parameters.AddWithValue("@is_active", client.IsActive);
-                cmd.Parameters.AddWithValue("@updated_at", DateTime.Now);
 
                 cmd.ExecuteNonQuery();
 

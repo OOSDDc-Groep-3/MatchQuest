@@ -1,4 +1,5 @@
-﻿using MatchQuest.Core.Models;
+﻿using System.Collections.Generic;
+using MatchQuest.Core.Models;
 
 namespace MatchQuest.Core.Interfaces.Repositories
 {

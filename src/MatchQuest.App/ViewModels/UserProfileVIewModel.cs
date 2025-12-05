@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
 
@@ -86,7 +87,35 @@ public partial class UserProfileViewModel : ObservableObject
                 _global.Client = updated;
         }
 
-        // Feedback in debug output
-        System.Diagnostics.Debug.WriteLine("✅ SaveProfileCommand uitgevoerd");
+    }
+    
+    
+    public ImageSource ProfileImageSource
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
+                return "dotnet_bot.png"; 
+            byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
+            return ImageSource.FromStream(() => new MemoryStream(imageBytes));
+        }
+    }
+
+    [RelayCommand]
+    private async Task UploadProfilePhoto()
+    {
+        var result = await FilePicker.PickAsync(new PickOptions
+        {
+            PickerTitle = "Select a profile picture",
+            FileTypes = FilePickerFileType.Images
+        });
+
+        if (result != null && _global.Client != null)
+        {
+            var base64 = FileHelper.ImageToBase64(result.FullPath);
+            _global.Client.ProfilePicture = base64;
+
+            OnPropertyChanged(nameof(ProfileImageSource));
+        }
     }
 }

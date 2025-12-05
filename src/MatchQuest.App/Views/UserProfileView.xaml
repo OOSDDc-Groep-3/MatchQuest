@@ -118,10 +118,11 @@
                            BorderColor="#C0ffee"
                            Padding="0"
                            HorizontalOptions="Center">
-                        <Image Source="dotnet_bot.png" Aspect="AspectFill"/>
+                        <Image Source="{Binding ProfileImageSource}" Aspect="AspectFill"/>
                     </Frame>
 
                     <Button Text="Upload profielfoto"
+                            Command="{Binding UploadProfilePhotoCommand}"
                             FontFamily="RubikRegular"
                             BackgroundColor="#C0ffee"
                             TextColor="Black"

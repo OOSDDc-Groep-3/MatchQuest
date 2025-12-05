@@ -70,7 +70,7 @@ public partial class UserProfileViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveProfile()
+    private async Task SaveProfile()
     {
         if (_global.Client == null) return;
 
@@ -87,7 +87,14 @@ public partial class UserProfileViewModel : ObservableObject
                 _global.Client = updated;
         }
 
+        // ✅ Altijd succesmelding tonen
+        await Application.Current.MainPage.DisplayAlert(
+            "Success",
+            "Your profile has been updated!",
+            "OK"
+        );
     }
+
     
     
     public ImageSource ProfileImageSource

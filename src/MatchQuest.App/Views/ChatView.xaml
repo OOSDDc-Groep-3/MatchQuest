@@ -6,6 +6,7 @@
              xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="MatchQuest.App.Views.ChatView"
              x:DataType="vm:ChatViewModel"
+             x:Name="ChatPage"
              BackgroundImageSource="background.png"
              BackgroundColor="Transparent">
 
@@ -40,23 +41,29 @@
                 <Setter Property="StrokeThickness" Value="0" />
             </Style>
 
+            <!-- Updated to match HomeView: explicit high-contrast label styling -->
             <Style x:Key="NameLabelStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="TextColor" Value="{StaticResource AccentColor}" />
+                <Setter Property="TextColor" Value="#FFFFFFFF" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="Opacity" Value="1" />
             </Style>
 
             <Style x:Key="PreviewLabelStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="13" />
-                <Setter Property="TextColor" Value="{StaticResource SecondaryText}" />
+                <Setter Property="TextColor" Value="#FFDADADA" />
                 <Setter Property="LineBreakMode" Value="TailTruncation" />
                 <Setter Property="MaxLines" Value="1" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
+                <Setter Property="Opacity" Value="1" />
             </Style>
 
             <Style x:Key="TimestampLabelStyle" TargetType="Label">
                 <Setter Property="FontSize" Value="11" />
-                <Setter Property="TextColor" Value="{StaticResource TimestampColor}" />
+                <Setter Property="TextColor" Value="#FFB0B0B0" />
                 <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="BackgroundColor" Value="Transparent" />
             </Style>
 
             <!-- Message bubble styles -->
@@ -83,7 +90,7 @@
                  HorizontalOptions="Fill" VerticalOptions="Fill"
                  InputTransparent="True" />
 
-        <!-- Left: Matches list (sidebar) -->
+        <!-- Left: Matches list (sidebar) - updated to match HomeView visual structure -->
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
                 Margin="0"
                 BackgroundColor="Transparent"
@@ -93,97 +100,88 @@
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
-            <VerticalStackLayout Padding="0" Spacing="0">
+            <!-- Replaced VerticalStackLayout with Grid (same structure as HomeView) -->
+            <Grid Padding="0" RowDefinitions="Auto,*,Auto">
 
-                <!-- Header -->
-                <Grid Padding="12" ColumnDefinitions="Auto,*">
-                    <Image Source="matchquest.png" WidthRequest="64" HeightRequest="64" VerticalOptions="Center" />
-                    <Label Grid.Column="1"
-                           Text="MATCHES"
-                           FontSize="22"
+                <!-- Header: larger high-contrast header like HomeView -->
+                <HorizontalStackLayout Grid.Row="0" Margin="0,24,32,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Image Source="matchquest.png" WidthRequest="100" HeightRequest="160" />
+                    <Label Text="ATCHES"
+                           FontSize="32"
                            FontAttributes="Bold"
                            TextColor="{StaticResource AccentColor}"
-                           VerticalOptions="Center"
-                           HorizontalOptions="Start"
-                           Margin="8,0,0,0"/>
-                </Grid>
-
-                <!-- Scrollable contact list -->
-                <ScrollView>
-                    <VerticalStackLayout Padding="8" Spacing="0">
-
-                        <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,0,6,0" />
-                        <Border x:Name="KeesButton" Style="{StaticResource ContactBorderStyle}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding OpenMatchCommand}" CommandParameter="Kees" NumberOfTapsRequired="1" />
-                            </Border.GestureRecognizers>
-
-                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                <Image Grid.Column="0"
-                                       Source="showcaseprofile.png"
-                                       WidthRequest="{StaticResource AvatarSize}"
-                                       HeightRequest="{StaticResource AvatarSize}"
-                                       Aspect="AspectFill"
-                                       VerticalOptions="Center">
-                                    <Image.Clip>
-                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
-                                    </Image.Clip>
-                                </Image>
-
-                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
-                                    <Label Text="Kees" Style="{StaticResource NameLabelStyle}" />
-                                    <Label Text="Looking forward to play..." Style="{StaticResource PreviewLabelStyle}" />
-                                </VerticalStackLayout>
-
-                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
-                                    <Label Text="11:42" Style="{StaticResource TimestampLabelStyle}" />
-                                    <Border WidthRequest="20" HeightRequest="20" Padding="0" BackgroundColor="{StaticResource AccentColor}" Stroke="#232A34" StrokeThickness="1" HorizontalOptions="Center" VerticalOptions="Center">
-                                        <Border.StrokeShape>
-                                            <RoundRectangle CornerRadius="10" />
-                                        </Border.StrokeShape>
-                                        <Label Text="3" FontSize="11" TextColor="Black" HorizontalOptions="Center" VerticalOptions="Center" />
-                                    </Border>
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-
-                        <BoxView Style="{StaticResource SeparatorStyle}" />
-
-                        <!-- Additional contacts (shortened for brevity) -->
-                        <Border Style="{StaticResource ContactBorderStyle}">
-                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                <Image Grid.Column="0" Source="showcaseprofile.png" WidthRequest="{StaticResource AvatarSize}" HeightRequest="{StaticResource AvatarSize}" Aspect="AspectFill">
-                                    <Image.Clip>
-                                        <EllipseGeometry Center="24,24" RadiusX="{StaticResource AvatarRadius}" RadiusY="{StaticResource AvatarRadius}" />
-                                    </Image.Clip>
-                                </Image>
-                                <VerticalStackLayout Grid.Column="1" Spacing="2" Padding="8,0">
-                                    <Label Text="Britney" Style="{StaticResource NameLabelStyle}" />
-                                    <Label Text="Hey! Do you have OF?" Style="{StaticResource PreviewLabelStyle}" />
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center" HorizontalOptions="End">
-                                    <Label Text="Yesterday" Style="{StaticResource TimestampLabelStyle}" />
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-
-                        <BoxView Style="{StaticResource SeparatorStyle}" />
-
-                    </VerticalStackLayout>
-                </ScrollView>
-
-                <!-- Filter picker at bottom -->
-                <HorizontalStackLayout Padding="12" VerticalOptions="End">
-                    <Picker x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
-                        <Picker.Items>
-                            <x:String>Filter</x:String>
-                            <x:String>New</x:String>
-                            <x:String>Favorites</x:String>
-                        </Picker.Items>
-                    </Picker>
+                           VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-            </VerticalStackLayout>
+                <!-- Matches collection (keeps binding to ChatViewModel.Matches and existing command usage) -->
+                <Grid Grid.Row="1" Padding="8">
+                    <VerticalStackLayout Spacing="8">
+                        <BoxView Style="{StaticResource SeparatorStyle}" />
+
+                        <CollectionView x:Name="MatchesCollection"
+                                        ItemsSource="{Binding Matches}"
+                                        SelectionMode="Single"
+                                        ItemsLayout="VerticalList"
+                                        Margin="0,8,0,0"
+                                        BackgroundColor="Transparent"
+                                        ItemsUpdatingScrollMode="KeepScrollOffset">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:User">
+                                    <!-- Visible card (high contrast) so labels are readable over background image -->
+                                    <Border Margin="4" Padding="24" BackgroundColor="Transparent" StrokeThickness="1" Stroke="#C0ffee">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding BindingContext.OpenMatchCommand, Source={x:Reference ChatPage}}"
+                                                CommandParameter="{Binding .}"
+                                                NumberOfTapsRequired="1" />
+                                        </Border.GestureRecognizers>
+
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Image Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}"
+                                                   WidthRequest="{StaticResource AvatarSize}"
+                                                   HeightRequest="{StaticResource AvatarSize}"
+                                                   Aspect="AspectFill"
+                                                   HorizontalOptions="Start"
+                                                   VerticalOptions="Center">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
+                                                </Image.Clip>
+                                            </Image>
+
+                                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Spacing="4">
+                                                <Label Text="{Binding Name, FallbackValue='Unknown'}" Style="{StaticResource NameLabelStyle}" />
+                                            </VerticalStackLayout>
+
+                                        </HorizontalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+
+                            <CollectionView.EmptyView>
+                                <VerticalStackLayout Padding="12" Spacing="6" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="No matches yet."
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource SecondaryText}"
+                                           HorizontalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Filter picker at bottom (keeps it visible like HomeView) -->
+                <Picker Grid.Row="2" x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" Margin="31">
+                    <Picker.Items>
+                        <x:String>Filter</x:String>
+                        <x:String>New</x:String>
+                        <x:String>Favorites</x:String>
+                    </Picker.Items>
+                </Picker>
+
+            </Grid>
         </Border>
 
         <!-- Right: Chat area header -->
@@ -218,7 +216,7 @@
                                 VerticalOptions="Fill">
                     <!-- Make CollectionView measure all items so scrolling to end is accurate -->
                     <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSizingStrategy="MeasureAllItems" />
+                        <LinearItemsLayout Orientation="Vertical"/>
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>

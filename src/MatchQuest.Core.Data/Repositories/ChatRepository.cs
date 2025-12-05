@@ -152,67 +152,56 @@ public class ChatRepository : DatabaseConnection
         return (found != null && found != DBNull.Value) ? Convert.ToInt32(found) : 0;
     }
 
-    public List<Message> GetMessagesAfter(int chatId, int lastMessageId)
-    {
-        var result = new List<Message>();
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
-        cmd.CommandText = @"SELECT message_id, chat_id, sender_id, message_text, created_at, updated_at
-                            FROM messages
-                            WHERE chat_id = @chatId AND message_id > @lastId
-                            ORDER BY created_at ASC;";
-        cmd.Parameters.AddWithValue("@chatId", chatId);
-        cmd.Parameters.AddWithValue("@lastId", lastMessageId);
-
-        using var rdr = cmd.ExecuteReader();
-        while (rdr.Read())
-        {
-            var m = new Message
-            {
-                Id = rdr.GetInt32("message_id"),
-                ChatId = rdr.GetInt32("chat_id"),
-                Sender = rdr.GetInt32("sender_id"),
-                MessageText = rdr.GetString("message_text"),
-                CreatedAt = rdr.IsDBNull(rdr.GetOrdinal("created_at")) ? DateTime.MinValue : rdr.GetDateTime("created_at"),
-            };
-            result.Add(m);
-        }
-
-        CloseConnection();
-        return result;
-    }
-
-    // Add this method to ChatRepository to resolve the missing method error.
+    /// <summary>
+    /// Return the other participant user_id for the given match_id.
+    /// Returns 0 when not found or when other user cannot be determined.
+    /// </summary>
     public int GetOtherUserIdForMatch(int matchId, int currentUserId)
     {
-        // Example implementation: assumes a table "Matches" with columns "User1Id" and "User2Id"
-        // and that matchId is a valid match in the database.
         OpenConnection();
-        try
-        {
-            using (var cmd = Connection.CreateCommand())
-            {
-                cmd.CommandText = "SELECT User1_Id, User2_Id FROM Matches WHERE match_id = @matchId";
-                cmd.Parameters.AddWithValue("@matchId", matchId);
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"SELECT user1_id, user2_id
+                            FROM matches
+                            WHERE match_id = @matchId
+                            LIMIT 1;";
+        cmd.Parameters.AddWithValue("@matchId", matchId);
 
-                using (var reader = cmd.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        int user1Id = reader.GetInt32(0);
-                        int user2Id = reader.GetInt32(1);
-                        if (user1Id == currentUserId)
-                            return user2Id;
-                        if (user2Id == currentUserId)
-                            return user1Id;
-                    }
-                }
-            }
-        }
-        finally
+        using var rdr = cmd.ExecuteReader();
+        if (!rdr.Read())
         {
             CloseConnection();
+            return 0;
         }
-        return 0; // Not found or currentUserId not part of match
+
+        var user1 = rdr.IsDBNull(rdr.GetOrdinal("user1_id")) ? 0 : rdr.GetInt32("user1_id");
+        var user2 = rdr.IsDBNull(rdr.GetOrdinal("user2_id")) ? 0 : rdr.GetInt32("user2_id");
+        CloseConnection();
+
+        if (currentUserId == 0) return 0;
+        if (user1 == currentUserId) return user2;
+        if (user2 == currentUserId) return user1;
+        return 0;
+    }
+
+    /// <summary>
+    /// Finds a match_id for the two user ids provided. Returns 0 when there is no match row.
+    /// </summary>
+    public int GetMatchIdBetween(int userAId, int userBId)
+    {
+        if (userAId == 0 || userBId == 0) return 0;
+
+        OpenConnection();
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = @"SELECT match_id
+                            FROM matches
+                            WHERE (user1_id = @a AND user2_id = @b) OR (user1_id = @b AND user2_id = @a)
+                            LIMIT 1;";
+        cmd.Parameters.AddWithValue("@a", userAId);
+        cmd.Parameters.AddWithValue("@b", userBId);
+
+        var found = cmd.ExecuteScalar();
+        CloseConnection();
+
+        return (found != null && found != DBNull.Value) ? Convert.ToInt32(found) : 0;
     }
 }

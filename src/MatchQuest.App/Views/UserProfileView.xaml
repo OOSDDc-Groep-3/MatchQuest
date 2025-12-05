@@ -189,7 +189,9 @@
                             CornerRadius="12"/>
 
                     <!-- OPSLAAN -->
-                    <Button Text="Save profile"
+                    <Button 
+                            Command="{Binding SaveProfileCommand}"
+                            Text="Save profile"
                             FontFamily="RubikRegular"
                             BackgroundColor="#C0ffee"
                             TextColor="Black"

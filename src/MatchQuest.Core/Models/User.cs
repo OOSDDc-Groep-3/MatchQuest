@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MatchQuest.Core.Models
 {
@@ -8,9 +9,9 @@ namespace MatchQuest.Core.Models
         public string Password { get; set; }
         public Role Role { get; set; } = Role.None;
         public DateOnly? BirthDate { get; set; }
-        public List<Game> Games { get; set; } = new List<Game>();
-        public List<Like> Likes { get; set; } = new List<Like>();
-        public List<Match> Matches { get; set; } = new List<Match>();
+        public List<Game> Games { get; set; } = [];
+        public List<Like> Likes { get; set; } = [];
+        public List<Match> Matches { get; set; } = [];
         public string? Region { get; set; }
         public string? Bio { get; set; }
         public string? ProfilePicture { get; set; }

@@ -6,7 +6,9 @@ namespace MatchQuest.Core.Data.Helpers
     {
         public static string? ConnectionStringValue(string name)
         {
-            return "Server=localhost;Port=3306;Database=match quest;Uid=root;Pwd=password123!";
+            IConfigurationRoot config = new ConfigurationBuilder().SetBasePath(AppDomain.CurrentDomain.BaseDirectory).AddJsonFile("appsettings.json").Build();
+            IConfigurationSection section = config.GetSection("ConnectionStrings");
+            return section.GetValue<string>(name);
         }
     }
 }

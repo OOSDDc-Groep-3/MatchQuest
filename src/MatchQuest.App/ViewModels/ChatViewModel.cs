@@ -36,6 +36,8 @@ namespace MatchQuest.App.ViewModels
         [ObservableProperty] private string messageText = string.Empty;
         [ObservableProperty] private string partnerName = string.Empty; // UI-bound partner name
 
+        private const string DefaultProfilePicture = "showcaseprofile.png";
+
         public ChatViewModel(IAuthService authService, GlobalViewModel global, IUserService userService, IMatchService matchService)
         {
             _authService = authService;
@@ -62,7 +64,12 @@ namespace MatchQuest.App.ViewModels
             if (_global?.Client == null) return;
 
             var list = _matchService.GetAll(_global.Client.Id) ?? new System.Collections.Generic.List<User>();
-            foreach (var u in list) Matches.Add(u);
+            foreach (var u in list)
+            {
+                // Populate UI-only preview property with the last message (if any)
+                u.LastMessagePreview = GetLastMessagePreview(u);
+                Matches.Add(u);
+            }
         }
 
         private void InitializeChatFromDatabase()
@@ -101,6 +108,18 @@ namespace MatchQuest.App.ViewModels
             foreach (var m in msgs)
             {
                 m.IsOutbound = (m.SenderId == CurrentUserId);
+
+                // populate per-message profile picture for binding in the message template
+                if (m.IsOutbound)
+                {
+                    m.ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture;
+                }
+                else
+                {
+                    var sender = _userService.Get(m.SenderId);
+                    m.ProfilePicture = sender?.ProfilePicture ?? DefaultProfilePicture;
+                }
+
                 Messages.Add(m);
             }
 
@@ -129,7 +148,20 @@ namespace MatchQuest.App.ViewModels
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     foreach (var m in newMsgs.OrderBy(m => m.CreatedAt))
+                    {
+                        // populate per-message profile picture before adding so the template can bind to it
+                        if (m.IsOutbound)
+                        {
+                            m.ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture;
+                        }
+                        else
+                        {
+                            var sender = _userService.Get(m.SenderId);
+                            m.ProfilePicture = sender?.ProfilePicture ?? DefaultProfilePicture;
+                        }
+
                         Messages.Add(m);
+                    }
                 });
             }
             catch (Exception ex)
@@ -168,6 +200,17 @@ namespace MatchQuest.App.ViewModels
             foreach (var m in msgs)
             {
                 m.IsOutbound = (m.SenderId == CurrentUserId);
+
+                if (m.IsOutbound)
+                {
+                    m.ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture;
+                }
+                else
+                {
+                    var sender = _userService.Get(m.SenderId);
+                    m.ProfilePicture = sender?.ProfilePicture ?? DefaultProfilePicture;
+                }
+
                 Messages.Add(m);
             }
 
@@ -197,7 +240,8 @@ namespace MatchQuest.App.ViewModels
                 SenderId = CurrentUserId,
                 MessageText = text,
                 CreatedAt = DateTime.UtcNow,
-                IsOutbound = true
+                IsOutbound = true,
+                ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture
             };
 
             // persist to DB and get id
@@ -210,6 +254,46 @@ namespace MatchQuest.App.ViewModels
             await MainThread.InvokeOnMainThreadAsync(() => Messages.Add(msg));
 
             MessageText = string.Empty;
+        }
+
+        [RelayCommand]
+        private async Task Back()
+        {
+            if (Shell.Current is null)
+            {
+                if (Application.Current?.MainPage is not AppShell)
+                {
+                    Application.Current!.MainPage = new AppShell();
+                    await Task.Yield();
+                }
+            }
+
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync("Home");
+            }
+        }
+
+        // Add this private helper method to ChatViewModel to fix CS0103
+        private string? GetLastMessagePreview(User user)
+        {
+            if (user == null || user.Id == 0)
+                return null;
+
+            // Find the match id between current user and the given user
+            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
+            if (matchId == 0)
+                return null;
+
+            // Get the chat id for this match
+            var chatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
+
+            // Get the last message for this chat
+            var lastMsg = _chatRepo.GetMessagesByChatId(chatId)
+                .OrderByDescending(m => m.CreatedAt)
+                .FirstOrDefault();
+
+            return lastMsg?.MessageText;
         }
 
         public void Dispose()

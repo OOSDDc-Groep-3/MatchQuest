@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Data.Common;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
 using MatchQuest.Core.Data.Helpers;
@@ -105,16 +106,20 @@ namespace MatchQuest.Core.Data.Repositories
                 using var conn = new MySqlConnection(connectionString);
                 conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
-
+                
+                // tranform Birthday DateOnly to Datetime
+                DateTime? birthDateTime = client.BirthDate.HasValue
+                    ? new DateTime(client.BirthDate.Value.Year, client.BirthDate.Value.Month, client.BirthDate.Value.Day)
+                    : null;
+                
                 cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
                 cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
                 cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
-                cmd.Parameters.AddWithValue("@birth_date", client.BirthDate.HasValue ? (object)client.BirthDate.Value : DBNull.Value);
+                cmd.Parameters.AddWithValue("@birth_date", birthDateTime.HasValue ? (object)birthDateTime.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
                 cmd.Parameters.AddWithValue("@bio", client.Bio ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? (object)DBNull.Value);
-                // store role as string (migration created role as string)
-                cmd.Parameters.AddWithValue("@role", client.Role.ToString());
+                cmd.Parameters.AddWithValue("@role", (int)client.Role);
                 cmd.Parameters.AddWithValue("@is_active", client.IsActive);
 
                 cmd.ExecuteNonQuery();
@@ -198,7 +203,7 @@ AND EXISTS ( -- check if users has already atleast 1 game type in common
             }
         }
 
-        private User? MapUser(MySqlDataReader reader)
+        private User? MapUser(DbDataReader reader)
         {
             var id = reader.GetInt32("user_id");
             var name = reader.GetString("name");

@@ -14,10 +14,10 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
 
         [ObservableProperty]
-        private string _email = "user1@mail.com";
+        private string _email = "user2@mail.com";
 
         [ObservableProperty]
-        private string _password = "user1";
+        private string _password = "hallo";
 
         [ObservableProperty]
         private string _loginMessage;
@@ -64,6 +64,8 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Register()
         {
+            // Navigate to the registered "Register" route using Shell.
+            // If Shell.Current is not available yet, ensure AppShell is attached.
             if (Shell.Current is null)
             {
                 if (Application.Current?.MainPage is not AppShell)

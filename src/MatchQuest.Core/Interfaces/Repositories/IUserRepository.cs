@@ -1,4 +1,5 @@
-﻿using MatchQuest.Core.Models;
+﻿using System.Collections.Generic;
+using MatchQuest.Core.Models;
 
 namespace MatchQuest.Core.Interfaces.Repositories
 {
@@ -8,6 +9,7 @@ namespace MatchQuest.Core.Interfaces.Repositories
         public User? Get(int id);
         public List<User> GetAll();
         public User? Add(User client);
+        public User? Update(User client);
         List<User> GetUsersWithMatchingGameType(int userId);
     }
 }

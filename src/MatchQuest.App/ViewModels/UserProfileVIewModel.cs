@@ -1,3 +1,7 @@
+using System;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Helpers;
@@ -11,14 +15,23 @@ public partial class UserProfileViewModel : ObservableObject
     private readonly GlobalViewModel _global;
     private readonly IUserRepository _userRepository;
     private readonly IGameRepository _gameRepository;
-    
 
-    public UserProfileViewModel(GlobalViewModel global, IUserRepository userRepository)
+    
+    public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
+
+    [ObservableProperty]
+    private Game selectedGame;
+
+    public UserProfileViewModel(GlobalViewModel global, IUserRepository userRepository, IGameRepository gameRepository)
     {
         _global = global;
         _userRepository = userRepository;
+        _gameRepository = gameRepository;
+
+        LoadGames();
     }
 
+  
     public string Name
     {
         get => _global.Client?.Name ?? string.Empty;
@@ -71,10 +84,26 @@ public partial class UserProfileViewModel : ObservableObject
         }
     }
 
+ 
+    public ImageSource ProfileImageSource
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
+                return "dotnet_bot.png";
+
+            byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
+            return ImageSource.FromStream(() => new MemoryStream(imageBytes));
+        }
+    }
+
+   
     [RelayCommand]
     private async Task SaveProfile()
     {
         if (_global.Client == null) return;
+
+       
 
         if (_global.Client.Id == 0)
         {
@@ -89,25 +118,11 @@ public partial class UserProfileViewModel : ObservableObject
                 _global.Client = updated;
         }
 
-        // ✅ Altijd succesmelding tonen
         await Application.Current.MainPage.DisplayAlert(
             "Success",
             "Your profile has been updated!",
             "OK"
         );
-    }
-
-    
-    
-    public ImageSource ProfileImageSource
-    {
-        get
-        {
-            if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
-                return "dotnet_bot.png"; 
-            byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
-            return ImageSource.FromStream(() => new MemoryStream(imageBytes));
-        }
     }
 
     [RelayCommand]
@@ -127,13 +142,17 @@ public partial class UserProfileViewModel : ObservableObject
             OnPropertyChanged(nameof(ProfileImageSource));
         }
     }
-    
-    
+
+   
     private void LoadGames()
     {
         var list = _gameRepository.GetAll();
+        Games.Clear();
+
+        foreach (var g in list)
+            Games.Add(g);
+
         
+       
     }
-
-
 }

@@ -173,6 +173,8 @@
                     <Label Text="Select your game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
                     <Picker Title="Select a game"
                             ItemsSource="{Binding Games}"
+                            ItemDisplayBinding="{Binding Name}"  
+
                             FontFamily="RubikRegular"
                             BackgroundColor="#312932"
                             TextColor="White"/>

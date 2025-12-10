@@ -2,9 +2,9 @@ using MatchQuest.App.ViewModels;
 
 namespace MatchQuest.App.Views;
 
-public partial class UserProfileView : ContentPage
+public partial class UserProfile : ContentPage
 {
-    public UserProfileView(UserProfileViewModel viewModel)
+    public UserProfile(UserProfileViewModel viewModel)
     {
         InitializeComponent();
         BindingContext = viewModel;

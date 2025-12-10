@@ -44,6 +44,7 @@
             <Label Text="Confirm Password" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Padding="0,15,0,0"  />
             <Entry Placeholder="Confirm Password" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding NewConfirmPassword}" IsPassword="True"  />
             
+            <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
 
             <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Next" Command="{Binding NextCommand}" Margin="0,100,0,0"  />
         </StackLayout>

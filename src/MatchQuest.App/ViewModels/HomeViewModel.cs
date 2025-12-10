@@ -81,7 +81,7 @@ namespace MatchQuest.App.ViewModels
 
             if (Shell.Current is not null)
             {
-                await Shell.Current.GoToAsync("UserProfile");
+                await Shell.Current.GoToAsync("Settings");
             }
         }
 

@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:system="clr-namespace:System;assembly=netstandard"
     x:Class="MatchQuest.App.Views.UserProfileView"
-    Title="UserProfile"
     BackgroundImageSource="background.png"
     BackgroundColor="Transparent">
 

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
              xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+             xmlns:converters="clr-namespace:MatchQuest.App.Converters"
              xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="MatchQuest.App.Views.ChatView"
              x:DataType="vm:ChatViewModel"
@@ -12,6 +13,10 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            
+            <!-- Converter for Base64 to image -->
+            <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            
             <!-- Colors -->
             <Color x:Key="AccentColor">#C0ffee</Color>
             <Color x:Key="OverlayColor">#E91E1E1E</Color>
@@ -139,7 +144,7 @@
                                         </Border.GestureRecognizers>
 
                                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                            <Image Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}"
+                                            <Image Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}}"
                                                    WidthRequest="{StaticResource AvatarSize}"
                                                    HeightRequest="{StaticResource AvatarSize}"
                                                    Aspect="AspectFill"
@@ -257,7 +262,7 @@
                                                        LineBreakMode="WordWrap"
                                                        MaximumWidthRequest="600"/>
                                             </Border>
-                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>
@@ -267,7 +272,7 @@
                                     <!-- Inbound (left) -->
                                     <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
-                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>

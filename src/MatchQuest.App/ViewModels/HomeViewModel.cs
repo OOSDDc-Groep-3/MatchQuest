@@ -8,6 +8,7 @@ using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Linq;
+using MatchQuest.Core.Helpers;
 
 namespace MatchQuest.App.ViewModels
 {

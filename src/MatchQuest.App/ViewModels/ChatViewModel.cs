@@ -9,6 +9,7 @@ using MatchQuest.Core.Models;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Data.Repositories;
 using Microsoft.Maui.ApplicationModel;
+using MatchQuest.Core.Helpers;
 
 namespace MatchQuest.App.ViewModels
 {

@@ -16,7 +16,7 @@ public class FileHelper
             return null;
 
         // Check if it's actually a Base64 string (not a file path)
-        if (base64String.Length > 100 && !base64String.Contains(".png") && !base64String.Contains(".jpg"))
+        if (base64String.Length > 100)
         {
             try
             {

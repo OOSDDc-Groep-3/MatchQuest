@@ -35,6 +35,7 @@ namespace MatchQuest.Core.Data.Repositories
             }
             catch (Exception ex)
             {
+                Debug.WriteLine(ex);
                 return null;
             }
         }
@@ -126,6 +127,57 @@ namespace MatchQuest.Core.Data.Repositories
                 var newId = (int)cmd.LastInsertedId;
 
                 return Get(newId);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        
+        
+        public User? Update(User client)
+        {
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+
+                var sql = @"UPDATE `users` 
+                               SET `email` = @email,
+                                   `password` = @password,
+                                   `name` = @name,
+                                   `birth_date` = @birth_date,
+                                   `region` = @region,
+                                   `bio` = @bio,
+                                   `profile_picture` = @profile_picture,
+                                   `role` = @role,
+                                   `is_active` = @is_active
+                             WHERE `user_id` = @user_id;";
+
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+                
+                // transform DateOnly to DateTime for DB storage
+                var birthDateTime = client.BirthDate.HasValue
+                    ? new DateTime(client.BirthDate.Value.Year, client.BirthDate.Value.Month, client.BirthDate.Value.Day)
+                    : (DateTime?)null;
+                
+
+                cmd.Parameters.AddWithValue("@user_id", client.Id);
+                cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
+                cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
+                cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
+                cmd.Parameters.AddWithValue("@birth_date", birthDateTime.HasValue ? birthDateTime.Value : DBNull.Value);
+                cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
+                cmd.Parameters.AddWithValue("@bio", client.Bio ?? string.Empty);
+                cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? string.Empty);
+                
+                cmd.Parameters.AddWithValue("@role", (int)client.Role);
+                cmd.Parameters.AddWithValue("@is_active", client.IsActive);
+
+                cmd.ExecuteNonQuery();
+
+                return Get(client.Id);
             }
             catch (Exception ex)
             {

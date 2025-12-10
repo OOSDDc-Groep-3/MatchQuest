@@ -169,15 +169,34 @@
                             TextColor="White"
                             HeightRequest="120"
                             PlaceholderColor="Gray"/>
+                    <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <CollectionView ItemsSource="{Binding UserGames}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                    <Label Text="{Binding Name}" TextColor="#c0ffee" FontSize="30"/>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    
+                    
+                    
 
-                    <Label Text="Select your game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Picker Title="Select a game"
-                            ItemsSource="{Binding Games}"
-                            ItemDisplayBinding="{Binding Name}"  
+                    <CollectionView ItemsSource="{Binding Games}"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
+                                    HeightRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                    <Label Text="{Binding Name}" TextColor="White" FontSize="16"/>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                            FontFamily="RubikRegular"
-                            BackgroundColor="#312932"
-                            TextColor="White"/>
 
                   
                     <!-- OPSLAAN -->

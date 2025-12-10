@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MatchQuest.Core.Data.Repositories;
 using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
@@ -15,22 +16,31 @@ public partial class UserProfileViewModel : ObservableObject
     private readonly GlobalViewModel _global;
     private readonly IUserRepository _userRepository;
     private readonly IGameRepository _gameRepository;
+    private readonly UserGameRepository _userGameRepository;
+    public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
+
 
     
     public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
 
     [ObservableProperty]
+    private ObservableCollection<Game> selectedGames = new ObservableCollection<Game>();
+    
+    [ObservableProperty]
     private Game selectedGame;
 
-    public UserProfileViewModel(GlobalViewModel global, IUserRepository userRepository, IGameRepository gameRepository)
+    public UserProfileViewModel(GlobalViewModel global,
+        IUserRepository userRepository,
+        IGameRepository gameRepository,
+        UserGameRepository userGameRepository)
     {
         _global = global;
         _userRepository = userRepository;
         _gameRepository = gameRepository;
+        _userGameRepository = userGameRepository;
 
         LoadGames();
     }
-
   
     public string Name
     {
@@ -103,19 +113,34 @@ public partial class UserProfileViewModel : ObservableObject
     {
         if (_global.Client == null) return;
 
-       
+        // -------------------------
+        // Profiel bijwerken
+        // -------------------------
+        var updated = _userRepository.Update(_global.Client);
+        if (updated != null)
+            _global.Client = updated;
 
-        if (_global.Client.Id == 0)
+        // -------------------------
+        // Voeg geselecteerde game toe
+        // -------------------------
+        if (SelectedGame != null)
         {
-            var created = _userRepository.Add(_global.Client);
-            if (created != null)
-                _global.Client = created;
-        }
-        else
-        {
-            var updated = _userRepository.Update(_global.Client);
-            if (updated != null)
-                _global.Client = updated;
+            try
+            {
+                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+            }
+            catch
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "Could not add the selected game.",
+                    "OK"
+                );
+            }
+
+            SelectedGame = null;
+            LoadGames();
+
         }
 
         await Application.Current.MainPage.DisplayAlert(
@@ -124,6 +149,8 @@ public partial class UserProfileViewModel : ObservableObject
             "OK"
         );
     }
+
+
 
     [RelayCommand]
     private async Task UploadProfilePhoto()
@@ -142,17 +169,28 @@ public partial class UserProfileViewModel : ObservableObject
             OnPropertyChanged(nameof(ProfileImageSource));
         }
     }
+    
 
    
     private void LoadGames()
     {
-        var list = _gameRepository.GetAll();
+        // Alle games uit database
+        var allGames = _gameRepository.GetAll();
+
+        // Games die de user al heeft
+        var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
+
+        // Vul UserGames (voor profielweergave)
+        UserGames.Clear();
+        foreach (var g in userGames)
+            UserGames.Add(g);
+
+        // Vul Games (voor toevoegen) alleen met games die gebruiker nog niet heeft
+        var userGameIds = userGames.Select(g => g.Id).ToList();
         Games.Clear();
-
-        foreach (var g in list)
+        foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
             Games.Add(g);
-
-        
-       
     }
+
+
 }

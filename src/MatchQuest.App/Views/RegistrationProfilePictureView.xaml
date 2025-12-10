@@ -34,8 +34,20 @@
 
         <ScrollView>
             <StackLayout Spacing="10" Padding="450,-100,450,450" VerticalOptions="Center">
-                <Label Text="SET UP PROFILE" Margin="0,0,0,50" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
-<!--
+                <Label Text="PROFILE PICTURE" Margin="0,50,0,100" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
+
+                <Border HeightRequest="280" WidthRequest="280"
+                        Stroke="#c0ffee"
+                        StrokeShape="RoundRectangle 90"
+                        StrokeThickness="0"
+                        Padding="0"
+                        Margin="0,0,0,80"
+                        HorizontalOptions="Center"
+                        VerticalOptions="Center">
+                    <Image Margin="0"  HeightRequest="280" WidthRequest="280" HorizontalOptions="Center" VerticalOptions="Center" Source="{Binding ProfileImageSource}" Aspect="AspectFill"/>
+                </Border>
+
+                <!--
                 <Label Text="First name" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" />
                 <Entry Placeholder="First name" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" Text="{Binding FirstName}" />
 
@@ -50,7 +62,22 @@
 
                 <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
 -->
-                <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Confirm" Command="{Binding NextCommand}" Margin="0,20,0,0"  />
+                <Button BackgroundColor="#383535"
+                        FontSize="20" 
+                        FontAttributes="Bold"
+                        TextColor="#c0ffee"
+                        Text="Upload"
+                        Command="{Binding UploadProfilePhotoCommand}"
+                        Margin="0,20,0,0"  />
+                
+                <Button BackgroundColor="#c0ffee" 
+                        FontSize="20" 
+                        FontAttributes="Bold" 
+                        TextColor="#383535" 
+                        Text="Next" 
+                        Command="{Binding NextCommand}" 
+                        Margin="0,20,0,0"  />
+
             </StackLayout>
         </ScrollView>
     </Grid>

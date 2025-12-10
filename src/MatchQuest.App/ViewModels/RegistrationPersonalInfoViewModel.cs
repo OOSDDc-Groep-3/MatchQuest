@@ -70,6 +70,9 @@ namespace MatchQuest.App.ViewModels
 
                 _global.Client = created;
 
+                // Persist logged-in user id so app can restore session
+                Preferences.Set("current_user_id", created.Id);
+
                 // Navigate to Home (or other next screen).
                 if (Shell.Current is null)
                 {

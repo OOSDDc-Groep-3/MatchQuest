@@ -1,32 +1,28 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
 using Microsoft.Maui.Controls;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace MatchQuest.App.ViewModels
 {
     public partial class RegistrationBiographyViewModel : BaseViewModel
     {
-        private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
         private readonly IUserService _userService;
-
-        [ObservableProperty] private string newEmail = "";
-        [ObservableProperty] private string newPassword = "";
-        [ObservableProperty] private string newConfirmPassword = "";
+        private readonly IUserRepository _userRepository;
 
         [ObservableProperty]
         private string loginMessage;
 
-        public RegistrationBiographyViewModel(IAuthService authService, GlobalViewModel global, IUserService userService)
+        public RegistrationBiographyViewModel(GlobalViewModel global, IUserRepository userRepository)
         {
-            _authService = authService;
             _global = global;
-            _userService = userService;
+            _userRepository = userRepository;
         }
 
         [RelayCommand]

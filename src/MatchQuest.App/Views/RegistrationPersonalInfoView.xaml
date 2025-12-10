@@ -48,7 +48,8 @@
                 <Label Text="Date of birth" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" />
                 <DatePicker Date="{Binding BirthDate}" FontAttributes="Bold" TextColor="#383535" BackgroundColor="#C6C2C2" MaximumDate="{x:Static sys:DateTime.Now}" />
 
-
+                <Label Text="{Binding LoginMessage}" TextColor="Red" />
+                
                 <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Confirm" Command="{Binding ConfirmCommand}" Margin="0,20,0,0"  />
             </StackLayout>
         </ScrollView>

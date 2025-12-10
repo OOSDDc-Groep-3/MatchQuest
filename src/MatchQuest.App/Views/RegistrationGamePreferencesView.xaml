@@ -51,6 +51,8 @@
                 <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
 -->
                 <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Confirm" Command="{Binding ConfirmCommand}" Margin="0,20,0,0"  />
+                
+                <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
             </StackLayout>
         </ScrollView>
     </Grid>

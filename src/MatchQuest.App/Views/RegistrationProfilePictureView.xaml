@@ -77,6 +77,8 @@
                         Text="Next" 
                         Command="{Binding NextCommand}" 
                         Margin="0,20,0,0"  />
+                
+                <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
 
             </StackLayout>
         </ScrollView>

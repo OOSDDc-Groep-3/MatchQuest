@@ -82,7 +82,7 @@ namespace MatchQuest.App.ViewModels
 
                 if (Shell.Current is not null)
                 {
-                    await Shell.Current.GoToAsync("Home");
+                    await Shell.Current.GoToAsync("RegisterProfilePicture");
                 }
             }
             catch (Exception ex)

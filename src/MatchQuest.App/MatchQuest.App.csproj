@@ -74,6 +74,15 @@
     <Compile Update="Views\ChatView.xaml.cs">
       <DependentUpon>ChatView.xaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\RegistrationBiographyView.xaml.cs">
+      <DependentUpon>RegistrationBiographyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationGamePreferencesView.xaml.cs">
+      <DependentUpon>RegistrationGamePreferencesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationProfilePictureView.xaml.cs">
+      <DependentUpon>RegistrationProfilePictureView.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
       <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
     </Compile>
@@ -84,6 +93,15 @@
 
   <ItemGroup>
     <MauiXaml Update="Views\ChatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\RegistrationBiographyView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\RegistrationGamePreferencesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Views\RegistrationProfilePictureView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Views\RegistrationPersonalInfoView.xaml">

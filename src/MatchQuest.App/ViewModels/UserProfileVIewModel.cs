@@ -87,22 +87,22 @@ public partial class UserProfileViewModel : ObservableObject
                 _global.Client = updated;
         }
 
-        // Altijd succesmelding tonen
-        await Application.Current.MainPage.DisplayAlertAsync(
+        // ✅ Altijd succesmelding tonen
+        await Application.Current.MainPage.DisplayAlert(
             "Success",
             "Your profile has been updated!",
             "OK"
         );
     }
 
-
-
+    
+    
     public ImageSource ProfileImageSource
     {
         get
         {
             if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
-                return "dotnet_bot.png";
+                return "dotnet_bot.png"; 
             byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
             return ImageSource.FromStream(() => new MemoryStream(imageBytes));
         }

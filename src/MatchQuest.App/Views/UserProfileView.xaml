@@ -172,23 +172,12 @@
 
                     <Label Text="Select your game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
                     <Picker Title="Select a game"
+                            ItemsSource="{Binding Games}"
                             FontFamily="RubikRegular"
                             BackgroundColor="#312932"
                             TextColor="White"/>
 
-                    <Label Text="Add new game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry Placeholder="Enter game name...."
-                           FontFamily="RubikRegular"
-                           BackgroundColor="#312932"
-                           TextColor="White"
-                           PlaceholderColor="Gray"/>
-
-                    <Button Text="Add new game"
-                            FontFamily="RubikRegular"
-                            BackgroundColor="#C0ffee"
-                            TextColor="Black"
-                            CornerRadius="12"/>
-
+                  
                     <!-- OPSLAAN -->
                     <Button 
                             Command="{Binding SaveProfileCommand}"

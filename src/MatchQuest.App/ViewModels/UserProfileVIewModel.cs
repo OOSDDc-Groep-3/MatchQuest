@@ -10,6 +10,8 @@ public partial class UserProfileViewModel : ObservableObject
 {
     private readonly GlobalViewModel _global;
     private readonly IUserRepository _userRepository;
+    private readonly IGameRepository _gameRepository;
+    
 
     public UserProfileViewModel(GlobalViewModel global, IUserRepository userRepository)
     {
@@ -125,4 +127,13 @@ public partial class UserProfileViewModel : ObservableObject
             OnPropertyChanged(nameof(ProfileImageSource));
         }
     }
+    
+    
+    private void LoadGames()
+    {
+        var list = _gameRepository.GetAll();
+        
+    }
+
+
 }

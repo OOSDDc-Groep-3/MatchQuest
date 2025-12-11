@@ -11,8 +11,4 @@ public partial class RegistrationBiographyView : ContentPage
         BindingContext = viewModel;
     }
 
-    private void Editor_Focused(object sender, FocusEventArgs e)
-    {
-
-    }
 }

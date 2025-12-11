@@ -1,196 +1,205 @@
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Maui.Controls;
 using MatchQuest.Core.Data.Repositories;
 using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
 
-namespace MatchQuest.App.ViewModels;
-
-public partial class UserProfileViewModel : ObservableObject
+namespace MatchQuest.App.ViewModels
 {
-    private readonly GlobalViewModel _global;
-    private readonly IUserRepository _userRepository;
-    private readonly IGameRepository _gameRepository;
-    private readonly UserGameRepository _userGameRepository;
-    public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
-
-
-    
-    public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
-
-    [ObservableProperty]
-    private ObservableCollection<Game> selectedGames = new ObservableCollection<Game>();
-    
-    [ObservableProperty]
-    private Game selectedGame;
-
-    public UserProfileViewModel(GlobalViewModel global,
-        IUserRepository userRepository,
-        IGameRepository gameRepository,
-        UserGameRepository userGameRepository)
+    public partial class UserProfileViewModel : ObservableObject
     {
-        _global = global;
-        _userRepository = userRepository;
-        _gameRepository = gameRepository;
-        _userGameRepository = userGameRepository;
+        private readonly GlobalViewModel _global;
+        private readonly IUserRepository _userRepository;
+        private readonly IGameRepository _gameRepository;
+        private readonly UserGameRepository _userGameRepository;
 
-        LoadGames();
-    }
-  
-    public string Name
-    {
-        get => _global.Client?.Name ?? string.Empty;
-        set
+        // Collections
+        public ObservableCollection<GameViewModel> UserGames { get; } = new ObservableCollection<GameViewModel>();
+        public ObservableCollection<GameViewModel> Games { get; } = new ObservableCollection<GameViewModel>();
+
+        // Selected game
+        [ObservableProperty] private GameViewModel selectedGame;
+
+        public UserProfileViewModel(GlobalViewModel global,
+            IUserRepository userRepository,
+            IGameRepository gameRepository,
+            UserGameRepository userGameRepository)
         {
+            _global = global;
+            _userRepository = userRepository;
+            _gameRepository = gameRepository;
+            _userGameRepository = userGameRepository;
+
+            // Zorg dat games geladen worden als er een client is
             if (_global.Client != null)
             {
-                _global.Client.Name = value;
-                OnPropertyChanged();
+                LoadGames();
             }
         }
-    }
 
-    public DateOnly BirthDate
-    {
-        get => _global.Client?.BirthDate ?? DateOnly.FromDateTime(DateTime.Now);
-        set
+        #region User Info Properties
+
+        public string Name
         {
-            if (_global.Client != null)
+            get => _global.Client?.Name ?? string.Empty;
+            set
             {
-                _global.Client.BirthDate = value;
-                OnPropertyChanged();
+                if (_global.Client != null)
+                {
+                    _global.Client.Name = value;
+                    OnPropertyChanged();
+                }
             }
         }
-    }
 
-    public string Region
-    {
-        get => _global.Client?.Region ?? string.Empty;
-        set
+        public DateOnly BirthDate
         {
-            if (_global.Client != null)
+            get => _global.Client?.BirthDate ?? DateOnly.FromDateTime(DateTime.Now);
+            set
             {
-                _global.Client.Region = value;
-                OnPropertyChanged();
+                if (_global.Client != null)
+                {
+                    _global.Client.BirthDate = value;
+                    OnPropertyChanged();
+                }
             }
         }
-    }
 
-    public string Biography
-    {
-        get => _global.Client?.Bio ?? string.Empty;
-        set
+        public string Region
         {
-            if (_global.Client != null)
+            get => _global.Client?.Region ?? string.Empty;
+            set
             {
-                _global.Client.Bio = value;
-                OnPropertyChanged();
+                if (_global.Client != null)
+                {
+                    _global.Client.Region = value;
+                    OnPropertyChanged();
+                }
             }
         }
-    }
 
- 
-    public ImageSource ProfileImageSource
-    {
-        get
+        public string Biography
         {
-            if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
-                return "dotnet_bot.png";
-
-            byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
-            return ImageSource.FromStream(() => new MemoryStream(imageBytes));
-        }
-    }
-
-   
-    [RelayCommand]
-    private async Task SaveProfile()
-    {
-        if (_global.Client == null) return;
-
-        // -------------------------
-        // Profiel bijwerken
-        // -------------------------
-        var updated = _userRepository.Update(_global.Client);
-        if (updated != null)
-            _global.Client = updated;
-
-        // -------------------------
-        // Voeg geselecteerde game toe
-        // -------------------------
-        if (SelectedGame != null)
-        {
-            try
+            get => _global.Client?.Bio ?? string.Empty;
+            set
             {
-                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+                if (_global.Client != null)
+                {
+                    _global.Client.Bio = value;
+                    OnPropertyChanged();
+                }
             }
-            catch
+        }
+
+        public ImageSource ProfileImageSource
+        {
+            get
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "Could not add the selected game.",
-                    "OK"
-                );
+                if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
+                    return "dotnet_bot.png";
+
+                try
+                {
+                    var bytes = Convert.FromBase64String(_global.Client.ProfilePicture);
+                    return ImageSource.FromStream(() => new MemoryStream(bytes));
+                }
+                catch
+                {
+                    return "dotnet_bot.png";
+                }
+            }
+        }
+
+        #endregion
+
+        #region Commands
+
+        [RelayCommand]
+        private async Task SaveProfile()
+        {
+            if (_global.Client == null) return;
+
+            // Update profiel
+            var updated = _userRepository.Update(_global.Client);
+            if (updated != null)
+                _global.Client = updated;
+
+            // Voeg geselecteerde game toe
+            if (SelectedGame != null)
+            {
+                try
+                {
+                    _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+                }
+                catch
+                {
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Error",
+                        "Could not add the selected game.",
+                        "OK"
+                    );
+                }
+
+                SelectedGame = null;
+                LoadGames();
             }
 
-            SelectedGame = null;
-            LoadGames();
-
+            await Application.Current.MainPage.DisplayAlert(
+                "Success",
+                "Your profile has been updated!",
+                "OK"
+            );
         }
 
-        await Application.Current.MainPage.DisplayAlert(
-            "Success",
-            "Your profile has been updated!",
-            "OK"
-        );
-    }
-
-
-
-    [RelayCommand]
-    private async Task UploadProfilePhoto()
-    {
-        var result = await FilePicker.PickAsync(new PickOptions
+        [RelayCommand]
+        private async Task UploadProfilePhoto()
         {
-            PickerTitle = "Select a profile picture",
-            FileTypes = FilePickerFileType.Images
-        });
+            var result = await FilePicker.PickAsync(new PickOptions
+            {
+                PickerTitle = "Select a profile picture",
+                FileTypes = FilePickerFileType.Images
+            });
 
-        if (result != null && _global.Client != null)
-        {
-            var base64 = FileHelper.ImageToBase64(result.FullPath);
-            _global.Client.ProfilePicture = base64;
+            if (result != null && _global.Client != null)
+            {
+                var base64 = FileHelper.ImageToBase64(result.FullPath);
+                _global.Client.ProfilePicture = base64;
 
-            OnPropertyChanged(nameof(ProfileImageSource));
+                OnPropertyChanged(nameof(ProfileImageSource));
+            }
         }
+
+        #endregion
+
+        #region Load Games
+
+        public void LoadGames()
+        {
+            if (_global.Client == null) return;
+
+            var allGames = _gameRepository.GetAll() ?? new System.Collections.Generic.List<Game>();
+            var userGamesFromDb = _userGameRepository.GetGamesForUser(_global.Client.Id) ??
+                                  new System.Collections.Generic.List<Game>();
+
+            // Vul UserGames
+            UserGames.Clear();
+            foreach (var g in userGamesFromDb)
+                UserGames.Add(new GameViewModel(g));
+
+            // Vul Games (voor toevoegen)
+            var userGameIds = userGamesFromDb.Select(g => g.Id).ToList();
+            Games.Clear();
+            foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
+                Games.Add(new GameViewModel(g));
+        }
+
+        #endregion
     }
-    
-
-   
-    private void LoadGames()
-    {
-        // Alle games uit database
-        var allGames = _gameRepository.GetAll();
-
-        // Games die de user al heeft
-        var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
-
-        // Vul UserGames (voor profielweergave)
-        UserGames.Clear();
-        foreach (var g in userGames)
-            UserGames.Add(g);
-
-        // Vul Games (voor toevoegen) alleen met games die gebruiker nog niet heeft
-        var userGameIds = userGames.Select(g => g.Id).ToList();
-        Games.Clear();
-        foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
-            Games.Add(g);
-    }
-
-
 }

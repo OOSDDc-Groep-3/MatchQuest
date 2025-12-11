@@ -80,7 +80,7 @@ SELECT game_id FROM user_games WHERE user_id = @userId;", conn);
             conn.Open();
 
             using var cmd = new MySqlCommand(@"
-SELECT g.game_id, g.name
+SELECT g.game_id, g.name,g.image
 FROM user_games ug
 INNER JOIN games g ON ug.game_id = g.game_id
 WHERE ug.user_id = @userId;", conn);
@@ -93,7 +93,8 @@ WHERE ug.user_id = @userId;", conn);
                 games.Add(new Game
                 {
                     Id = reader.GetInt32("game_id"),
-                    Name = reader.GetString("name")
+                    Name = reader.GetString("name"),
+                    Image = reader.GetString("image")
                 });
             }
 

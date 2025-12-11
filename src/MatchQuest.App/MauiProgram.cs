@@ -52,8 +52,7 @@ public static class MauiProgram
         builder.Services.AddTransient<UserProfileView>().AddTransient<UserProfileViewModel>();
         
         builder.Services.AddSingleton<IGameRepository, GameRepository>();
-        builder.Services.AddSingleton<UserProfileViewModel>();
-        //Fixed app launch screensize & lock screensize
+        builder.Services.AddSingleton<UserGameRepository>();
 
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>

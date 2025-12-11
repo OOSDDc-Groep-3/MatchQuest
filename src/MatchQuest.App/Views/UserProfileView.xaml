@@ -48,7 +48,6 @@
                             BorderColor="#C0ffee"
                             BorderWidth="2"
                             BackgroundColor="#202022"/>
-
                     <Button Text="MY ACCOUNT"
                             FontFamily="RubikRegular"
                             FontSize="28"
@@ -60,7 +59,6 @@
                             BorderColor="#C0ffee"
                             BorderWidth="2"
                             BackgroundColor="#202022"/>
-
                     <Button Text="ADMIN"
                             FontFamily="RubikRegular"
                             FontSize="28"
@@ -132,27 +130,22 @@
 
                     <!-- FORMULIER VELDEN -->
                     <Label Text="name" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry 
-                           Text="{Binding Name}"
+                    <Entry Text="{Binding Name}"
                            Placeholder="Enter your name..."
                            FontFamily="RubikRegular"
                            TextColor="White"
                            PlaceholderColor="Gray"
                            BackgroundColor="#312932"/>
 
-                    
-
                     <Label Text="Date of birth" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <DatePicker 
-                                Date="{Binding BirthDate}"
+                    <DatePicker Date="{Binding BirthDate}"
                                 MaximumDate="{x:Static system:DateTime.Now}"
                                 FontFamily="RubikRegular"
                                 TextColor="White"
                                 BackgroundColor="#312932"/>
 
                     <Label Text="City" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry
-                           Text="{Binding Region}"
+                    <Entry Text="{Binding Region}"
                            Placeholder="Enter city...."
                            FontFamily="RubikRegular"
                            TextColor="White"
@@ -160,47 +153,55 @@
                            BackgroundColor="#312932"/>
 
                     <Label Text="Biography" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Editor 
-                            Text = "{Binding Biography}"
+                    <Editor Text="{Binding Biography}"
                             Placeholder="Enter biography...."
                             FontFamily="RubikRegular"
                             BackgroundColor="#312932"
                             TextColor="White"
                             HeightRequest="120"
                             PlaceholderColor="Gray"/>
+
+                    <!-- Your games -->
                     <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <CollectionView ItemsSource="{Binding UserGames}"
-                                    SelectionMode="None">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
-                                    <Label Text="{Binding Name}" TextColor="#c0ffee" FontSize="30"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                    
-                    
-                    
 
-                    <CollectionView ItemsSource="{Binding Games}"
-                                    SelectionMode="Single"
-                                    SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
-                                    HeightRequest="300">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
-                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
-                                    <Label Text="{Binding Name}" TextColor="White" FontSize="16"/>
-                                </Frame>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="20" Padding="10">
 
+                            <!-- User Games -->
+                            <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                            <CollectionView ItemsSource="{Binding UserGames}" SelectionMode="None" HeightRequest="200">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                                <Image Source="{Binding ImageSource}" WidthRequest="50" HeightRequest="50" Aspect="AspectFill"/>
+                                                <Label Text="{Binding Name}" TextColor="#C0ffee" FontSize="30" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
 
-                  
+                            <!-- Add a Game -->
+                            <Label Text="Add a game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                            <CollectionView ItemsSource="{Binding Games}" SelectionMode="Single" SelectedItem="{Binding SelectedGame}" HeightRequest="200">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                            <HorizontalStackLayout Spacing="10">
+                                                <Image Source="{Binding ImageSource}" WidthRequest="40" HeightRequest="40" Aspect="AspectFill"/>
+                                                <Label Text="{Binding Name}" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+
                     <!-- OPSLAAN -->
-                    <Button 
-                            Command="{Binding SaveProfileCommand}"
+                    <Button Command="{Binding SaveProfileCommand}"
                             Text="Save profile"
                             FontFamily="RubikRegular"
                             BackgroundColor="#C0ffee"

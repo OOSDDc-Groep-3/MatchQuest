@@ -1,37 +1,38 @@
-using System.Collections.Generic;
-using MatchQuest.Core.Interfaces.Repositories;
-using MatchQuest.Core.Models;
-using MySql.Data.MySqlClient;
+    using System.Collections.Generic;
+    using MatchQuest.Core.Interfaces.Repositories;
+    using MatchQuest.Core.Models;
+    using MySql.Data.MySqlClient;
 
-namespace MatchQuest.Core.Data.Repositories;
+    namespace MatchQuest.Core.Data.Repositories;
 
-public class GameRepository : DatabaseConnection, IGameRepository
-{
-    public List<Game> GetAll()
+    public class GameRepository : DatabaseConnection, IGameRepository
     {
-        var games = new List<Game>();
-
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
-
-        // Pas kolomnamen aan indien nodig (game_id / name)
-        cmd.CommandText = @"SELECT game_id, name 
-                            FROM games
-                            ORDER BY name ASC;";
-
-        using var rdr = cmd.ExecuteReader();
-        while (rdr.Read())
+        public List<Game> GetAll()
         {
-            var g = new Game
+            var games = new List<Game>();
+
+            OpenConnection();
+            using var cmd = Connection.CreateCommand();
+
+            cmd.CommandText = @"SELECT game_id, name, image
+                                FROM games
+                                ORDER BY name ASC;";
+
+            using var rdr = cmd.ExecuteReader();
+            while (rdr.Read())
             {
-                Id = rdr.GetInt32("game_id"),
-                Name = rdr.GetString("name")
-            };
+                var g = new Game
+                {
+                    Id = rdr.GetInt32("game_id"),
+                    Name = rdr.GetString("name"),
+                    Image = rdr.IsDBNull(rdr.GetOrdinal("image")) ? null : rdr.GetString("image")
+                    
+                };
 
-            games.Add(g);
+                games.Add(g);
+            }
+
+            CloseConnection();
+            return games;
         }
-
-        CloseConnection();
-        return games;
     }
-}

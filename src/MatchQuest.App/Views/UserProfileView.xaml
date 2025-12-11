@@ -2,366 +2,214 @@
 <ContentPage 
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
-    xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
     xmlns:system="clr-namespace:System;assembly=netstandard"
     x:Class="MatchQuest.App.Views.UserProfileView"
-    x:DataType="vm:UserProfileViewModel"
-    x:Name="ProfilePage"
     BackgroundImageSource="background.png"
     BackgroundColor="Transparent">
 
-    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="0.4*,0.8*">
-        
-        <!-- Full-page semi-opaque overlay so background image reads darker -->
-        <BoxView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
-                 Color="#E91E1E1E"
-                 HorizontalOptions="Fill" 
-                 VerticalOptions="Fill"
-                 InputTransparent="True"
-                 Opacity="1"/>
+    <Grid RowDefinitions="*" ColumnDefinitions="0.4*,0.8*">
+
+        <!-- Semi-transparante overlay over de achtergrond -->
+        <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Color="Black"
+                 Opacity="0.5"
+                 InputTransparent="True" />
 
         <!-- SIDEBAR -->
-        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
-                Margin="0"
-                BackgroundColor="Transparent"
+        <Border Grid.Column="0"
                 Stroke="#C0ffee"
-                StrokeThickness="0.5">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0" />
-            </Border.StrokeShape>
+                StrokeThickness="2"
+                BackgroundColor="#202022"
+                Opacity="0.85">
 
-            <Grid RowDefinitions="Auto,*,Auto" Padding="0" RowSpacing="10">
-                
-                <!-- Logo -->
-                <Image Grid.Row="0" 
-                       Margin="0,20,390,0" 
-                       Source="matchquest.png" 
-                       WidthRequest="150" 
-                       HeightRequest="141" />
-                
-                <!-- Header -->
-                <HorizontalStackLayout Grid.Row="0" 
-                                       Margin="0,34,12,6" 
-                                       Spacing="-30" 
-                                       VerticalOptions="Center" 
-                                       HorizontalOptions="Center">
-                    <Label Text="SETTINGS"
-                           FontSize="32"
-                           FontAttributes="Bold"
+            <Grid RowDefinitions="Auto,*,Auto" Padding="10" RowSpacing="10">
+                <!-- Logo + Titel -->
+                <HorizontalStackLayout Spacing="10" Grid.Row="0" Padding="10">
+                    <Image Source="matchquest.png"
+                           WidthRequest="180" HeightRequest="180"/>
+                    <Label Text="Settings"
+                           FontFamily="RubikRegular"
                            TextColor="#C0ffee"
-                           VerticalOptions="Center" />
+                           FontSize="36"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
                 </HorizontalStackLayout>
 
                 <!-- Nav buttons -->
-                <Grid Grid.Row="1" Padding="30,8,30,0">
-                    <VerticalStackLayout Spacing="35">
-                        <BoxView HeightRequest="1" 
-                                 BackgroundColor="#C0ffee" 
-                                 HorizontalOptions="Fill" 
-                                 Margin="0,0,6,0" />
+                <VerticalStackLayout Grid.Row="1" Spacing="5" Padding="5">
+                    <Button Text="MY PROFILE"
+                            FontFamily="RubikRegular"
+                            FontSize="28"
+                            TextColor="#C0ffee"
+                            FontAttributes="Bold"
+                            HeightRequest="100"
+                            WidthRequest="500"
+                            CornerRadius="0"
+                            BorderColor="#C0ffee"
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
+                    <Button Text="MY ACCOUNT"
+                            FontFamily="RubikRegular"
+                            FontSize="28"
+                            TextColor="#C0ffee"
+                            FontAttributes="Bold"
+                            HeightRequest="100"
+                            WidthRequest="500"
+                            CornerRadius="0"
+                            BorderColor="#C0ffee"
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
+                    <Button Text="ADMIN"
+                            FontFamily="RubikRegular"
+                            FontSize="28"
+                            TextColor="#C0ffee"
+                            FontAttributes="Bold"
+                            HeightRequest="100"
+                            WidthRequest="500"
+                            CornerRadius="0"
+                            BorderColor="#C0ffee"
+                            BorderWidth="2"
+                            BackgroundColor="#202022"/>
+                </VerticalStackLayout>
 
-                        <Button Text="MY PROFILE"
-                                FontFamily="RubikRegular"
-                                FontSize="20"
-                                TextColor="#C0ffee"
-                                FontAttributes="Bold"
-                                HeightRequest="80"
-                                CornerRadius="0"
-                                BorderColor="#C0ffee"
-                                BorderWidth="2"
-                                BackgroundColor="#192126"/>
-
-                        <Button Text="MY ACCOUNT"
-                                FontFamily="RubikRegular"
-                                FontSize="20"
-                                TextColor="#C0ffee"
-                                FontAttributes="Bold"
-                                HeightRequest="80"
-                                CornerRadius="0"
-                                BorderColor="#C0ffee"
-                                BorderWidth="2"
-                                BackgroundColor="#192126"/>
-
-                        <Button Text="ADMIN"
-                                FontFamily="RubikRegular"
-                                FontSize="20"
-                                TextColor="#C0ffee"
-                                FontAttributes="Bold"
-                                HeightRequest="80"
-                                CornerRadius="0"
-                                BorderColor="#C0ffee"
-                                BorderWidth="2"
-                                BackgroundColor="#192126"/>
-                    </VerticalStackLayout>
-                </Grid>
-
-                <!-- Logout button -->
-                <Button Grid.Row="2"
-                        Text="LOG OUT"
+                <!-- Logout button onderaan -->
+                <Button Text="LOG OUT"
+                        Grid.Row="2"
                         FontFamily="RubikRegular"
-                        FontSize="20"
-                        BackgroundColor="#E37272"
-                        TextColor="Black"
+                        FontSize="28"
+                        BackgroundColor="Red"
+                        TextColor="White"
                         FontAttributes="Bold"
                         HeightRequest="80"
+                        WidthRequest="500"
                         CornerRadius="0"
-                        BorderColor="Black"
-                        BorderWidth="2"
-                        Margin="31"/>
+                        BorderColor="#C0ffee"
+                        BorderWidth="2"/>
             </Grid>
         </Border>
 
-        <!-- RIGHT PANEL: User Profile Form -->
-        <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="3"
+        <!-- RECHTER GEDEELTE: User Profile Form -->
+        <Border Grid.Column="1"
                 Margin="0"
+                Padding="40"
                 Stroke="#C0ffee"
-                StrokeThickness="0.5"
-                BackgroundColor="Transparent">
-            <Border.StrokeShape>
-                <RoundRectangle CornerRadius="0" />
-            </Border.StrokeShape>
+                StrokeThickness="2"
+                BackgroundColor="#332A34"
+                Opacity="0.85">
 
-            <Grid RowDefinitions="Auto,*" Padding="0">
-                
-                <!-- Header with back button and settings button -->
-                <Grid Grid.Row="0" 
-                      Margin="10,-10,10,0" 
-                      Padding="32" 
-                      ColumnDefinitions="Auto,*,Auto"
-                      RowDefinitions="Auto">
-                    
-                    <!-- Back Button (matching ChatView) -->
-                    <ImageButton Grid.Column="0"
-                                 BackgroundColor="Transparent"
-                                 Margin="10,5,20,10" 
-                                 Source="back.png" 
-                                 WidthRequest="38" 
-                                 HeightRequest="38" 
-                                 VerticalOptions="Center" 
-                                 Command="{Binding BackCommand}" />
-                    
-                    <Label Grid.Column="1" 
-                           Text="MY PROFILE" 
-                           FontSize="32" 
-                           FontAttributes="Bold" 
-                           TextColor="#C0ffee" 
-                           VerticalOptions="Center" 
-                           HorizontalOptions="Start" />
-                    
-                    <ImageButton Grid.Column="2"
-                                 Source="settings.png"
-                                 CornerRadius="28"
-                                 WidthRequest="32"
-                                 HeightRequest="32"
-                                 VerticalOptions="Center"/>
-                    
-                    <!-- Header divider -->
-                    <BoxView Grid.Row="1" Grid.ColumnSpan="3" 
-                             HeightRequest="1" 
-                             BackgroundColor="#C0ffee" 
-                             VerticalOptions="End" 
-                             Margin="0,148,0,0" />
-                </Grid>
+            <ScrollView>
+                <VerticalStackLayout Spacing="25">
 
-                <!-- Scrollable form content -->
-                <ScrollView Grid.Row="1" Padding="32,12,32,32">
-                    <VerticalStackLayout Spacing="20">
+                    <!-- SETTINGS BUTTON -->
+                    <HorizontalStackLayout HorizontalOptions="End">
+                        <ImageButton Source="settings.png"
+                                     BackgroundColor="#C0ffee"
+                                     CornerRadius="28"
+                                     WidthRequest="36"
+                                     HeightRequest="36"/>
+                    </HorizontalStackLayout>
 
-                        <!-- PROFILE PHOTO -->
-                        <VerticalStackLayout Spacing="15" HorizontalOptions="Center">
-                            <Frame HeightRequest="180" 
-                                   WidthRequest="180"
-                                   CornerRadius="90"
-                                   BorderColor="#C0ffee"
-                                   Padding="0"
-                                   HorizontalOptions="Center"
-                                   BackgroundColor="Transparent">
-                                <Image Source="{Binding ProfileImageSource}" 
-                                       Aspect="AspectFill"/>
-                            </Frame>
+                    <!-- PROFIELFOTO -->
+                    <Frame HeightRequest="180" WidthRequest="180"
+                           CornerRadius="90"
+                           BorderColor="#C0ffee"
+                           Padding="0"
+                           HorizontalOptions="Center">
+                        <Image Source="{Binding ProfileImageSource}" Aspect="AspectFill"/>
+                    </Frame>
 
-                            <Button Text="Upload Profile Photo"
-                                    Command="{Binding UploadProfilePhotoCommand}"
-                                    FontFamily="RubikRegular"
-                                    FontSize="16"
-                                    FontAttributes="Bold"
-                                    BackgroundColor="#C0ffee"
-                                    TextColor="#383535"
-                                    CornerRadius="12"
-                                    WidthRequest="200"
-                                    HeightRequest="48"
-                                    HorizontalOptions="Center"/>
-                        </VerticalStackLayout>
+                    <Button Text="Upload profielfoto"
+                            Command="{Binding UploadProfilePhotoCommand}"
+                            FontFamily="RubikRegular"
+                            BackgroundColor="#C0ffee"
+                            TextColor="Black"
+                            CornerRadius="12"
+                            WidthRequest="200"
+                            HeightRequest="50"
+                            HorizontalOptions="Center"/>
 
-                        <!-- NAME -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Name" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            <Entry Text="{Binding Name}"
-                                   Placeholder="Enter your name..."
-                                   FontFamily="RubikRegular"
-                                   FontAttributes="Bold"
-                                   TextColor="#383535"
-                                   PlaceholderColor="#888888"
-                                   BackgroundColor="#C6C2C2"/>
-                        </VerticalStackLayout>
+                    <!-- FORMULIER VELDEN -->
+                    <Label Text="name" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <Entry Text="{Binding Name}"
+                           Placeholder="Enter your name..."
+                           FontFamily="RubikRegular"
+                           TextColor="White"
+                           PlaceholderColor="Gray"
+                           BackgroundColor="#312932"/>
 
-                        <!-- DATE OF BIRTH -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Date of Birth" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            <DatePicker Date="{Binding BirthDate}"
-                                        MaximumDate="{x:Static system:DateTime.Now}"
-                                        FontFamily="RubikRegular"
-                                        FontAttributes="Bold"
-                                        TextColor="#383535"
-                                        BackgroundColor="#C6C2C2"/>
-                        </VerticalStackLayout>
+                    <Label Text="Date of birth" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <DatePicker Date="{Binding BirthDate}"
+                                MaximumDate="{x:Static system:DateTime.Now}"
+                                FontFamily="RubikRegular"
+                                TextColor="White"
+                                BackgroundColor="#312932"/>
 
-                        <!-- REGION -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="City" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            <Entry Text="{Binding Region}"
-                                   Placeholder="Enter city..."
-                                   FontFamily="RubikRegular"
-                                   FontAttributes="Bold"
-                                   TextColor="#383535"
-                                   PlaceholderColor="#888888"
-                                   BackgroundColor="#C6C2C2"/>
-                        </VerticalStackLayout>
+                    <Label Text="City" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <Entry Text="{Binding Region}"
+                           Placeholder="Enter city...."
+                           FontFamily="RubikRegular"
+                           TextColor="White"
+                           PlaceholderColor="Gray"
+                           BackgroundColor="#312932"/>
 
-                        <!-- BIOGRAPHY -->
-                        <VerticalStackLayout Spacing="8">
-                            <Label Text="Biography" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            <Editor Text="{Binding Biography}"
-                                    Placeholder="Enter biography..."
-                                    FontFamily="RubikRegular"
-                                    FontAttributes="Bold"
-                                    BackgroundColor="#C6C2C2"
-                                    TextColor="#383535"
-                                    PlaceholderColor="#888888"
-                                    HeightRequest="120"
-                                    AutoSize="TextChanges"/>
-                        </VerticalStackLayout>
+                    <Label Text="Biography" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <Editor Text="{Binding Biography}"
+                            Placeholder="Enter biography...."
+                            FontFamily="RubikRegular"
+                            BackgroundColor="#312932"
+                            TextColor="White"
+                            HeightRequest="120"
+                            PlaceholderColor="Gray"/>
 
-                        <!-- YOUR GAMES SECTION -->
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="Your Games" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            
-                            <CollectionView ItemsSource="{Binding UserGames}"
-                                            SelectionMode="None"
-                                            MinimumHeightRequest="100"
-                                            MaximumHeightRequest="200">
+                    <!-- Your games -->
+                    <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+
+                    <ScrollView>
+                        <VerticalStackLayout Spacing="20" Padding="10">
+
+                            <!-- User Games -->
+                            <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                            <CollectionView ItemsSource="{Binding UserGames}" SelectionMode="None" HeightRequest="200">
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Game">
-                                        <Border BackgroundColor="#383535" 
-                                                Padding="12" 
-                                                Margin="4"
-                                                StrokeThickness="1"
-                                                Stroke="#c0ffee">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="8" />
-                                            </Border.StrokeShape>
-                                            
-                                            <Grid ColumnDefinitions="*,Auto">
-                                                <Label Grid.Column="0"
-                                                       Text="{Binding Name}" 
-                                                       FontSize="16" 
-                                                       TextColor="#c0ffee" 
-                                                       VerticalOptions="Center" />
-                                                
-
-                                                <!-- Red X Button to remove game -->
-                                                <Button Grid.Column="1"
-                                                        Text="✕"
-                                                        FontSize="18"
-                                                        FontAttributes="Bold"
-                                                        TextColor="Black"
-                                                        BackgroundColor="#E37272"
-                                                        CornerRadius="12"
-                                                        WidthRequest="30"
-                                                        HeightRequest="30"
-                                                        Padding="0"
-                                                        VerticalOptions="Center"
-                                                        Command="{Binding BindingContext.RemoveGameCommand, Source={x:Reference ProfilePage}}"
-                                                        CommandParameter="{Binding .}" />
-                                            </Grid>
-                                        </Border>
+                                    <DataTemplate>
+                                        <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                                <Image Source="{Binding ImageSource}" WidthRequest="50" HeightRequest="50" Aspect="AspectFill"/>
+                                                <Label Text="{Binding Name}" TextColor="#C0ffee" FontSize="30" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </Frame>
                                     </DataTemplate>
                                 </CollectionView.ItemTemplate>
-                                
-                                <CollectionView.EmptyView>
-                                    <Label Text="No games added yet." 
-                                           FontSize="14" 
-                                           FontAttributes="Italic"
-                                           TextColor="#DADADA" 
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center" />
-                                </CollectionView.EmptyView>
                             </CollectionView>
+
+                            <!-- Add a Game -->
+                            <Label Text="Add a game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                            <CollectionView ItemsSource="{Binding Games}" SelectionMode="Single" SelectedItem="{Binding SelectedGame}" HeightRequest="200">
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                            <HorizontalStackLayout Spacing="10">
+                                                <Image Source="{Binding ImageSource}" WidthRequest="40" HeightRequest="40" Aspect="AspectFill"/>
+                                                <Label Text="{Binding Name}" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                        </Frame>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
                         </VerticalStackLayout>
+                    </ScrollView>
 
-                        <!-- ADD GAMES SECTION -->
-                        <VerticalStackLayout Spacing="12">
-                            <Label Text="Add Games" 
-                                   TextColor="#FFFFFF" 
-                                   FontFamily="RubikRegular"
-                                   FontSize="20"
-                                   FontAttributes="Bold"/>
-                            
-                            <Picker ItemsSource="{Binding Games}" 
-                                    SelectedItem="{Binding SelectedGame}"
-                                    ItemDisplayBinding="{Binding Name}"
-                                    FontAttributes="Bold" 
-                                    TextColor="#383535" 
-                                    BackgroundColor="#C6C2C2"
-                                    Title="Pick a game..."
-                                    HeightRequest="60"/>
-
-                            <Button Text="Add Game"
-                                    Command="{Binding AddGameCommand}"
-                                    FontFamily="RubikRegular"
-                                    FontSize="16"
-                                    FontAttributes="Bold"
-                                    BackgroundColor="#C0ffee"
-                                    TextColor="#383535"
-                                    CornerRadius="12"
-                                    HeightRequest="48"/>
-                        </VerticalStackLayout>
-
-                        <!-- SAVE BUTTON -->
-                        <Button Command="{Binding SaveProfileCommand}"
-                                Text="Save Profile"
-                                FontFamily="RubikRegular"
-                                FontSize="20"
-                                FontAttributes="Bold"
-                                BackgroundColor="#C0ffee"
-                                TextColor="#383535"
-                                CornerRadius="12"
-                                HeightRequest="56"
-                                Margin="0,20,0,0"/>
-                    </VerticalStackLayout>
-                </ScrollView>
-            </Grid>
+                    <!-- OPSLAAN -->
+                    <Button Command="{Binding SaveProfileCommand}"
+                            Text="Save profile"
+                            FontFamily="RubikRegular"
+                            BackgroundColor="#C0ffee"
+                            TextColor="Black"
+                            CornerRadius="12"
+                            HeightRequest="48"/>
+                </VerticalStackLayout>
+            </ScrollView>
         </Border>
     </Grid>
 </ContentPage>

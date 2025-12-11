@@ -34,11 +34,29 @@
 
         <ScrollView>
             <StackLayout Spacing="10" Padding="450,-100,450,450" VerticalOptions="Center">
-                <Label Text="REGISTER" Margin="0,0,0,50" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
+                <Label Text="SET UP PROFILE" Margin="0,50,0,0" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
 
-                <Button BackgroundColor="#c0ffee" FontSize="20" FontAttributes="Bold" TextColor="#383535" Text="Confirm" Command="{Binding NextCommand}" Margin="0,20,0,0"  />
+                <Label Margin="0,100,0,0" Text="Biography" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" />
+                <Editor Placeholder="Tell us about yourself..." 
+                        FontAttributes="Bold" 
+                        Margin="0,10,0,200"
+                        TextColor="#383535" 
+                        BackgroundColor="#C6C2C2" 
+                        Text="{Binding Biography}" 
+                        HeightRequest="200"
+                        AutoSize="TextChanges" />
+
+                <Button BackgroundColor="#c0ffee" 
+                        FontSize="20" 
+                        FontAttributes="Bold" 
+                        TextColor="#383535" 
+                        Text="Next" 
+                        Command="{Binding NextCommand}" 
+                        Margin="0,20,0,0" />
                 
-                <Label Text="{Binding LoginMessage}" TextColor="Red" IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
+                <Label Text="{Binding LoginMessage}" 
+                       TextColor="Red" 
+                       IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
             </StackLayout>
         </ScrollView>
     </Grid>

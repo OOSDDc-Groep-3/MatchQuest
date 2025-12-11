@@ -10,4 +10,5 @@ public partial class RegistrationBiographyView : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
 }

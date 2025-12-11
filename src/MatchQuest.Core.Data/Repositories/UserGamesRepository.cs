@@ -38,10 +38,31 @@ VALUES (@userId, @gameId, @createdAt, @updatedAt);", conn);
             }
         }
 
-        
-       
+        public void RemoveUserGame(int userId, int gameId)
+        {
+            try
+            {
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
 
-       
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+
+                using var cmd = new MySqlCommand(@"
+DELETE FROM user_games 
+WHERE user_id = @userId AND game_id = @gameId;", conn);
+
+                cmd.Parameters.AddWithValue("@userId", userId);
+                cmd.Parameters.AddWithValue("@gameId", gameId);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"UserGameRepository.RemoveUserGame: {ex}");
+                throw;
+            }
+        }
+
         public List<int> GetUserGameIds(int userId)
         {
             var result = new List<int>();

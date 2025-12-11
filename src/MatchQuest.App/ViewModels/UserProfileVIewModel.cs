@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,17 +18,12 @@ public partial class UserProfileViewModel : ObservableObject
     private readonly IUserRepository _userRepository;
     private readonly IGameRepository _gameRepository;
     private readonly UserGameRepository _userGameRepository;
-    public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
-
-
     
+    public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
     public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
 
     [ObservableProperty]
-    private ObservableCollection<Game> selectedGames = new ObservableCollection<Game>();
-    
-    [ObservableProperty]
-    private Game selectedGame;
+    private Game? selectedGame;
 
     public UserProfileViewModel(GlobalViewModel global,
         IUserRepository userRepository,
@@ -94,7 +90,6 @@ public partial class UserProfileViewModel : ObservableObject
         }
     }
 
- 
     public ImageSource ProfileImageSource
     {
         get
@@ -107,50 +102,104 @@ public partial class UserProfileViewModel : ObservableObject
         }
     }
 
-   
+    [RelayCommand]
+    private async Task Back()
+    {
+        if (Shell.Current is null)
+        {
+            if (Application.Current?.MainPage is not AppShell)
+            {
+                Application.Current!.MainPage = new AppShell();
+                await Task.Yield();
+            }
+        }
+
+        if (Shell.Current is not null)
+        {
+            await Shell.Current.GoToAsync("Home");
+        }
+    }
+
+    [RelayCommand]
+    private async Task AddGame()
+    {
+        if (SelectedGame == null)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Error",
+                "Please select a game to add.",
+                "OK"
+            );
+            return;
+        }
+
+        if (_global?.Client == null) return;
+
+        try
+        {
+            _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+            SelectedGame = null;
+            LoadGames();
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Error",
+                "Could not add the selected game.",
+                "OK"
+            );
+            Debug.WriteLine($"UserProfileViewModel.AddGame: {ex}");
+        }
+    }
+
+    [RelayCommand]
+    private async Task RemoveGame(Game game)
+    {
+        if (game == null) return;
+        if (_global?.Client == null) return;
+
+        try
+        {
+            _userGameRepository.RemoveUserGame(_global.Client.Id, game.Id);
+            LoadGames();
+        }
+        catch (Exception ex)
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Error",
+                "Could not remove the game.",
+                "OK"
+            );
+            Debug.WriteLine($"UserProfileViewModel.RemoveGame: {ex}");
+        }
+    }
+
     [RelayCommand]
     private async Task SaveProfile()
     {
         if (_global.Client == null) return;
 
-        // -------------------------
-        // Profiel bijwerken
-        // -------------------------
+        // Update user profile in database
         var updated = _userRepository.Update(_global.Client);
         if (updated != null)
-            _global.Client = updated;
-
-        // -------------------------
-        // Voeg geselecteerde game toe
-        // -------------------------
-        if (SelectedGame != null)
         {
-            try
-            {
-                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
-            }
-            catch
-            {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "Could not add the selected game.",
-                    "OK"
-                );
-            }
-
-            SelectedGame = null;
-            LoadGames();
-
+            _global.Client = updated;
+            
+            await Application.Current.MainPage.DisplayAlert(
+                "Success",
+                "Your profile has been updated!",
+                "OK"
+            );
         }
-
-        await Application.Current.MainPage.DisplayAlert(
-            "Success",
-            "Your profile has been updated!",
-            "OK"
-        );
+        else
+        {
+            await Application.Current.MainPage.DisplayAlert(
+                "Error",
+                "Failed to update profile.",
+                "OK"
+            );
+        }
     }
-
-
 
     [RelayCommand]
     private async Task UploadProfilePhoto()
@@ -169,28 +218,26 @@ public partial class UserProfileViewModel : ObservableObject
             OnPropertyChanged(nameof(ProfileImageSource));
         }
     }
-    
 
-   
     private void LoadGames()
     {
-        // Alle games uit database
+        if (_global?.Client == null) return;
+
+        // Get all games from database
         var allGames = _gameRepository.GetAll();
 
-        // Games die de user al heeft
+        // Get games the user already has
         var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
 
-        // Vul UserGames (voor profielweergave)
+        // Populate UserGames collection
         UserGames.Clear();
         foreach (var g in userGames)
             UserGames.Add(g);
 
-        // Vul Games (voor toevoegen) alleen met games die gebruiker nog niet heeft
+        // Populate Games collection with only games user doesn't have yet
         var userGameIds = userGames.Select(g => g.Id).ToList();
         Games.Clear();
         foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
             Games.Add(g);
     }
-
-
 }

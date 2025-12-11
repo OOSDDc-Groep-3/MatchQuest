@@ -1,3 +1,9 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MatchQuest.Core.Helpers;
+using MatchQuest.Core.Interfaces.Repositories;
+using MatchQuest.Core.Models;
+
 namespace MatchQuest.Core.Models;
 
 public class Message

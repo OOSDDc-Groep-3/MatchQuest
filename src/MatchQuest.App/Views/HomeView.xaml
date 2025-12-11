@@ -4,6 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
              xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+             xmlns:converters="clr-namespace:MatchQuest.App.Converters"
              x:Class="MatchQuest.App.Views.HomeView"
              x:DataType="vm:HomeViewModel"
              x:Name="HomePage"
@@ -12,6 +13,10 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            
+            <!-- Converter for Base64 to image -->
+            <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            
             <!-- Colors -->
             <Color x:Key="AccentColor">#C0ffee</Color>
             <Color x:Key="OverlayColor">#E91E1E1E</Color>
@@ -128,7 +133,7 @@
                                         </Border.GestureRecognizers>
 
                                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                            <Image Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}"
+                                            <Image Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}"
                                                    WidthRequest="{StaticResource AvatarSize}"
                                                    HeightRequest="{StaticResource AvatarSize}"
                                                    Aspect="AspectFill"

@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:system="clr-namespace:System;assembly=netstandard"
     x:Class="MatchQuest.App.Views.UserProfileView"
-    Title="UserProfile"
     BackgroundImageSource="background.png"
     BackgroundColor="Transparent">
 
@@ -169,26 +168,36 @@
                             TextColor="White"
                             HeightRequest="120"
                             PlaceholderColor="Gray"/>
+                    <Label Text="Your games" TextColor="#C0ffee" FontFamily="RubikRegular"/>
+                    <CollectionView ItemsSource="{Binding UserGames}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                    <Label Text="{Binding Name}" TextColor="#c0ffee" FontSize="30"/>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    
+                    
+                    
 
-                    <Label Text="Select your game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Picker Title="Select a game"
-                            FontFamily="RubikRegular"
-                            BackgroundColor="#312932"
-                            TextColor="White"/>
+                    <CollectionView ItemsSource="{Binding Games}"
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
+                                    HeightRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Frame Padding="10" Margin="5" BackgroundColor="#312932" CornerRadius="10">
+                                    <Label Text="{Binding Name}" TextColor="White" FontSize="16"/>
+                                </Frame>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
 
-                    <Label Text="Add new game" TextColor="#C0ffee" FontFamily="RubikRegular"/>
-                    <Entry Placeholder="Enter game name...."
-                           FontFamily="RubikRegular"
-                           BackgroundColor="#312932"
-                           TextColor="White"
-                           PlaceholderColor="Gray"/>
 
-                    <Button Text="Add new game"
-                            FontFamily="RubikRegular"
-                            BackgroundColor="#C0ffee"
-                            TextColor="Black"
-                            CornerRadius="12"/>
-
+                  
                     <!-- OPSLAAN -->
                     <Button 
                             Command="{Binding SaveProfileCommand}"

@@ -115,7 +115,9 @@ WHERE ug.user_id = @userId;", conn);
                 {
                     Id = reader.GetInt32("game_id"),
                     Name = reader.GetString("name"),
-                    Image = reader.GetString("image")
+                    Image = reader.IsDBNull(reader.GetOrdinal("image")) 
+                        ? "carlala.png" // fallback image
+                        : reader.GetString("image")
                 });
             }
 

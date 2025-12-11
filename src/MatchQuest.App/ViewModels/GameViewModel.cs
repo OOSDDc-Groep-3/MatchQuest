@@ -24,7 +24,7 @@ namespace MatchQuest.App.ViewModels
             get
             {
                 if (string.IsNullOrEmpty(_game.Image))
-                    return "placeholder_game.png"; // fallback image
+                    return "carlala.png"; // fallback image
 
                 try
                 {
@@ -33,7 +33,7 @@ namespace MatchQuest.App.ViewModels
                 }
                 catch
                 {
-                    return "placeholder_game.png";
+                    return "carlala.png";
                 }
             }
         }

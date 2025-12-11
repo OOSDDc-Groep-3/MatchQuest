@@ -25,7 +25,7 @@
                 {
                     Id = rdr.GetInt32("game_id"),
                     Name = rdr.GetString("name"),
-                    Image = rdr.GetString("image"),
+                    Image = rdr.IsDBNull(rdr.GetOrdinal("image")) ? null : rdr.GetString("image")
                     
                 };
 

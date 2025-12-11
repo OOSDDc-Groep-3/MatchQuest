@@ -103,7 +103,7 @@ namespace MatchQuest.App.ViewModels
             get
             {
                 if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
-                    return "dotnet_bot.png";
+                    return "carlala.png";
 
                 try
                 {
@@ -112,7 +112,7 @@ namespace MatchQuest.App.ViewModels
                 }
                 catch
                 {
-                    return "dotnet_bot.png";
+                    return "carlala.png";
                 }
             }
         }
@@ -184,7 +184,7 @@ namespace MatchQuest.App.ViewModels
         {
             if (_global.Client == null) return;
 
-            var allGames = _gameRepository.GetAll() ?? new System.Collections.Generic.List<Game>();
+            var allGames = _gameRepository.GetAll() ?? new List<Game>();
             var userGamesFromDb = _userGameRepository.GetGamesForUser(_global.Client.Id) ??
                                   new System.Collections.Generic.List<Game>();
 

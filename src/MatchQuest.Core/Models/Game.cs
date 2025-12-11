@@ -13,10 +13,5 @@ public class Game
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }
     
-    public string Image { get; set; } // Base64 string van database
-
-    
-    
-    
-    
+    public string Image { get; set; } = string.Empty;
 }

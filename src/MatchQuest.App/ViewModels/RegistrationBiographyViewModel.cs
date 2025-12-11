@@ -27,12 +27,12 @@ namespace MatchQuest.App.ViewModels
         // Biography property that binds to the global client
         public string Biography
         {
-            get => _global.Client?.Bio ?? string.Empty;
+            get => _global.Client?.Biography ?? string.Empty;
             set
             {
                 if (_global.Client != null)
                 {
-                    _global.Client.Bio = value;
+                    _global.Client.Biography = value;
                     OnPropertyChanged();
                 }
             }
@@ -49,7 +49,7 @@ namespace MatchQuest.App.ViewModels
             }
 
             // Validate that biography is not empty
-            if (string.IsNullOrWhiteSpace(_global.Client.Bio))
+            if (string.IsNullOrWhiteSpace(_global.Client.Biography))
             {
                 LoginMessage = "Please enter a biography before continuing.";
                 return;

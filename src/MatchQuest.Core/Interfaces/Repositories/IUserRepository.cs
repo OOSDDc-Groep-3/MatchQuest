@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Data;
+using System.Data.Common;
 using MatchQuest.Core.Models;
 
 namespace MatchQuest.Core.Interfaces.Repositories
 {
     public interface IUserRepository
     {
-        public User? Get(string email);
-        public User? Get(int id);
-        public List<User> GetAll();
-        public User? Add(User client);
-        public User? Update(User client);
+        User? Get(string email);
+        User? Get(int id);
+        List<User> GetAll();
+        User? Add(User client);
+        User? Update(User client);
         List<User> GetUsersWithMatchingGameType(int userId);
+        User? MapUser(DbDataReader reader);
     }
 }

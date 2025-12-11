@@ -32,6 +32,12 @@ public partial class App : Application
 
         // Fallback to login view if no stored user or restore failed
         MainPage = new LoginView(viewModel);
-    }
+
+        MainPage.MinimumHeightRequest = 1080;
+        MainPage.MinimumWidthRequest = 1600;
+        MainPage.MaximumHeightRequest = 1080;
+        MainPage.MaximumWidthRequest = 1600;
+        MainPage.Title = "MatchQuest";
+    } 
 }
 

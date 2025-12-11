@@ -64,7 +64,7 @@ namespace MatchQuest.App.ViewModels
             Matches.Clear();
             if (_global?.Client == null) return;
 
-            var list = _matchService.GetAll(_global.Client.Id) ?? new System.Collections.Generic.List<User>();
+            var list = _matchService.GetAllMatchesFromUserId(_global.Client.Id);
             foreach (var u in list)
             {
                 // Populate UI-only preview property with the last message (if any)

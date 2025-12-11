@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
@@ -45,17 +46,27 @@ namespace MatchQuest.Core.Services
             }
         }
         
-        public List<User> GetUsersWithMatchingGameType(int userId)
+        public List<MatchingScore> GetUserMatchPool(User matcher)
         {
             try
             {
-                var users = _userRepository.GetUsersWithMatchingGameType(userId);
-                return users;
+                var matchPool = new List<MatchingScore>();
+                var users = _userRepository.GetUsersWithMatchingGameType(matcher.Id);
+
+                foreach (var user in users)
+                {
+                    var mscore = AlgorithmHelper.CalculateMatchScore(user, matcher);
+                    matchPool.Add(mscore);
+                }
+                
+                // sort matchPool by Score descending
+                matchPool = matchPool.OrderByDescending(m => m.Score).ToList();
+                return matchPool;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"UserService.GetUsersWithMatchingGameType: Exception: {ex}");
-                return new List<User>();
+                return new List<MatchingScore>();
             }
         }
     }

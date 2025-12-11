@@ -113,12 +113,12 @@ namespace MatchQuest.Core.Data.Repositories
                     ? new DateTime(client.BirthDate.Value.Year, client.BirthDate.Value.Month, client.BirthDate.Value.Day)
                     : null;
                 
-                cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
+                cmd.Parameters.AddWithValue("@email", client.Email ?? string.Empty);
                 cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
                 cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
                 cmd.Parameters.AddWithValue("@birth_date", birthDateTime.HasValue ? (object)birthDateTime.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
-                cmd.Parameters.AddWithValue("@bio", client.Bio ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@bio", client.Biography ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@role", (int)client.Role);
                 cmd.Parameters.AddWithValue("@is_active", client.IsActive);
@@ -164,12 +164,12 @@ namespace MatchQuest.Core.Data.Repositories
                 
 
                 cmd.Parameters.AddWithValue("@user_id", client.Id);
-                cmd.Parameters.AddWithValue("@email", client.EmailAddress ?? string.Empty);
+                cmd.Parameters.AddWithValue("@email", client.Email ?? string.Empty);
                 cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);
                 cmd.Parameters.AddWithValue("@name", client.Name ?? string.Empty);
                 cmd.Parameters.AddWithValue("@birth_date", birthDateTime.HasValue ? birthDateTime.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@region", string.IsNullOrWhiteSpace(client.Region) ? DBNull.Value : (object)client.Region);
-                cmd.Parameters.AddWithValue("@bio", client.Bio ?? string.Empty);
+                cmd.Parameters.AddWithValue("@bio", client.Biography ?? string.Empty);
                 cmd.Parameters.AddWithValue("@profile_picture", client.ProfilePicture ?? string.Empty);
                 
                 cmd.Parameters.AddWithValue("@role", (int)client.Role);
@@ -197,38 +197,55 @@ SELECT
     -- CHECK if the user has liked the current user
     CASE
         WHEN EXISTS (
-            SELECT 1 FROM likes l
-            WHERE l.from_user_id = u.user_id
-              AND l.to_user_id = @CurrentUserId
+            SELECT 1
+            FROM reactions r
+            WHERE r.user_id = u.user_id
+              AND r.target_user_id = @CurrentUserId
+              AND r.is_like = 1
         ) THEN 1
         ELSE 0
         END AS has_liked_you
 FROM users u
 WHERE u.user_id != @CurrentUserId
-AND NOT EXISTS ( -- exclude existing matches
+
+  -- exclude existing matches
+  AND NOT EXISTS (
     SELECT 1
     FROM matches m
     WHERE (m.user1_id = @CurrentUserId AND m.user2_id = u.user_id)
        OR (m.user1_id = u.user_id AND m.user2_id = @CurrentUserId)
 )
-AND NOT EXISTS ( -- exclude users the user has already liked
+
+  -- exclude users the current user ALREADY liked
+  AND NOT EXISTS (
     SELECT 1
-    FROM likes l_sent
-    WHERE l_sent.from_user_id = @CurrentUserId
-    AND l_sent.to_user_id = u.user_id
+    FROM reactions l_sent
+    WHERE l_sent.user_id = @CurrentUserId
+      AND l_sent.target_user_id = u.user_id
+      AND l_sent.is_like = 1
 )
-AND EXISTS ( -- check if users has already atleast 1 game type in common
+
+  -- exclude users the current user ALREADY disliked
+  AND NOT EXISTS (
+    SELECT 1
+    FROM reactions d_sent
+    WHERE d_sent.user_id = @CurrentUserId
+      AND d_sent.target_user_id = u.user_id
+      AND d_sent.is_like = 0
+)
+
+  -- require at least one game type in common
+  AND EXISTS (
     SELECT 1
     FROM user_games ug_candidate
-             JOIN games g_candidate ON ug_candidate.game_id = g_candidate.game_id
+    JOIN games g_candidate ON ug_candidate.game_id = g_candidate.game_id
     WHERE ug_candidate.user_id = u.user_id
       AND g_candidate.type IN (
-        -- Get list of current user game types
         SELECT g_me.type
         FROM user_games ug_me
-                 JOIN games g_me ON ug_me.game_id = g_me.game_id
+        JOIN games g_me ON ug_me.game_id = g_me.game_id
         WHERE ug_me.user_id = @CurrentUserId
-    )
+      )
 )";
                 
                 using var conn = new MySqlConnection(connectionString);
@@ -255,7 +272,7 @@ AND EXISTS ( -- check if users has already atleast 1 game type in common
             }
         }
 
-        private User? MapUser(DbDataReader reader)
+        public User? MapUser(DbDataReader reader)
         {
             var id = reader.GetInt32("user_id");
             var name = reader.GetString("name");
@@ -284,8 +301,11 @@ AND EXISTS ( -- check if users has already atleast 1 game type in common
             DateOnly? birthDate = birthDateTime.HasValue
                 ? DateOnly.FromDateTime(birthDateTime.Value)
                 : null;
+            
+            var createdAt = reader.GetDateTime("created_at");
+            DateTime? updatedAt = reader.IsDBNull(reader.GetOrdinal("updated_at")) ? null : reader.GetDateTime("updated_at");
 
-            var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive)
+            var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive, createdAt, updatedAt)
             {
                 Role = Enum.IsDefined(typeof(Role), (ushort)roleInt) ? (Role)roleInt : Role.None
             };

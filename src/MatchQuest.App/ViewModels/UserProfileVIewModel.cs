@@ -87,12 +87,12 @@ namespace MatchQuest.App.ViewModels
 
         public string Biography
         {
-            get => _global.Client?.Bio ?? string.Empty;
+            get => _global.Client?.Biography ?? string.Empty;
             set
             {
                 if (_global.Client != null)
                 {
-                    _global.Client.Bio = value;
+                    _global.Client.Biography = value;
                     OnPropertyChanged();
                 }
             }

@@ -3,33 +3,33 @@ using System.Diagnostics;
 
 namespace MatchQuest.Core.Helpers;
 
-public class AlgorithmHelper
+public static class AlgorithmHelper
 {
-    private readonly int _ageGapMaxScore = 100;
-    private readonly double _ageGapFactor = 0.2;
-    private readonly int _matchingGameScore = 75;
-    private readonly int _matchingGameTypeScore = 50;
-    private readonly int _profilePictureScore = 200;
+    private static readonly int AgeGapMaxScore = 100;
+    private static readonly double AgeGapFactor = 0.2;
+    private static readonly int MatchingGameScore = 75;
+    private static readonly int MatchingGameTypeScore = 50;
+    private static readonly int ProfilePictureScore = 200;
     
-    public MatchingScore CalculateMatchScore(User user, User matcher)
+    public static MatchingScore CalculateMatchScore(User user, User matcher)
     {
         var matchingScore = new MatchingScore(user, user);
 
         // Has profile picture
-        if (!string.IsNullOrEmpty(matcher.ProfilePicture))
+        if (!string.IsNullOrEmpty(user.ProfilePicture))
         {
-            matchingScore.Score += _profilePictureScore;
+            matchingScore.Score += ProfilePictureScore;
         }
         
         // Matching game - 75 points
         var matchingGame = user.Games.Intersect(matcher.Games).ToList();
-        matchingScore.Score += matchingGame.Count * _matchingGameScore;
+        matchingScore.Score += matchingGame.Count * MatchingGameScore;
         
         // Matching game types - 50 points
         var matcherGameTypes = matcher.Games.Select(g => g.Type).ToList();
         var userGameTypes = user.Games.Select(g => g.Type).ToList();
         var matchingGameTypes = userGameTypes.Intersect(matcherGameTypes).ToList();
-        matchingScore.Score += matchingGameTypes.Count * _matchingGameTypeScore;
+        matchingScore.Score += matchingGameTypes.Count * MatchingGameTypeScore;
         
         // Age gap score
         if (user.BirthDate.HasValue && matcher.BirthDate.HasValue)
@@ -40,7 +40,7 @@ public class AlgorithmHelper
         return matchingScore;
     }
 
-    private int CalculateAgeGapScore(DateOnly userDob, DateOnly matchDob)
+    private static int CalculateAgeGapScore(DateOnly userDob, DateOnly matchDob)
     {
         // get the exact age of user
         var userAge = DateTime.Now.Year - userDob.Year;
@@ -52,7 +52,7 @@ public class AlgorithmHelper
         var ageDifference = Math.Abs(userAge - matcherAge);
         
         // [Max(0,100-(5^2 * 0.2))]
-        var ageGapScore = Math.Max(0, _ageGapMaxScore - (Math.Pow(ageDifference, 2) * _ageGapFactor));
+        var ageGapScore = Math.Max(0, AgeGapMaxScore - (Math.Pow(ageDifference, 2) * AgeGapFactor));
         return (int)Math.Round(ageGapScore);
     }
 }

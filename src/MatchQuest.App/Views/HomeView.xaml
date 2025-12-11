@@ -15,6 +15,7 @@
         <ResourceDictionary>
             <!-- Add the converter -->
             <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
             
             <!-- Colors (matching ChatView) -->
             <Color x:Key="AccentColor">#C0ffee</Color>
@@ -74,10 +75,10 @@
         <!-- Full-page semi-opaque overlay (matching ChatView) -->
         <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                  Color="{StaticResource OverlayColor}"
+                 Opacity="0.8"
                  HorizontalOptions="Fill"
                  VerticalOptions="Fill"
-                 InputTransparent="True"
-                 Opacity="1" />
+                 InputTransparent="True"/>
 
         <!-- Left: Matches list (sidebar) - matching ChatView structure -->
         <Border Grid.Row="0" Grid.Column="0"
@@ -226,26 +227,54 @@
                                  Command="{Binding OpenSettingsCommand}"/>
                 </HorizontalStackLayout>
 
-                <!-- Profile card (matching ChatView card structure) -->
-                <Border Margin="120"
-                        Stroke="{StaticResource CardStroke}"
-                        StrokeThickness="0.5"
-                        BackgroundColor="Transparent">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="28" />
-                    </Border.StrokeShape>
+                <Grid>
+                    <!-- No people left message -->
+                    <VerticalStackLayout 
+                        IsVisible="{Binding HasMatch, Converter={StaticResource InverseBoolConverter}}"
+                        VerticalOptions="Center" 
+                        HorizontalOptions="Center"
+                        Spacing="12">
+        
+                        <Label Text="No more people to match with"
+                               TextColor="{StaticResource AccentColor}"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+
+                        <Label Text="Check back later for new matches!"
+                               TextColor="{StaticResource SecondaryText}"
+                               FontSize="16"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    
+                    <Border Margin="120"
+                            IsVisible="{Binding HasMatch}"
+                            Stroke="{StaticResource CardStroke}"
+                            StrokeThickness="2"
+                            BackgroundColor="Transparent">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="28" />
+                        </Border.StrokeShape>
 
                     <ScrollView Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="8" Padding="12" BackgroundColor="Transparent">
-                            <Image Source="showcaseprofile.png" HeightRequest="250" WidthRequest="250" Margin="0,0,0,8" HorizontalOptions="Center" Aspect="AspectFill">
+                            <!-- Profile Picture -->
+                            <Image Source="{Binding CurrentProfileImage}"
+                                   HeightRequest="250"
+                                   WidthRequest="250"
+                                   Aspect="AspectFill"
+                                   HorizontalOptions="Center">
                                 <Image.Clip>
                                     <EllipseGeometry Center="125,125" RadiusX="125" RadiusY="125" />
                                 </Image.Clip>
                             </Image>
-                            <HorizontalStackLayout Spacing="250"> 
-                                <Label Text="Britney, 27" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />
-                                <Label Text="Zwolle" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
-                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="250">
+                                <HorizontalStackLayout Spacing="12">
+                                    <Label Text="{Binding CurrentMatch.Matcher.Name}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />
+                                    <Label Text="{Binding CurrentMatchAge}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />
+                                </HorizontalStackLayout> 
+                            <Label Text="{Binding CurrentMatch.Matcher.Region}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
+                                </HorizontalStackLayout>
                             <Label Text="Catan, Chess" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" Margin="0,3" HorizontalOptions="Start" />
                             <BoxView Style="{StaticResource SeparatorStyle}" />
 
@@ -253,7 +282,7 @@
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="10" />
                                 </Border.StrokeShape>
-                                <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque ut urna volutpat, elementum metus id, bibendum lacus. Cras sodales elit arcu, ut sodales ipsum molestie sit amet. Curabitur commodo non eros in pretium. Fusce ornare purus sodales metus venenatis, at pulvinar erat porta. Vestibulum rhoncus ante sed placerat viverra. Donec finibus tortor eu velit eleifend tincidunt. Suspendisse et mi a neque euismod blandit vitae id justo. Suspendisse fermentum fringilla augue, auctor vulputate arcu pharetra vehicula. Sed porta massa nec finibus viverra. Sed elementum tellus vel lacus vestibulum, eget venenatis enim aliquam."
+                                <Label Text="{Binding CurrentMatch.Matcher.Biography}"
                                        FontSize="14" TextColor="White" HorizontalOptions="Center" BackgroundColor="Transparent" />
                             </Border>
                             <BoxView Style="{StaticResource SeparatorStyle}" />
@@ -301,16 +330,50 @@
                             </CollectionView>
 
                         </VerticalStackLayout>
-                    </ScrollView>
-                </Border>
+                       </ScrollView>
+                    </Border>
+                    </Grid>
 
-                <!-- Like/Dislike buttons -->
-                <HorizontalStackLayout Grid.Column="0" Spacing="150" HorizontalOptions="Center" VerticalOptions="End" TranslationY="-90" BackgroundColor="Transparent" InputTransparent="True">
-                    <ImageButton Source="dislike.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />
-                    <ImageButton Source="like.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />
+                <HorizontalStackLayout 
+                    IsVisible="{Binding HasMatch}"
+                    Grid.Column="0" 
+                    Spacing="150"
+                    HorizontalOptions="Center" 
+                    VerticalOptions="End"
+                    TranslationY="-90"
+                    BackgroundColor="Transparent">
+                    <ImageButton Source="dislike.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" Command="{Binding DislikeCommand}" />
+                    <ImageButton Source="like.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" Command="{Binding LikeCommand}" />
                 </HorizontalStackLayout>
             </Grid>
         </Border>
 
+        <Border Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                IsVisible="{Binding IsToastVisible}"
+                BackgroundColor="{Binding ToastBackgroundColor}"
+                Stroke="Transparent"
+                VerticalOptions="Start"
+                HorizontalOptions="Center"
+                Margin="0,20,0,0"
+                Padding="20,10">
+            
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="20" />
+            </Border.StrokeShape>
+            
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.5" />
+            </Border.Shadow>
+
+            <Label Text="{Binding ToastMessage}"
+                   TextColor="White"
+                   FontAttributes="Bold"
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+        </Border>
+        
     </Grid>
 </ContentPage>

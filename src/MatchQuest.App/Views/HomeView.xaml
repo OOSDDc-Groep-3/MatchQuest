@@ -3,8 +3,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
-             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
              xmlns:converters="clr-namespace:MatchQuest.App.Converters"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
              x:Class="MatchQuest.App.Views.HomeView"
              x:DataType="vm:HomeViewModel"
              x:Name="HomePage"
@@ -13,27 +13,26 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
-            
-            <!-- Converter for Base64 to image -->
+            <!-- Add the converter -->
             <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
             
-            <!-- Colors -->
+            <!-- Colors (matching ChatView) -->
             <Color x:Key="AccentColor">#C0ffee</Color>
             <Color x:Key="OverlayColor">#E91E1E1E</Color>
             <Color x:Key="SecondaryText">#DADADA</Color>
             <Color x:Key="TimestampColor">#B0B0B0</Color>
             <Color x:Key="CardStroke">#A4D5C7</Color>
 
-            <!-- Sizes -->
-            <x:Double x:Key="AvatarSize">48</x:Double>
-            <x:Double x:Key="AvatarRadius">24</x:Double>
+            <!-- Sizes (matching ChatView) -->
+            <x:Double x:Key="AvatarSize">80</x:Double>
+            <x:Double x:Key="AvatarRadius">40</x:Double>
 
-            <!-- Styles -->
+            <!-- Styles (matching ChatView) -->
             <Style x:Key="SeparatorStyle" TargetType="BoxView">
                 <Setter Property="HeightRequest" Value="1" />
                 <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
                 <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="Margin" Value="0,6,6,0" />
+                <Setter Property="Margin" Value="0,0,6,0" />
             </Style>
 
             <Style x:Key="ContactBorderStyle" TargetType="Border">
@@ -70,31 +69,32 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="*" ColumnDefinitions="0.4*,0.8*">
+    <Grid RowDefinitions="*" ColumnDefinitions="0.38*,0.62*">
 
-        <!-- Semi-opaque dark overlay -->
-        <BoxView Grid.Column="0"
-                 Grid.ColumnSpan="2"
+        <!-- Full-page semi-opaque overlay (matching ChatView) -->
+        <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
                  Color="{StaticResource OverlayColor}"
                  HorizontalOptions="Fill"
                  VerticalOptions="Fill"
-                 InputTransparent="True" />
+                 InputTransparent="True"
+                 Opacity="1" />
 
-        <!-- Left: Matches list (sidebar) -->
-        <Border Grid.Column="0"
+        <!-- Left: Matches list (sidebar) - matching ChatView structure -->
+        <Border Grid.Row="0" Grid.Column="0"
                 Margin="0"
                 BackgroundColor="Transparent"
                 Stroke="{StaticResource AccentColor}"
-                StrokeThickness="2">
+                StrokeThickness="0.5">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
             <Grid Padding="0" RowDefinitions="Auto,*,Auto">
-
-                <Image Margin="0,10,390,0" Source="matchquest.png" WidthRequest="150" HeightRequest="141" />
-                <!-- Header -->
-                <HorizontalStackLayout Grid.Row="0" Margin="0,24,32,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
+                <!-- Logo (matching ChatView positioning) -->
+                <Image Margin="0,20,450,0" Source="matchquest.png" WidthRequest="150" HeightRequest="141" />
+                
+                <!-- Header (matching ChatView) -->
+                <HorizontalStackLayout Grid.Row="0" Margin="0,34,12,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
                     <Label Text="MATCHES"
                            FontSize="32"
                            FontAttributes="Bold"
@@ -102,15 +102,11 @@
                            VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- NOTE: CollectionView must not be nested inside a ScrollView.
-                     A nested ScrollView can prevent CollectionView from laying out / rendering items.
-                     Use CollectionView's built-in scrolling instead. -->
-                <Grid Grid.Row="1" Padding="8">
-                    <VerticalStackLayout Spacing="8">
+                <!-- Matches collection (matching ChatView padding) -->
+                <Grid Grid.Row="1" Padding="30,8,30,0">
+                    <VerticalStackLayout Spacing="35">
                         <BoxView Style="{StaticResource SeparatorStyle}" />
-                        
 
-                        <!-- Matches collection -->
                         <CollectionView x:Name="MatchesCollection"
                                         ItemsSource="{Binding Matches}"
                                         SelectionMode="Single"
@@ -119,12 +115,11 @@
                                         SelectionChanged="Matches_SelectionChanged"
                                         BackgroundColor="Transparent"
                                         ItemsUpdatingScrollMode="KeepScrollOffset">
-                            
+                        
                             <CollectionView.ItemTemplate>
-                                <!-- Added x:DataType and TapGesture to use strongly-typed bindings and call the VM command -->
                                 <DataTemplate x:DataType="models:User">
-                                    <!-- Visible card (high contrast) so labels are readable over background image -->
-                                    <Border Margin="4" Padding="24" BackgroundColor="Transparent" StrokeThickness="1" Stroke="#C0ffee">
+                                    <!-- Match card styling (matching ChatView) -->
+                                    <Border Margin="0" Padding="24,24,24,24" BackgroundColor="#49192126" StrokeThickness="1" Stroke="#C0ffee">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
                                                 Command="{Binding BindingContext.OpenChatForCommand, Source={x:Reference HomePage}}"
@@ -133,26 +128,30 @@
                                         </Border.GestureRecognizers>
 
                                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                            <Image Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}"
+                                            <Image Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}}"
                                                    WidthRequest="{StaticResource AvatarSize}"
                                                    HeightRequest="{StaticResource AvatarSize}"
                                                    Aspect="AspectFill"
                                                    HorizontalOptions="Start"
                                                    VerticalOptions="Center">
-                                                <Image.Clip>
-                                                    <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
-                                                </Image.Clip>
                                             </Image>
 
                                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Start" Spacing="4">
-                                                <!-- Use strongly-typed binding to Name -->
-                                                <Label Text="{Binding Name, FallbackValue='Unknown'}" Style="{StaticResource NameLabelStyle}" TextColor="#C0ffee" />
-                                                <!-- Last-message preview shown under the name -->
-                                                <Label Text="{Binding LastMessagePreview, FallbackValue=''}"
+                                                <Label Text="{Binding Name, FallbackValue='Unknown'}" 
+                                                       Style="{StaticResource NameLabelStyle}" 
+                                                       FontSize="15"
+                                                       Margin="20,10,0,0"
+                                                       HorizontalOptions="Start"/>
+                                                <Label Text="{Binding LastMessagePreview, FallbackValue='No messages'}"
                                                        Style="{StaticResource PreviewLabelStyle}"
                                                        TextColor="{StaticResource SecondaryText}"
+                                                       FontAttributes="Italic"
+                                                       FontSize="14"
                                                        LineBreakMode="TailTruncation"
-                                                       MaxLines="1" />
+                                                       MaximumWidthRequest="400"
+                                                       Margin="20,10,0,0"
+                                                       MaxLines="1"
+                                                       HorizontalOptions="Start"/>
                                             </VerticalStackLayout> 
 
                                         </HorizontalStackLayout>
@@ -175,93 +174,62 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <!-- Picker remains in the bottom row so it is always visible -->
-                <Picker Grid.Row="2" x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" Margin="31">
+                <!-- Filter picker (matching ChatView positioning) -->
+                <Picker Grid.Row="2" x:Name="MyMatchesFilter" 
+                        TextColor="{StaticResource AccentColor}" 
+                        FontAttributes="Bold" 
+                        SelectedIndex="0" 
+                        BackgroundColor="#192126" 
+                        WidthRequest="220" 
+                        Margin="31">
                     <Picker.Items>
-                        <x:String>My Matches Filter</x:String>
+                        <x:String>Filter</x:String>
                         <x:String>New</x:String>
                         <x:String>Favorites</x:String>
-                        <x:String>Nearby</x:String>
-                        <x:String>Action</x:String>
-                        <x:String>Adventure</x:String>
-                        <x:String>Action-adventure</x:String>
-                        <x:String>Role-playing (RPG)</x:String>
-                        <x:String>Shooter (FPS / TPS)</x:String>
-                        <x:String>Fighting</x:String>
-                        <x:String>Platformer</x:String>
-                        <x:String>Strategy (RTS, turn-based, 4X)</x:String>
-                        <x:String>Simulation</x:String>
-                        <x:String>Sports</x:String>
-                        <x:String>Racing</x:String>
-                        <x:String>Puzzle</x:String>
-                        <x:String>Stealth</x:String>
-                        <x:String>Survival</x:String>
-                        <x:String>Horror</x:String>
-                        <x:String>Sandbox / Open-world</x:String>
-                        <x:String>Massively Multiplayer Online (MMO / MMORPG)</x:String>
-                        <x:String>Battle Royale</x:String>
-                        <x:String>Party / Casual</x:String>
                     </Picker.Items>
                 </Picker>
 
             </Grid>
         </Border>
 
-        <!-- Right column: Profile Card (unchanged structure, tightened spacing where helpful) -->
+        <!-- Right column: Profile Card -->
         <Border Grid.Column="1"
                 Margin="0"
                 Stroke="{StaticResource AccentColor}"
-                StrokeThickness="2"
+                StrokeThickness="0.5"
                 BackgroundColor="Transparent">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
             <Grid>
+                <!-- Top controls (matching ChatView positioning) -->
                 <HorizontalStackLayout Spacing="18" HorizontalOptions="End" Padding="20" VerticalOptions="Start">
-                    <Picker x:Name="NewMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220">
+                    <Picker x:Name="NewMatchesFilter" 
+                            TextColor="{StaticResource AccentColor}" 
+                            FontAttributes="Bold" 
+                            SelectedIndex="0" 
+                            BackgroundColor="#192126" 
+                            WidthRequest="140">
                         <Picker.Items>
-                            <x:String>Suggested Matches Filter</x:String>
-                            <x:String>New</x:String>
-                            <x:String>Favorites</x:String>
-                            <x:String>Nearby</x:String>
-                            <x:String>Action</x:String>
-                            <x:String>Adventure</x:String>
-                            <x:String>Action-adventure</x:String>
-                            <x:String>Role-playing (RPG)</x:String>
-                            <x:String>Shooter (FPS / TPS)</x:String>
-                            <x:String>Fighting</x:String>
-                            <x:String>Platformer</x:String>
-                            <x:String>Strategy (RTS, turn-based, 4X)</x:String>
-                            <x:String>Simulation</x:String>
-                            <x:String>Sports</x:String>
-                            <x:String>Racing</x:String>
-                            <x:String>Puzzle</x:String>
-                            <x:String>Stealth</x:String>
-                            <x:String>Survival</x:String>
-                            <x:String>Horror</x:String>
-                            <x:String>Sandbox / Open-world</x:String>
-                            <x:String>Massively Multiplayer Online (MMO / MMORPG)</x:String>
-                            <x:String>Battle Royale</x:String>
-                            <x:String>Party / Casual</x:String>
+                            <x:String>FILTER</x:String>
                         </Picker.Items>
                     </Picker>
 
                     <ImageButton x:Name="SettingsButton"
                                  Source="settings.png"
-                                 BackgroundColor="{StaticResource AccentColor}"
                                  CornerRadius="28"
                                  WidthRequest="32"
                                  HeightRequest="32"
                                  HorizontalOptions="End"
                                  VerticalOptions="Start"
-                                 Command="{Binding OpenSettingsCommand}"
-                                 />
+                                 Command="{Binding OpenSettingsCommand}"/>
                 </HorizontalStackLayout>
 
+                <!-- Profile card (matching ChatView card structure) -->
                 <Border Margin="120"
                         Stroke="{StaticResource CardStroke}"
-                        StrokeThickness="2"
+                        StrokeThickness="0.5"
                         BackgroundColor="Transparent">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="28" />
@@ -276,8 +244,8 @@
                             </Image>
                             <HorizontalStackLayout Spacing="250"> 
                                 <Label Text="Britney, 27" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />
-                            <Label Text="Zwolle" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
-                                </HorizontalStackLayout>
+                                <Label Text="Zwolle" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
+                            </HorizontalStackLayout>
                             <Label Text="Catan, Chess" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" Margin="0,3" HorizontalOptions="Start" />
                             <BoxView Style="{StaticResource SeparatorStyle}" />
 
@@ -290,7 +258,7 @@
                             </Border>
                             <BoxView Style="{StaticResource SeparatorStyle}" />
                             
-                            <!-- Games Collection: shows game image and name; displays placeholder text when empty -->
+                            <!-- Games Collection -->
                             <CollectionView ItemsSource="{Binding Games}"
                                             SelectionMode="None"
                                             ItemsLayout="VerticalList"
@@ -336,6 +304,7 @@
                     </ScrollView>
                 </Border>
 
+                <!-- Like/Dislike buttons -->
                 <HorizontalStackLayout Grid.Column="0" Spacing="150" HorizontalOptions="Center" VerticalOptions="End" TranslationY="-90" BackgroundColor="Transparent" InputTransparent="True">
                     <ImageButton Source="dislike.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />
                     <ImageButton Source="like.png" BackgroundColor="Transparent" WidthRequest="80" HeightRequest="80" />

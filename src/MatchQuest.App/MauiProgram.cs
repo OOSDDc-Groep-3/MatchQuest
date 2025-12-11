@@ -53,6 +53,7 @@ public static class MauiProgram
         
         builder.Services.AddSingleton<IGameRepository, GameRepository>();
         builder.Services.AddSingleton<UserGameRepository>();
+        //Fixed app launch screensize & lock screensize
 
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>

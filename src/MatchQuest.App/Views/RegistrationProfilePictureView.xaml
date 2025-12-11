@@ -46,6 +46,7 @@
                         VerticalOptions="Center">
                     <Image Margin="0"  HeightRequest="280" WidthRequest="280" HorizontalOptions="Center" VerticalOptions="Center" Source="{Binding ProfileImageSource}" Aspect="AspectFill"/>
                 </Border>
+
                 <Button BackgroundColor="#383535"
                         FontSize="20" 
                         FontAttributes="Bold"

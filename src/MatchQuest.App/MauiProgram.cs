@@ -1,5 +1,4 @@
-﻿using CoreGraphics;
-using MatchQuest.App.ViewModels;
+﻿using MatchQuest.App.ViewModels;
 using MatchQuest.App.Views;
 using MatchQuest.Core.Data.Repositories;
 using MatchQuest.Core.Interfaces.Repositories;
@@ -8,7 +7,6 @@ using MatchQuest.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Maui.Platform;
-using UIKit;
 
 namespace MatchQuest.App;
 

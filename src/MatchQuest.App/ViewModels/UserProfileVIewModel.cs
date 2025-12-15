@@ -1,15 +1,16 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.Maui.Controls;
 using MatchQuest.Core.Data.Repositories;
 using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
+using Microsoft.Maui.Controls;
 
 namespace MatchQuest.App.ViewModels
 {
@@ -19,13 +20,14 @@ namespace MatchQuest.App.ViewModels
         private readonly IUserRepository _userRepository;
         private readonly IGameRepository _gameRepository;
         private readonly UserGameRepository _userGameRepository;
+        public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
+        public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
 
-        // Collections
-        public ObservableCollection<GameViewModel> UserGames { get; } = new ObservableCollection<GameViewModel>();
-        public ObservableCollection<GameViewModel> Games { get; } = new ObservableCollection<GameViewModel>();
-
-        // Selected game
-        [ObservableProperty] private GameViewModel selectedGame;
+        [ObservableProperty]
+        private ObservableCollection<Game> selectedGames = new ObservableCollection<Game>();
+        
+        [ObservableProperty]
+        private Game selectedGame;
 
         public UserProfileViewModel(GlobalViewModel global,
             IUserRepository userRepository,
@@ -37,15 +39,9 @@ namespace MatchQuest.App.ViewModels
             _gameRepository = gameRepository;
             _userGameRepository = userGameRepository;
 
-            // Zorg dat games geladen worden als er een client is
-            if (_global.Client != null)
-            {
-                LoadGames();
-            }
+            LoadGames();
         }
-
-        #region User Info Properties
-
+  
         public string Name
         {
             get => _global.Client?.Name ?? string.Empty;
@@ -103,53 +99,116 @@ namespace MatchQuest.App.ViewModels
             get
             {
                 if (string.IsNullOrEmpty(_global.Client?.ProfilePicture))
-                    return "carlala.png";
+                    return "dotnet_bot.png";
 
-                try
-                {
-                    var bytes = Convert.FromBase64String(_global.Client.ProfilePicture);
-                    return ImageSource.FromStream(() => new MemoryStream(bytes));
-                }
-                catch
-                {
-                    return "carlala.png";
-                }
+                byte[] imageBytes = Convert.FromBase64String(_global.Client.ProfilePicture);
+                return ImageSource.FromStream(() => new MemoryStream(imageBytes));
             }
         }
 
-        #endregion
+        [RelayCommand]
+        private void SelectGame(Game game)
+        {
+            SelectedGame = game;
+        }
 
-        #region Commands
+        [RelayCommand]
+        private async Task AddGame()
+        {
+            if (SelectedGame == null)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "Please select a game to add.",
+                    "OK"
+                );
+                return;
+            }
+
+            if (_global?.Client == null)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "User profile not found.",
+                    "OK"
+                );
+                return;
+            }
+
+            try
+            {
+                // Add the game to the database
+                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+
+                // Clear selection and reload games
+                SelectedGame = null;
+                LoadGames();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    $"Error adding game: {ex.Message}",
+                    "OK"
+                );
+                Debug.WriteLine($"UserProfileViewModel.AddGame: Exception: {ex}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task RemoveGame(Game game)
+        {
+            if (game == null) return;
+
+            if (_global?.Client == null)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "User profile not found.",
+                    "OK"
+                );
+                return;
+            }
+
+            try
+            {
+                // Remove the game from the database
+                _userGameRepository.RemoveUserGame(_global.Client.Id, game.Id);
+
+                // Reload games to update both collections
+                LoadGames();
+            }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    $"Error removing game: {ex.Message}",
+                    "OK"
+                );
+                Debug.WriteLine($"UserProfileViewModel.RemoveGame: Exception: {ex}");
+            }
+        }
 
         [RelayCommand]
         private async Task SaveProfile()
         {
             if (_global.Client == null) return;
 
-            // Update profiel
+            // Validate that at least one game has been added
+            if (UserGames.Count == 0)
+            {
+                await Application.Current.MainPage.DisplayAlert(
+                    "Error",
+                    "Please add at least one game before saving.",
+                    "OK"
+                );
+                return;
+            }
+
+            // Update profile
             var updated = _userRepository.Update(_global.Client);
             if (updated != null)
                 _global.Client = updated;
-
-            // Voeg geselecteerde game toe
-            if (SelectedGame != null)
-            {
-                try
-                {
-                    _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
-                }
-                catch
-                {
-                    await Application.Current.MainPage.DisplayAlert(
-                        "Error",
-                        "Could not add the selected game.",
-                        "OK"
-                    );
-                }
-
-                SelectedGame = null;
-                LoadGames();
-            }
 
             await Application.Current.MainPage.DisplayAlert(
                 "Success",
@@ -176,30 +235,44 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
-        #endregion
-
-        #region Load Games
-
-        public void LoadGames()
+        [RelayCommand]
+        private async Task Back()
         {
-            if (_global.Client == null) return;
+            if (Shell.Current is null)
+            {
+                if (Application.Current?.MainPage is not AppShell)
+                {
+                    Application.Current!.MainPage = new AppShell();
+                    await Task.Yield();
+                }
+            }
 
-            var allGames = _gameRepository.GetAll() ?? new List<Game>();
-            var userGamesFromDb = _userGameRepository.GetGamesForUser(_global.Client.Id) ??
-                                  new System.Collections.Generic.List<Game>();
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync("Home");
+            }
+        }
+        
+        private void LoadGames()
+        {
+            if (_global?.Client == null) return;
 
-            // Vul UserGames
+            // All games from database
+            var allGames = _gameRepository.GetAll();
+
+            // Games the user has already added
+            var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
+
+            // Fill UserGames (for profile display)
             UserGames.Clear();
-            foreach (var g in userGamesFromDb)
-                UserGames.Add(new GameViewModel(g));
+            foreach (var g in userGames)
+                UserGames.Add(g);
 
-            // Vul Games (voor toevoegen)
-            var userGameIds = userGamesFromDb.Select(g => g.Id).ToList();
+            // Fill Games (for adding) only with games the user hasn't added yet
+            var userGameIds = userGames.Select(g => g.Id).ToList();
             Games.Clear();
             foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
-                Games.Add(new GameViewModel(g));
+                Games.Add(g);
         }
-
-        #endregion
     }
 }

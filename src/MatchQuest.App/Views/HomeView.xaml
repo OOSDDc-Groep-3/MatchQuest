@@ -262,7 +262,6 @@
                             <Image Source="{Binding CurrentProfileImage}"
                                    HeightRequest="250"
                                    WidthRequest="250"
-                                   Aspect="AspectFill"
                                    HorizontalOptions="Center">
                                 <Image.Clip>
                                     <EllipseGeometry Center="125,125" RadiusX="125" RadiusY="125" />

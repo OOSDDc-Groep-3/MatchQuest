@@ -36,6 +36,7 @@ namespace MatchQuest.App.ViewModels
 
         [ObservableProperty] private string messageText = string.Empty;
         [ObservableProperty] private string partnerName = string.Empty; // UI-bound partner name
+        [ObservableProperty] private int partnerUserId; // New property for partner user ID
 
         private const string DefaultProfilePicture = "showcaseprofile.png";
 
@@ -92,7 +93,7 @@ namespace MatchQuest.App.ViewModels
                 return;
             }
 
-            // set partner name by resolving other participant from matches and users table
+            // set partner name by resolving other participant from matches and userstable
             var otherUserId = _chatRepo.GetOtherUserIdForMatch(matchId, CurrentUserId);
             if (otherUserId > 0)
             {
@@ -178,6 +179,7 @@ namespace MatchQuest.App.ViewModels
             if (user is null || CurrentUserId == 0) return;
 
             _global.SelectedMatch = user;
+            PartnerUserId = user.Id; // ADD THIS LINE
 
             // find existing match row for these two users
             var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
@@ -272,6 +274,26 @@ namespace MatchQuest.App.ViewModels
             if (Shell.Current is not null)
             {
                 await Shell.Current.GoToAsync("Home");
+            }
+        }
+
+        [RelayCommand]
+        private async Task ViewPartnerProfile()
+        {
+            if (PartnerUserId == 0) return;
+
+            if (Shell.Current is null)
+            {
+                if (Application.Current?.MainPage is not AppShell)
+                {
+                    Application.Current!.MainPage = new AppShell();
+                    await Task.Yield();
+                }
+            }
+
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync($"ViewMatchProfile?userId={PartnerUserId}");
             }
         }
 

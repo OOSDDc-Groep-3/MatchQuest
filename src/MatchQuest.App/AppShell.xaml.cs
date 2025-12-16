@@ -16,6 +16,7 @@ namespace MatchQuest.App
             Routing.RegisterRoute("Home", typeof(HomeView));
             Routing.RegisterRoute("Chat", typeof(ChatView));
             Routing.RegisterRoute("UserProfile", typeof(UserProfileView));
+            Routing.RegisterRoute("ViewMatchProfile", typeof(ViewMatchProfileView));
         }
     }
 }

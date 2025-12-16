@@ -21,6 +21,7 @@ namespace MatchQuest.Core.Models
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
+        public string? LastMessagePreview { get; set; }
 
         public User(int id, string name, string email, string password) : base(id, name)
         {

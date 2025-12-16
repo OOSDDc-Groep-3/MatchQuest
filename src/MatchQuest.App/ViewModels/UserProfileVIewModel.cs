@@ -20,6 +20,16 @@ namespace MatchQuest.App.ViewModels
         private readonly IUserRepository _userRepository;
         private readonly IGameRepository _gameRepository;
         private readonly UserGameRepository _userGameRepository;
+        
+        [ObservableProperty]
+        private string addGameStatus;
+
+        [ObservableProperty]
+        private string saveProfileStatus;
+
+        [ObservableProperty]
+        private string removeGameStatus;
+
         public ObservableCollection<Game> UserGames { get; } = new ObservableCollection<Game>();
         public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
 
@@ -117,105 +127,82 @@ namespace MatchQuest.App.ViewModels
         {
             if (SelectedGame == null)
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "Please select a game to add.",
-                    "OK"
-                );
+                AddGameStatus = "Please select a game to add.";
+                await ClearStatusAfterDelay(nameof(AddGameStatus), 4000);
+
                 return;
             }
 
-            if (_global?.Client == null)
-            {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "User profile not found.",
-                    "OK"
-                );
-                return;
-            }
+         
 
             try
             {
-                // Add the game to the database
                 _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
-
-                // Clear selection and reload games
                 SelectedGame = null;
                 LoadGames();
+
+                AddGameStatus = "Game added successfully!";
+                await ClearStatusAfterDelay(nameof(AddGameStatus), 3000);
+
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    $"Error adding game: {ex.Message}",
-                    "OK"
-                );
-                Debug.WriteLine($"UserProfileViewModel.AddGame: Exception: {ex}");
+                AddGameStatus = $"Error adding game: {ex.Message}";
+                await ClearStatusAfterDelay(nameof(AddGameStatus), 3000);
+
             }
         }
+
 
         [RelayCommand]
         private async Task RemoveGame(Game game)
         {
             if (game == null) return;
 
-            if (_global?.Client == null)
-            {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "User profile not found.",
-                    "OK"
-                );
-                return;
-            }
+            
 
             try
             {
-                // Remove the game from the database
                 _userGameRepository.RemoveUserGame(_global.Client.Id, game.Id);
-
-                // Reload games to update both collections
                 LoadGames();
+                RemoveGameStatus = "Game removed successfully!";
+                await ClearStatusAfterDelay(nameof(RemoveGameStatus), 1000);
+
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    $"Error removing game: {ex.Message}",
-                    "OK"
-                );
-                Debug.WriteLine($"UserProfileViewModel.RemoveGame: Exception: {ex}");
+                RemoveGameStatus = $"Error removing game: {ex.Message}";
+                await ClearStatusAfterDelay(nameof(RemoveGameStatus), 1000);
+                
             }
         }
+
 
         [RelayCommand]
         private async Task SaveProfile()
         {
             if (_global.Client == null) return;
 
-            // Validate that at least one game has been added
-            if (UserGames.Count == 0)
-            {
-                await Application.Current.MainPage.DisplayAlert(
-                    "Error",
-                    "Please add at least one game before saving.",
-                    "OK"
-                );
-                return;
-            }
+        
 
-            // Update profile
             var updated = _userRepository.Update(_global.Client);
             if (updated != null)
                 _global.Client = updated;
 
-            await Application.Current.MainPage.DisplayAlert(
-                "Success",
-                "Your profile has been updated!",
-                "OK"
-            );
+            SaveProfileStatus = "Your profile has been updated!";
+            await ClearStatusAfterDelay(nameof(SaveProfileStatus), 4000);
+
         }
+        private async Task ClearStatusAfterDelay(string propertyName, int milliseconds)
+        {
+            await Task.Delay(milliseconds);
+    
+            // Gebruik reflection om de juiste property leeg te maken
+            var prop = GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+            if (prop != null && prop.CanWrite)
+                prop.SetValue(this, string.Empty);
+        }
+
 
         [RelayCommand]
         private async Task UploadProfilePhoto()

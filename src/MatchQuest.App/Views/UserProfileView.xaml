@@ -295,6 +295,7 @@
                             </CollectionView.EmptyView>
                         </CollectionView>
                     </Border>
+                    <Label Text="{Binding AddGameStatus}" TextColor="Green" HorizontalOptions="Center" />
 
                     <Button Text="Add Selected Game"
                             Command="{Binding AddGameCommand}"
@@ -310,6 +311,8 @@
 
                     <!-- Your Games -->
                     <Label Text="Your Games" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="{Binding RemoveGameStatus}" TextColor="Green" HorizontalOptions="Center" />
+
                     <CollectionView ItemsSource="{Binding UserGames}" 
                                     SelectionMode="None" 
                                     MinimumHeightRequest="150"
@@ -341,6 +344,7 @@
                                                TextColor="White" 
                                                VerticalOptions="Center"
                                                Margin="12,0,0,0"/>
+
                                         
                                         <!-- Remove Button (Red X) -->
                                         <Button Grid.Column="2"
@@ -373,6 +377,9 @@
                     </CollectionView>
 
                     <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,20,0,10"/>
+                    <Label Text="{Binding SaveProfileStatus}" TextColor="Green" HorizontalOptions="Center" />
+
+
 
                     <!-- Save Button -->
                     <Button Command="{Binding SaveProfileCommand}"
@@ -384,7 +391,9 @@
                             HeightRequest="50"
                             FontSize="16"/>
                 </VerticalStackLayout>
+                
             </ScrollView>
+            
         </Border>
     </Grid>
 </ContentPage>

@@ -44,7 +44,7 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistrationProfilePictureView>().AddTransient<RegistrationProfilePictureViewModel>();
         builder.Services.AddTransient<RegistrationBiographyView>().AddTransient<RegistrationBiographyViewModel>();
         builder.Services.AddTransient<RegistrationGamePreferencesView>().AddTransient<RegistrationGamePreferencesViewModel>();
-
+        builder.Services.AddTransient<ViewMatchProfileView>().AddTransient<ViewMatchProfileViewModel>();
 
         builder.Services.AddTransient<HomeView>().AddTransient<HomeViewModel>();
         builder.Services.AddTransient<ChatView>().AddTransient<ChatViewModel>();

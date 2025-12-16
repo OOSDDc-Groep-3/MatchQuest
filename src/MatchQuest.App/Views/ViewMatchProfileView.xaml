@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+             xmlns:converters="clr-namespace:MatchQuest.App.Converters"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+             x:Class="MatchQuest.App.Views.ViewMatchProfileView"
+             x:DataType="vm:ViewMatchProfileViewModel"
+             x:Name="ViewProfilePage"
+             BackgroundImageSource="background.png"
+             BackgroundColor="Transparent">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters -->
+            <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            
+            <!-- Colors (matching HomeView) -->
+            <Color x:Key="AccentColor">#C0ffee</Color>
+            <Color x:Key="OverlayColor">#E91E1E1E</Color>
+            <Color x:Key="SecondaryText">#DADADA</Color>
+            <Color x:Key="CardStroke">#A4D5C7</Color>
+
+            <!-- Styles -->
+            <Style x:Key="SeparatorStyle" TargetType="BoxView">
+                <Setter Property="HeightRequest" Value="1" />
+                <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="Margin" Value="0,0,6,0" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" ColumnDefinitions="*">
+
+        <!-- Full-page semi-opaque overlay -->
+        <BoxView Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                 Color="{StaticResource OverlayColor}"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill"
+                 InputTransparent="True"
+                 Opacity="1"/>
+
+        <!-- Header with back button -->
+        <Grid Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="Auto,*" RowDefinitions="Auto">
+            <!-- Back Button -->
+            <ImageButton Grid.Column="0"
+                         BackgroundColor="Transparent" 
+                         Margin="10,5,20,10" 
+                         Source="back.png" 
+                         WidthRequest="38" 
+                         HeightRequest="38" 
+                         VerticalOptions="Center" 
+                         Command="{Binding BackCommand}" />
+            
+            <!-- Title -->
+            <Label Grid.Column="1" 
+                   Text="{Binding UserName, StringFormat='{0}'}" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource AccentColor}" 
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start" />
+
+            <!-- header divider -->
+            <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,148,0,0" />
+        </Grid>
+
+        <!-- Profile Card (matching HomeView design) -->
+        <Border Grid.Row="1"
+                Margin="120,20,120,20"
+                Stroke="{StaticResource CardStroke}"
+                StrokeThickness="2"
+                BackgroundColor="Transparent"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+
+            <ScrollView Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
+                <VerticalStackLayout Spacing="12" Padding="24" BackgroundColor="Transparent">
+                    <!-- Profile Picture -->
+                    <Image Source="{Binding ProfileImageSource}"
+                           HeightRequest="250"
+                           WidthRequest="250"
+                           Aspect="AspectFill"
+                           HorizontalOptions="Center">
+                        <Image.Clip>
+                            <EllipseGeometry Center="125,125" RadiusX="125" RadiusY="125" />
+                        </Image.Clip>
+                    </Image>
+
+                    <!-- Name and Age -->
+                    <HorizontalStackLayout Spacing="0" HorizontalOptions="Start">
+                        <Label Text="{Binding UserName}" 
+                               FontSize="28" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource AccentColor}" />
+                        <Label Text=", " 
+                               FontSize="28" 
+                               CharacterSpacing="3"
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource AccentColor}" />
+                        <Label Text="{Binding Age}" 
+                               FontSize="28" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource AccentColor}" />
+                    </HorizontalStackLayout>
+
+                    <!-- Region -->
+                    <Label Text="{Binding Region}" 
+                           FontSize="18" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource SecondaryText}" 
+                           HorizontalOptions="Start" 
+                           Margin="0,0,0,10" />
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,10,0,10"/>
+
+                    <!-- Biography Section -->
+                    <Label Text="Biography" 
+                           TextColor="{StaticResource AccentColor}" 
+                           FontAttributes="Bold" 
+                           FontSize="18"/>
+                    <Border BackgroundColor="#192126" 
+                            Padding="16" 
+                            HorizontalOptions="Fill">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Label Text="{Binding Biography}"
+                               FontSize="15" 
+                               TextColor="White" 
+                               LineBreakMode="WordWrap"/>
+                    </Border>
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,10,0,10"/>
+
+                    <!-- Games Section -->
+                    <Label Text="Favorite Games" 
+                           TextColor="{StaticResource AccentColor}" 
+                           FontAttributes="Bold" 
+                           FontSize="18"
+                           Margin="0,0,0,10"/>
+
+                    <CollectionView ItemsSource="{Binding Games}"
+                                    SelectionMode="None"
+                                    HorizontalOptions="Fill">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                        </CollectionView.ItemsLayout>
+                        
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Game">
+                                <Border BackgroundColor="#383535" 
+                                        Padding="12" 
+                                        StrokeThickness="1" 
+                                        Stroke="{StaticResource AccentColor}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <!-- Game Image -->
+                                        <Image Grid.Column="0"
+                                               Source="{Binding Image, Converter={StaticResource ProfilePictureConverter}}"
+                                               WidthRequest="50" 
+                                               HeightRequest="50" 
+                                               Aspect="AspectFill"
+                                               VerticalOptions="Center">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="25,25" RadiusX="25" RadiusY="25" />
+                                            </Image.Clip>
+                                        </Image>
+                                        
+                                        <!-- Game Name -->
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}" 
+                                               FontSize="18" 
+                                               TextColor="White" 
+                                               VerticalOptions="Center"
+                                               Margin="16,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        
+                        <CollectionView.EmptyView>
+                            <Label Text="No games added yet." 
+                                   FontSize="16" 
+                                   FontAttributes="Italic"
+                                   TextColor="{StaticResource SecondaryText}" 
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Margin="0,20,0,20"/>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+    </Grid>
+</ContentPage>

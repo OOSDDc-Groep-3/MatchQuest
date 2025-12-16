@@ -1,16 +1,22 @@
 using System;
 using System.Collections.Generic;
 using MatchQuest.Core.Models;
+using MatchQuest.Core.Interfaces.Repositories;
+using MatchQuest.Core.Data.Helpers;
 using MySql.Data.MySqlClient;
 
 namespace MatchQuest.Core.Data.Repositories;
 
-public class ChatRepository : DatabaseConnection
+public class ChatRepository : IChatRepository
 {
+    public ChatRepository() { }
+
     public int GetOrCreateChatByMatchId(int matchId)
     {
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
 
         cmd.CommandText = "SELECT chat_id FROM chats WHERE match_id = @matchId LIMIT 1;";
         cmd.Parameters.AddWithValue("@matchId", matchId);
@@ -18,7 +24,6 @@ public class ChatRepository : DatabaseConnection
         var found = cmd.ExecuteScalar();
         if (found != null && found != DBNull.Value)
         {
-            CloseConnection();
             return Convert.ToInt32(found);
         }
 
@@ -31,15 +36,16 @@ public class ChatRepository : DatabaseConnection
 
         cmd.CommandText = "SELECT LAST_INSERT_ID();";
         var id = Convert.ToInt32(cmd.ExecuteScalar());
-        CloseConnection();
         return id;
     }
 
     public List<Message> GetMessagesByChatId(int chatId)
     {
         var result = new List<Message>();
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT message_id, chat_id, sender_id, message_text, created_at, updated_at
                             FROM messages
                             WHERE chat_id = @chatId
@@ -60,31 +66,32 @@ public class ChatRepository : DatabaseConnection
             result.Add(m);
         }
 
-        CloseConnection();
         return result;
     }
 
     public bool UserExists(int userId)
     {
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT 1 FROM users WHERE user_id = @id LIMIT 1;";
         cmd.Parameters.AddWithValue("@id", userId);
 
         var found = cmd.ExecuteScalar();
-        CloseConnection();
         return found != null && found != DBNull.Value;
     }
 
     public bool ChatExists(int chatId)
     {
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = "SELECT 1 FROM chats WHERE chat_id = @id LIMIT 1;";
         cmd.Parameters.AddWithValue("@id", chatId);
 
         var found = cmd.ExecuteScalar();
-        CloseConnection();
         return found != null && found != DBNull.Value;
     }
 
@@ -93,8 +100,10 @@ public class ChatRepository : DatabaseConnection
     {
         if (UserExists(userId)) return;
 
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO users (user_id, email, password, name, birth_date, role, is_active, created_at)
                             VALUES (@id, @email, @password, @name, @birthDate, @role, 1, @createdAt);";
         cmd.Parameters.AddWithValue("@id", userId);
@@ -105,7 +114,6 @@ public class ChatRepository : DatabaseConnection
         cmd.Parameters.AddWithValue("@role", "User");
         cmd.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
         cmd.ExecuteNonQuery();
-        CloseConnection();
     }
 
     public int InsertMessage(Message message)
@@ -118,8 +126,10 @@ public class ChatRepository : DatabaseConnection
         if (!ChatExists(message.ChatId))
             throw new InvalidOperationException($"Chat id {message.ChatId} does not exist. Create or retrieve the chat before inserting messages.");
 
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"INSERT INTO messages (chat_id, sender_id, message_text, created_at)
                             VALUES (@chatId, @senderId, @text, @createdAt);";
         cmd.Parameters.AddWithValue("@chatId", message.ChatId);
@@ -131,14 +141,15 @@ public class ChatRepository : DatabaseConnection
 
         cmd.CommandText = "SELECT LAST_INSERT_ID();";
         var id = Convert.ToInt32(cmd.ExecuteScalar());
-        CloseConnection();
         return id;
     }
 
     public int GetMatchIdForUser(int userId)
     {
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT match_id
                             FROM matches
                             WHERE user1_id = @id OR user2_id = @id
@@ -147,7 +158,6 @@ public class ChatRepository : DatabaseConnection
         cmd.Parameters.AddWithValue("@id", userId);
 
         var found = cmd.ExecuteScalar();
-        CloseConnection();
 
         return (found != null && found != DBNull.Value) ? Convert.ToInt32(found) : 0;
     }
@@ -158,8 +168,10 @@ public class ChatRepository : DatabaseConnection
     /// </summary>
     public int GetOtherUserIdForMatch(int matchId, int currentUserId)
     {
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT user1_id, user2_id
                             FROM matches
                             WHERE match_id = @matchId
@@ -169,13 +181,11 @@ public class ChatRepository : DatabaseConnection
         using var rdr = cmd.ExecuteReader();
         if (!rdr.Read())
         {
-            CloseConnection();
             return 0;
         }
 
         var user1 = rdr.IsDBNull(rdr.GetOrdinal("user1_id")) ? 0 : rdr.GetInt32("user1_id");
         var user2 = rdr.IsDBNull(rdr.GetOrdinal("user2_id")) ? 0 : rdr.GetInt32("user2_id");
-        CloseConnection();
 
         if (currentUserId == 0) return 0;
         if (user1 == currentUserId) return user2;
@@ -190,8 +200,10 @@ public class ChatRepository : DatabaseConnection
     {
         if (userAId == 0 || userBId == 0) return 0;
 
-        OpenConnection();
-        using var cmd = Connection.CreateCommand();
+        var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+        using var connection = new MySqlConnection(connectionString);
+        connection.Open();
+        using var cmd = connection.CreateCommand();
         cmd.CommandText = @"SELECT match_id
                             FROM matches
                             WHERE (user1_id = @a AND user2_id = @b) OR (user1_id = @b AND user2_id = @a)
@@ -200,7 +212,6 @@ public class ChatRepository : DatabaseConnection
         cmd.Parameters.AddWithValue("@b", userBId);
 
         var found = cmd.ExecuteScalar();
-        CloseConnection();
 
         return (found != null && found != DBNull.Value) ? Convert.ToInt32(found) : 0;
     }

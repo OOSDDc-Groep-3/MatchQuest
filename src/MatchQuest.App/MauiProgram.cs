@@ -31,11 +31,14 @@ public static class MauiProgram
         builder.Services.AddSingleton<IUserService, UserService>();
         builder.Services.AddSingleton<IMatchService, MatchService>();
         builder.Services.AddSingleton<IReactionService, ReactionService>();
+        builder.Services.AddSingleton<IChatService, ChatService>();
         builder.Services.AddSingleton<IGameService, GameService>();
         
         builder.Services.AddSingleton<IUserRepository, UserRepository>();
         builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
         builder.Services.AddSingleton<IReactionRepository, ReactionRepository>();
+        builder.Services.AddSingleton<IChatRepository, ChatRepository>();
+        builder.Services.AddSingleton<IGameRepository, GameRepository>();
         builder.Services.AddSingleton<IGameRepository, GameRepository>();
         builder.Services.AddSingleton<IUserGameRepository, UserGameRepository>();
 
@@ -52,6 +55,8 @@ public static class MauiProgram
         builder.Services.AddTransient<HomeView>().AddTransient<HomeViewModel>();
         builder.Services.AddTransient<ChatView>().AddTransient<ChatViewModel>();
         builder.Services.AddTransient<UserProfileView>().AddTransient<UserProfileViewModel>();
+
+        //Fixed app launch screensize & lock screensize
 
 #if WINDOWS
         builder.ConfigureLifecycleEvents(events =>
@@ -89,4 +94,4 @@ public static class MauiProgram
 #endif
         return builder.Build();
     }
-}
+}   

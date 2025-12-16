@@ -7,9 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Models;
 using MatchQuest.Core.Interfaces.Services;
-using MatchQuest.Core.Data.Repositories;
 using Microsoft.Maui.ApplicationModel;
-using MatchQuest.Core.Helpers;
 
 namespace MatchQuest.App.ViewModels
 {
@@ -19,42 +17,38 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
         private readonly IUserService _userService;
         private readonly IMatchService _matchService;
+        private readonly IChatService _chatService;
         private readonly System.Timers.Timer _pollTimer;
-        private readonly ChatRepository _chatRepo;
 
-        // Use the logged-in user's id from GlobalViewModel
         private int CurrentUserId => _global?.Client?.Id ?? 0;
-
         private int _lastMessageId;
 
         public int ChatId { get; private set; }
-
         public ObservableCollection<Message> Messages { get; } = new();
-
-        // Expose matches for the left sidebar (populated from IMatchService + GlobalViewModel)
-        public ObservableCollection<User> Matches { get; } = new();
+        public ObservableCollection<MatchChatItemViewModel> Matches { get; } = new();
 
         [ObservableProperty] private string messageText = string.Empty;
-        [ObservableProperty] private string partnerName = string.Empty; // UI-bound partner name
-        [ObservableProperty] private int partnerUserId; // New property for partner user ID
+        [ObservableProperty] private string partnerName = string.Empty;
+        [ObservableProperty] private int partnerUserId;
 
         private const string DefaultProfilePicture = "showcaseprofile.png";
 
-        public ChatViewModel(IAuthService authService, GlobalViewModel global, IUserService userService, IMatchService matchService)
+        public ChatViewModel(
+            IAuthService authService, 
+            GlobalViewModel global, 
+            IUserService userService, 
+            IMatchService matchService,
+            IChatService chatService)
         {
             _authService = authService;
             _global = global;
             _userService = userService;
             _matchService = matchService;
-            _chatRepo = new ChatRepository();
+            _chatService = chatService;
 
-            // Load matches for the left sidebar
             LoadMatches();
-
-            // Load/create chat and messages from DB for either the selected global match or fallback
             InitializeChatFromDatabase();
 
-            // Poll DB for new messages every 4 seconds (tweak interval as needed)
             _pollTimer = new System.Timers.Timer(4000) { AutoReset = true };
             _pollTimer.Elapsed += (s, e) => PollNewMessages();
             _pollTimer.Start();
@@ -68,23 +62,23 @@ namespace MatchQuest.App.ViewModels
             var list = _matchService.GetAllMatchesFromUserId(_global.Client.Id);
             foreach (var u in list)
             {
-                // Populate UI-only preview property with the last message (if any)
-                u.LastMessagePreview = GetLastMessagePreview(u);
-                Matches.Add(u);
+                var preview = _chatService.GetLastMessagePreview(CurrentUserId, u);
+                var matchItem = new MatchChatItemViewModel(u, preview);
+                Matches.Add(matchItem);
             }
         }
 
         private void InitializeChatFromDatabase()
         {
-            // If a match was previously selected in the global VM, prefer that
             if (_global?.SelectedMatch is not null)
             {
-                OpenChatForInternal(_global.SelectedMatch);
+                var preview = _chatService.GetLastMessagePreview(CurrentUserId, _global.SelectedMatch);
+                var matchItem = new MatchChatItemViewModel(_global.SelectedMatch, preview);
+                OpenChatForInternal(matchItem);
                 return;
             }
 
-            // find a match id that involves the current user (fallback)
-            var matchId = CurrentUserId == 0 ? 0 : _chatRepo.GetMatchIdForUser(CurrentUserId);
+            var matchId = CurrentUserId == 0 ? 0 : _chatService.GetMatchIdForUser(CurrentUserId);
 
             if (matchId == 0)
             {
@@ -93,25 +87,21 @@ namespace MatchQuest.App.ViewModels
                 return;
             }
 
-            // set partner name by resolving other participant from matches and userstable
-            var otherUserId = _chatRepo.GetOtherUserIdForMatch(matchId, CurrentUserId);
+            var otherUserId = _chatService.GetOtherUserIdForMatch(matchId, CurrentUserId);
             if (otherUserId > 0)
             {
                 var other = _userService.Get(otherUserId);
                 PartnerName = other?.Name ?? string.Empty;
             }
 
-            // Ensure a chat exists for this match and get its id
-            ChatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
+            ChatId = _chatService.GetOrCreateChatByMatchId(matchId);
 
-            // Load existing messages for this chat and populate ObservableCollection
-            var msgs = _chatRepo.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
+            var msgs = _chatService.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
             Messages.Clear();
             foreach (var m in msgs)
             {
                 m.IsOutbound = (m.SenderId == CurrentUserId);
 
-                // populate per-message profile picture for binding in the message template
                 if (m.IsOutbound)
                 {
                     m.ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture;
@@ -134,7 +124,7 @@ namespace MatchQuest.App.ViewModels
             {
                 if (ChatId == 0) return;
 
-                var allMsgs = _chatRepo.GetMessagesByChatId(ChatId);
+                var allMsgs = _chatService.GetMessagesByChatId(ChatId);
                 var newMsgs = allMsgs
                     .Where(m => m.Id > _lastMessageId)
                     .OrderBy(m => m.CreatedAt)
@@ -151,7 +141,6 @@ namespace MatchQuest.App.ViewModels
                 {
                     foreach (var m in newMsgs.OrderBy(m => m.CreatedAt))
                     {
-                        // populate per-message profile picture before adding so the template can bind to it
                         if (m.IsOutbound)
                         {
                             m.ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture;
@@ -168,24 +157,21 @@ namespace MatchQuest.App.ViewModels
             }
             catch (Exception ex)
             {
-                // optional: log exception for diagnostics
                 System.Diagnostics.Debug.WriteLine($"PollNewMessages error: {ex}");
             }
         }
 
-        // Internal helper used both by Initialize and by OpenMatchCommand
-        private void OpenChatForInternal(User user)
+        private void OpenChatForInternal(MatchChatItemViewModel matchItem)
         {
-            if (user is null || CurrentUserId == 0) return;
-
+            if (matchItem?.User is null || CurrentUserId == 0) return;
+            
+            var user = matchItem.User;
             _global.SelectedMatch = user;
-            PartnerUserId = user.Id; // ADD THIS LINE
+            PartnerUserId = user.Id;
 
-            // find existing match row for these two users
-            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
+            var matchId = _chatService.GetMatchIdBetween(CurrentUserId, user.Id);
             if (matchId == 0)
             {
-                // no match row found; leave ChatId 0 (optionally create match here if desired)
                 ChatId = 0;
                 PartnerName = user.Name ?? string.Empty;
                 Messages.Clear();
@@ -193,12 +179,10 @@ namespace MatchQuest.App.ViewModels
                 return;
             }
 
-            // set partner name and ensure chat exists
             PartnerName = user.Name ?? string.Empty;
-            ChatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
+            ChatId = _chatService.GetOrCreateChatByMatchId(matchId);
 
-            // load messages for this chat
-            var msgs = _chatRepo.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
+            var msgs = _chatService.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
             Messages.Clear();
             foreach (var m in msgs)
             {
@@ -221,12 +205,10 @@ namespace MatchQuest.App.ViewModels
         }
 
         [RelayCommand]
-        private async Task OpenMatch(User? user)
+        private async Task OpenMatch(MatchChatItemViewModel? matchItem)
         {
-            if (user is null) return;
-
-            // run the internal logic on the UI thread to ensure observable updates are safe
-            await MainThread.InvokeOnMainThreadAsync(() => OpenChatForInternal(user));
+            if (matchItem is null) return;
+            await MainThread.InvokeOnMainThreadAsync(() => OpenChatForInternal(matchItem));
         }
 
         [RelayCommand]
@@ -247,13 +229,10 @@ namespace MatchQuest.App.ViewModels
                 ProfilePicture = _global?.Client?.ProfilePicture ?? DefaultProfilePicture
             };
 
-            // persist to DB and get id
-            msg.Id = _chatRepo.InsertMessage(msg);
+            msg.Id = _chatService.SendMessage(msg);
 
-            // update last message id so poller won't refetch it
             if (msg.Id > _lastMessageId) _lastMessageId = msg.Id;
 
-            // Add to collection on UI thread
             await MainThread.InvokeOnMainThreadAsync(() => Messages.Add(msg));
 
             MessageText = string.Empty;
@@ -297,33 +276,10 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
-        // Add this private helper method to ChatViewModel to fix CS0103
-        private string? GetLastMessagePreview(User user)
-        {
-            if (user == null || user.Id == 0)
-                return null;
-
-            // Find the match id between current user and the given user
-            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
-            if (matchId == 0)
-                return null;
-
-            // Get the chat id for this match
-            var chatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
-
-            // Get the last message for this chat
-            var lastMsg = _chatRepo.GetMessagesByChatId(chatId)
-                .OrderByDescending(m => m.CreatedAt)
-                .FirstOrDefault();
-
-            return lastMsg?.MessageText;
-        }
-
         public void Dispose()
         {
             _pollTimer?.Stop();
             _pollTimer?.Dispose();
-            _chatRepo?.Dispose();
         }
     }
 }

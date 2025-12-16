@@ -70,18 +70,18 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid RowDefinitions="*" ColumnDefinitions="0.38*,0.62*">
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="0.38*,0.62*">
 
-        <!-- Full-page semi-opaque overlay (matching ChatView) -->
-        <BoxView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+        <!-- Full-page semi-opaque overlay (matching ChatView) - increased opacity from 0.8 to 1 -->
+        <BoxView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
                  Color="{StaticResource OverlayColor}"
-                 Opacity="0.8"
                  HorizontalOptions="Fill"
                  VerticalOptions="Fill"
-                 InputTransparent="True"/>
+                 InputTransparent="True"
+                 Opacity="1"/>
 
         <!-- Left: Matches list (sidebar) - matching ChatView structure -->
-        <Border Grid.Row="0" Grid.Column="0"
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
                 Margin="0"
                 BackgroundColor="Transparent"
                 Stroke="{StaticResource AccentColor}"
@@ -193,40 +193,44 @@
             </Grid>
         </Border>
 
+        <!-- Right column header with controls (matching ChatView structure) -->
+        <Grid Grid.Column="1" Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="*,Auto" RowDefinitions="Auto">
+            <Label Grid.Column="0" Text="FIND A MATCH" FontSize="32" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" VerticalOptions="Center" HorizontalOptions="Start" />
+            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
+                <Picker x:Name="NewMatchesFilter" 
+                        TextColor="{StaticResource AccentColor}" 
+                        FontAttributes="Bold" 
+                        SelectedIndex="0" 
+                        BackgroundColor="#192126" 
+                        WidthRequest="140">
+                    <Picker.Items>
+                        <x:String>FILTER</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <ImageButton x:Name="SettingsButton"
+                             Source="settings.png"
+                             CornerRadius="28"
+                             WidthRequest="32"
+                             HeightRequest="32"
+                             Command="{Binding OpenSettingsCommand}"/>
+            </HorizontalStackLayout>
+
+            <!-- header divider (matching ChatView) -->
+            <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,148,0,0" />
+        </Grid>
+
         <!-- Right column: Profile Card -->
-        <Border Grid.Column="1"
+        <Border Grid.Column="1" Grid.Row="1"
                 Margin="0"
-                Stroke="{StaticResource AccentColor}"
-                StrokeThickness="0.5"
+                Stroke="Transparent"
+                StrokeThickness="0"
                 BackgroundColor="Transparent">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="0" />
             </Border.StrokeShape>
 
             <Grid>
-                <!-- Top controls (matching ChatView positioning) -->
-                <HorizontalStackLayout Spacing="18" HorizontalOptions="End" Padding="20" VerticalOptions="Start">
-                    <Picker x:Name="NewMatchesFilter" 
-                            TextColor="{StaticResource AccentColor}" 
-                            FontAttributes="Bold" 
-                            SelectedIndex="0" 
-                            BackgroundColor="#192126" 
-                            WidthRequest="140">
-                        <Picker.Items>
-                            <x:String>FILTER</x:String>
-                        </Picker.Items>
-                    </Picker>
-
-                    <ImageButton x:Name="SettingsButton"
-                                 Source="settings.png"
-                                 CornerRadius="28"
-                                 WidthRequest="32"
-                                 HeightRequest="32"
-                                 HorizontalOptions="End"
-                                 VerticalOptions="Start"
-                                 Command="{Binding OpenSettingsCommand}"/>
-                </HorizontalStackLayout>
-
                 <Grid>
                     <!-- No people left message -->
                     <VerticalStackLayout 
@@ -259,7 +263,7 @@
                     <ScrollView Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="8" Padding="12" BackgroundColor="Transparent">
                             <!-- Profile Picture -->
-                            <Image Source="{Binding CurrentProfileImage}"
+                                <Image Source="{Binding CurrentProfileImage}"
                                    HeightRequest="250"
                                    WidthRequest="250"
                                    Aspect="AspectFill"
@@ -362,7 +366,7 @@
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="20" />
             </Border.StrokeShape>
-            
+
             <Border.Shadow>
                 <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.5" />
             </Border.Shadow>

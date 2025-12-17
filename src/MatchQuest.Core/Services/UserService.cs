@@ -9,9 +9,13 @@ namespace MatchQuest.Core.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+        private readonly IGameService _gameService;
+        private readonly IReactionService _reactionService;
+        public UserService(IUserRepository userRepository, IGameService gameService, IReactionService reactionService)
         {
             _userRepository = userRepository;
+            _gameService = gameService;
+            _reactionService = reactionService;
         }
 
         public User? Get(string email)
@@ -57,6 +61,9 @@ namespace MatchQuest.Core.Services
                 {
                     var mscore = AlgorithmHelper.CalculateMatchScore(user, matcher);
                     matchPool.Add(mscore);
+
+                    user.Games = _gameService.ListByUserId(user.Id);
+                    user.Reactions = _reactionService.ListByUserId(user.Id);
                 }
                 
                 // sort matchPool by Score descending
@@ -68,6 +75,11 @@ namespace MatchQuest.Core.Services
                 Debug.WriteLine($"UserService.GetUsersWithMatchingGameType: Exception: {ex}");
                 return new List<MatchingScore>();
             }
+        }
+
+        public User? Update(User user)
+        {
+            return _userRepository.Update(user);
         }
     }
 }

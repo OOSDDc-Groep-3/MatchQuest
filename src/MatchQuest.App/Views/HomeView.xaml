@@ -15,7 +15,7 @@
         <ResourceDictionary>
             <!-- Add the converter -->
             <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
-            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            <converters:InverseBooleanConverter x:Key="InverseBoolConverter" />
             
             <!-- Colors (matching ChatView) -->
             <Color x:Key="AccentColor">#C0ffee</Color>
@@ -263,15 +263,13 @@
                     <ScrollView Orientation="Vertical" VerticalOptions="Fill" HorizontalOptions="Fill">
                         <VerticalStackLayout Spacing="8" Padding="12" BackgroundColor="Transparent">
                             <!-- Profile Picture -->
-                                <Image Source="{Binding CurrentProfileImage}"
+                            <Image Source="{Binding CurrentProfileImage}"
                                    HeightRequest="250"
                                    WidthRequest="250"
                                    Aspect="AspectFill"
                                    HorizontalOptions="Center">
-                                <Image.Clip>
-                                    <EllipseGeometry Center="125,125" RadiusX="125" RadiusY="125" />
-                                </Image.Clip>
                             </Image>
+
                             <HorizontalStackLayout Spacing="250">
                                 <HorizontalStackLayout Spacing="12">
                                     <Label Text="{Binding CurrentMatch.Matcher.Name}" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" HorizontalOptions="Start" />

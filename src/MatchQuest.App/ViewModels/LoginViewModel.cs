@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
-using MatchQuest.Core.Models;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.ApplicationModel;
-using System.Threading.Tasks;
 
 namespace MatchQuest.App.ViewModels
 {

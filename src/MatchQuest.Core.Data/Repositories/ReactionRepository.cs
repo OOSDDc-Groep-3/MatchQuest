@@ -69,6 +69,38 @@ VALUES (@UserId, @TargetUserId, @IsLike);
             return null;
         }
     }
+    
+    public List<Reaction> ListByUserId(int userId)
+    {
+        try
+        {
+            var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
+            var sql = @"select * from reactions where user_id = @UserId";
+        
+            using var conn = new MySqlConnection(connectionString);
+            conn.Open();
+            using var cmd = new MySqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@UserId", userId);
+        
+            var reactions = new List<Reaction>();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var reaction = MapReaction(reader);
+                if (reaction != null)
+                {
+                    reactions.Add(reaction);
+                }
+            }
+
+            return reactions;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine("Error retrieving reaction by user ID and target user ID", ex);
+            return null;
+        }
+    }
 
     private Reaction MapReaction(MySqlDataReader reader)
     {

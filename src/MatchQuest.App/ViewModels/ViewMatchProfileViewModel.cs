@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Data.Repositories;
+using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
 using Microsoft.Maui.Controls;
@@ -15,7 +16,7 @@ namespace MatchQuest.App.ViewModels
     public partial class ViewMatchProfileViewModel : ObservableObject
     {
         private readonly IUserService _userService;
-        private readonly UserGameRepository _userGameRepository;
+        private readonly IGameService _gameService;
         
         private User? _user;
 
@@ -39,10 +40,10 @@ namespace MatchQuest.App.ViewModels
 
         public ObservableCollection<Game> Games { get; } = new ObservableCollection<Game>();
 
-        public ViewMatchProfileViewModel(IUserService userService, UserGameRepository userGameRepository)
+        public ViewMatchProfileViewModel(IUserService userService, IGameService gameService)
         {
             _userService = userService;
-            _userGameRepository = userGameRepository;
+            _gameService = gameService;
         }
 
         partial void OnUserIdChanged(int value)
@@ -76,7 +77,7 @@ namespace MatchQuest.App.ViewModels
         {
             Games.Clear();
             
-            var userGames = _userGameRepository.GetGamesForUser(userId);
+            var userGames = _gameService.ListByUserId(userId);
             
             foreach (var game in userGames)
             {

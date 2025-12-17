@@ -18,8 +18,7 @@ namespace MatchQuest.App.ViewModels
         private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
         private readonly IUserService _userService;
-        private readonly IGameRepository _gameRepository;
-        private readonly UserGameRepository _userGameRepository;
+        private readonly IGameService _gamesService;
 
         [ObservableProperty]
         private string loginMessage;
@@ -38,14 +37,12 @@ namespace MatchQuest.App.ViewModels
             IAuthService authService, 
             GlobalViewModel global, 
             IUserService userService,
-            IGameRepository gameRepository,
-            UserGameRepository userGameRepository)
+            IGameService gameService)
         {
             _authService = authService;
             _global = global;
             _userService = userService;
-            _gameRepository = gameRepository;
-            _userGameRepository = userGameRepository;
+            _gamesService = gameService;
 
             LoadGames();
         }
@@ -55,10 +52,10 @@ namespace MatchQuest.App.ViewModels
             if (_global?.Client == null) return;
 
             // Get all games from database
-            var allGames = _gameRepository.GetAll();
+            var allGames = _gamesService.GetAll();
 
             // Get games the user has already added
-            var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
+            var userGames = _gamesService.ListByUserId(_global.Client.Id);
 
             // Populate UserGames collection (for display)
             UserGames.Clear();
@@ -90,7 +87,7 @@ namespace MatchQuest.App.ViewModels
             try
             {
                 // Add the game to the database
-                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+                _gamesService.AddGameToUser(SelectedGame.Id, _global.Client.Id);
 
                 // Clear selection and reload games
                 SelectedGame = null;
@@ -118,7 +115,7 @@ namespace MatchQuest.App.ViewModels
             try
             {
                 // Remove the game from the database
-                _userGameRepository.RemoveUserGame(_global.Client.Id, game.Id);
+                _gamesService.RemoveGameFromUser(_global.Client.Id, game.Id);
 
                 // Reload games to update both collections
                 LoadGames();

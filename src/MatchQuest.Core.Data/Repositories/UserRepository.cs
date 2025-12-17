@@ -10,8 +10,6 @@ namespace MatchQuest.Core.Data.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public UserRepository() { }
-
         // Get client by email address (case-insensitive)
         public User? Get(string email)
         {
@@ -162,7 +160,6 @@ namespace MatchQuest.Core.Data.Repositories
                     ? new DateTime(client.BirthDate.Value.Year, client.BirthDate.Value.Month, client.BirthDate.Value.Day)
                     : (DateTime?)null;
                 
-
                 cmd.Parameters.AddWithValue("@user_id", client.Id);
                 cmd.Parameters.AddWithValue("@email", client.Email ?? string.Empty);
                 cmd.Parameters.AddWithValue("@password", client.Password ?? string.Empty);

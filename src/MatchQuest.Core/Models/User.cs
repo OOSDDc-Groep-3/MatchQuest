@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MatchQuest.Core.Models
+﻿namespace MatchQuest.Core.Models
 {
-    public partial class User : Model
+    public partial class User : Entity
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -22,16 +19,14 @@ namespace MatchQuest.Core.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
 
-        public User(int id, string name, string email, string password) : base(id, name)
+        public User(int id, string name, string email, string password)
         {
             Name = name;
             Email = email;
             Password = password;
         }
 
-        // Optional full constructor to populate all columns from DB
-        public User(int id, string name, string email, string password,
-            DateOnly? birthDate, string? region, string? biography, string? profilePicture, bool isActive, DateTime createdAt, DateTime? updatedAt) : base(id, name)
+        public User(int id, string name, string email, string password, DateOnly? birthDate, string? region, string? biography, string? profilePicture, bool isActive, DateTime createdAt, DateTime? updatedAt)
         {
             Id = id;
             Name = name;
@@ -52,7 +47,7 @@ namespace MatchQuest.Core.Models
                 return 0;
 
             var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            int age = today.Year - BirthDate.Value.Year;
+            var age = today.Year - BirthDate.Value.Year;
 
             if (today < BirthDate.Value.AddYears(age))
                 age--;

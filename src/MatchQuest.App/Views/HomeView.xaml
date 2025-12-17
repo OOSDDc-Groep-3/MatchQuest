@@ -290,32 +290,41 @@
                             <BoxView Style="{StaticResource SeparatorStyle}" />
                             
                             <!-- Games Collection -->
-                            <CollectionView ItemsSource="{Binding Games}"
+                            <CollectionView ItemsSource="{Binding CurrentMatch.User.Games}"
                                             SelectionMode="None"
                                             ItemsLayout="VerticalList"
-                                            HeightRequest="120"
+                                            HeightRequest="220"
                                             HorizontalOptions="Fill">
                                 <CollectionView.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BackgroundColor="{StaticResource OverlayColor}" Padding="6" Margin="6" StrokeThickness="0">
-                                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="84">
-                                                <Image Source="{Binding Image}"
-                                                       WidthRequest="72"
-                                                       HeightRequest="72"
-                                                       Aspect="AspectFill">
-                                                    <Image.Clip>
-                                                        <EllipseGeometry Center="36,36" RadiusX="36" RadiusY="36" />
-                                                    </Image.Clip>
-                                                </Image>
-                                                <Label Text="{Binding Name}"
-                                                       FontSize="12"
-                                                       LineBreakMode="TailTruncation"
-                                                       MaxLines="1"
-                                                       HorizontalOptions="Center"
-                                                       TextColor="{StaticResource AccentColor}" />
-                                            </VerticalStackLayout>
-                                        </Border>
-                                    </DataTemplate>
+                               <DataTemplate x:DataType="models:Game">
+                                <Border BackgroundColor="#383535" 
+                                        Padding="12" 
+                                        StrokeThickness="1" 
+                                        Stroke="{StaticResource AccentColor}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <!-- Game Image -->
+                                        <Image Grid.Column="0"
+                                               Source="{Binding Image, Converter={StaticResource ProfilePictureConverter}}"
+                                               WidthRequest="50" 
+                                               HeightRequest="50" 
+                                               Aspect="AspectFill"
+                                               VerticalOptions="Center">
+                                        </Image>
+                                        
+                                        <!-- Game Name -->
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}" 
+                                               FontSize="18" 
+                                               TextColor="White" 
+                                               VerticalOptions="Center"
+                                               Margin="16,0,0,0"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
                                 </CollectionView.ItemTemplate>
 
                                 <CollectionView.EmptyView>

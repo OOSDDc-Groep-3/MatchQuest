@@ -68,13 +68,12 @@ namespace MatchQuest.App.ViewModels
             }
             else
             {
-                CurrentMatch = null;  // Ensure view updates
+                CurrentMatch = null;
             }
 
             OnPropertyChanged(nameof(HasMatch));
         }
-
-
+        
         private void LoadMatches()
         {
             if (_global?.Client == null)

@@ -1,5 +1,3 @@
-using System;
-
 namespace MatchQuest.Core.Models
 {
     // UI-only additions to the User model (partial to avoid changing DB mapping)
@@ -12,7 +10,7 @@ namespace MatchQuest.Core.Models
         public string? LastMessagePreview
         {
             get => _lastMessagePreview;
-            set => SetProperty(ref _lastMessagePreview, value);
+            set => _lastMessagePreview = value;
         }
     }
 }

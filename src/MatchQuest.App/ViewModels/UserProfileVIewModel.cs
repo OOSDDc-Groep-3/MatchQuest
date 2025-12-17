@@ -1,25 +1,23 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using MatchQuest.Core.Data.Repositories;
 using MatchQuest.Core.Helpers;
-using MatchQuest.Core.Interfaces.Repositories;
+using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 
 namespace MatchQuest.App.ViewModels
 {
     public partial class UserProfileViewModel : ObservableObject
     {
         private readonly GlobalViewModel _global;
-        private readonly IUserRepository _userRepository;
-        private readonly IGameRepository _gameRepository;
-        private readonly UserGameRepository _userGameRepository;
+        private readonly IUserService _userService;
+        private readonly IGameService _gameService;
         
         [ObservableProperty]
         private string addGameStatus;
@@ -37,17 +35,13 @@ namespace MatchQuest.App.ViewModels
         private ObservableCollection<Game> selectedGames = new ObservableCollection<Game>();
         
         [ObservableProperty]
-        private Game selectedGame;
+        private Game? selectedGame;
 
-        public UserProfileViewModel(GlobalViewModel global,
-            IUserRepository userRepository,
-            IGameRepository gameRepository,
-            UserGameRepository userGameRepository)
+        public UserProfileViewModel(GlobalViewModel global, IUserService userService, IGameService gameService)
         {
             _global = global;
-            _userRepository = userRepository;
-            _gameRepository = gameRepository;
-            _userGameRepository = userGameRepository;
+            _userService = userService;
+            _gameService = gameService;
 
             LoadGames();
         }
@@ -137,7 +131,10 @@ namespace MatchQuest.App.ViewModels
 
             try
             {
-                _userGameRepository.AddUserGame(_global.Client.Id, SelectedGame.Id);
+                // Add the game to the database
+                _gameService.AddGameToUser(SelectedGame.Id, _global.Client.Id);
+
+                // Clear selection and reload games
                 SelectedGame = null;
                 LoadGames();
 
@@ -153,17 +150,17 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
-
         [RelayCommand]
-        private async Task RemoveGame(Game game)
+        private async Task RemoveGame(Game? game)
         {
             if (game == null) return;
-
             
-
             try
             {
-                _userGameRepository.RemoveUserGame(_global.Client.Id, game.Id);
+                // Remove the game from the database
+                _gameService.RemoveGameFromUser(game.Id, _global.Client.Id);
+
+                // Reload games to update both collections
                 LoadGames();
                 RemoveGameStatus = "Game removed successfully!";
                 await ClearStatusAfterDelay(nameof(RemoveGameStatus), 1000);
@@ -176,18 +173,16 @@ namespace MatchQuest.App.ViewModels
                 
             }
         }
-
-
+        
         [RelayCommand]
         private async Task SaveProfile()
         {
             if (_global.Client == null) return;
-
-        
-
-            var updated = _userRepository.Update(_global.Client);
-            if (updated != null)
-                _global.Client = updated;
+            
+            // Update profile
+            var user = _userService.Update(_global.Client);
+            if (user != null)
+                _global.Client = user;
 
             SaveProfileStatus = "Your profile has been updated!";
             await ClearStatusAfterDelay(nameof(SaveProfileStatus), 4000);
@@ -245,21 +240,23 @@ namespace MatchQuest.App.ViewModels
             if (_global?.Client == null) return;
 
             // All games from database
-            var allGames = _gameRepository.GetAll();
+            var allGames = _gameService.GetAll();
 
             // Games the user has already added
-            var userGames = _userGameRepository.GetGamesForUser(_global.Client.Id);
+            var userGames = _gameService.ListByUserId(_global.Client.Id);
 
-            // Fill UserGames (for profile display)
             UserGames.Clear();
-            foreach (var g in userGames)
-                UserGames.Add(g);
+            foreach (var game in userGames)
+                UserGames.Add(game);
 
-            // Fill Games (for adding) only with games the user hasn't added yet
-            var userGameIds = userGames.Select(g => g.Id).ToList();
             Games.Clear();
-            foreach (var g in allGames.Where(g => !userGameIds.Contains(g.Id)))
-                Games.Add(g);
+            foreach (var game in allGames)
+            {
+                if (UserGames.All(ug => ug.Id != game.Id))
+                {
+                    Games.Add(game);
+                }
+            }
         }
     }
 }

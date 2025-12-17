@@ -6,4 +6,5 @@ public interface IReactionRepository
 {
     Reaction? GetReactionByUserIdAndTargetUserId(int userId, int targetUserId);
     Reaction? CreateReaction(int userId, int targetUserId, bool isLike);
+    List<Reaction> ListByUserId(int userId);
 }

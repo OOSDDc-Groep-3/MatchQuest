@@ -38,6 +38,11 @@ public class ReactionService : IReactionService
     {
         return _reactionRepository.GetReactionByUserIdAndTargetUserId(userId, targetUserId);
     }
+    
+    public List<Reaction> ListByUserId(int userId)
+    {
+        return _reactionRepository.ListByUserId(userId);
+    }
 
     public bool CheckMatch(int userId, int targetUserId)
     {

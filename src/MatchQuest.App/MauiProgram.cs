@@ -39,6 +39,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IReactionRepository, ReactionRepository>();
         builder.Services.AddSingleton<IChatRepository, ChatRepository>();
         builder.Services.AddSingleton<IGameRepository, GameRepository>();
+        builder.Services.AddSingleton<IChatRepository, ChatRepository>();
         builder.Services.AddSingleton<IGameRepository, GameRepository>();
         builder.Services.AddSingleton<IUserGameRepository, UserGameRepository>();
 

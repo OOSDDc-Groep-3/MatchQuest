@@ -78,7 +78,7 @@
                  HorizontalOptions="Fill"
                  VerticalOptions="Fill"
                  InputTransparent="True"
-                 Opacity="0.8"/>
+                 Opacity="1"/>
 
         <!-- Left: Matches list (sidebar) - matching ChatView structure -->
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"

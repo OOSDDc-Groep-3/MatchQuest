@@ -120,21 +120,19 @@
                            VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Matches collection (keeps binding to ChatViewModel.Matches and existing command usage) -->
-                <Grid Grid.Row="1" Padding="30,8,30,0">
+                <!-- Matches collection - wrapped in ScrollView for scrollability -->
+                <ScrollView Grid.Row="1" Padding="30,8,30,0" VerticalScrollBarVisibility="Always">
                     <VerticalStackLayout Spacing="35">
                         <BoxView Style="{StaticResource SeparatorStyle}" />
 
                         <CollectionView x:Name="MatchesCollection"
                                         ItemsSource="{Binding Matches}"
                                         SelectionMode="Single"
-                                        ItemsLayout="VerticalList"
                                         Margin="0,8,0,0"
-                                        BackgroundColor="Transparent"
-                                        ItemsUpdatingScrollMode="KeepScrollOffset">
+                                        BackgroundColor="Transparent">
                             <CollectionView.ItemTemplate>
                                 <DataTemplate x:DataType="vm:MatchChatItemViewModel">
-                                    <Border Margin="0" Padding="24,24,24,24" BackgroundColor="#49192126" StrokeThickness="1" Stroke="#C0ffee">
+                                    <Border Margin="0,0,0,12" Padding="24,24,24,24" BackgroundColor="#49192126" StrokeThickness="1" Stroke="#C0ffee">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
                                                 Command="{Binding BindingContext.OpenMatchCommand, Source={x:Reference ChatPage}}"
@@ -188,7 +186,7 @@
                             </CollectionView.EmptyView>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Grid>
+                </ScrollView>
 
                 <!-- Filter picker at bottom (keeps it visible like HomeView) -->
                 <Picker Grid.Row="2" x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" Margin="31">

@@ -182,7 +182,7 @@ namespace MatchQuest.Core.Data.Repositories
             }
         }
 
-        public List<User> GetUsersWithMatchingGameType(int userId)
+        public List<User> GetUsersWithMatchingGameType(int userId, int gameTypeId)
         {
             try
             {
@@ -229,26 +229,49 @@ WHERE u.user_id != @CurrentUserId
     WHERE d_sent.user_id = @CurrentUserId
       AND d_sent.target_user_id = u.user_id
       AND d_sent.is_like = 0
-)
+)";
 
+                if (gameTypeId > 0)
+                {
+                    sql += @"
+-- Require at least one game of a specific type
+    AND EXISTS (
+      SELECT 1
+      FROM user_games ug_candidate
+      JOIN games g_candidate ON ug_candidate.game_id = g_candidate.game_id
+      WHERE ug_candidate.user_id = u.user_id
+      AND g_candidate.type = @GameTypeId
+    )";
+                }
+                else
+                {
+                    sql += @"
   -- require at least one game type in common
   AND EXISTS (
     SELECT 1
     FROM user_games ug_candidate
     JOIN games g_candidate ON ug_candidate.game_id = g_candidate.game_id
     WHERE ug_candidate.user_id = u.user_id
-      AND g_candidate.type IN (
+    AND g_candidate.type IN (
         SELECT g_me.type
         FROM user_games ug_me
         JOIN games g_me ON ug_me.game_id = g_me.game_id
         WHERE ug_me.user_id = @CurrentUserId
       )
 )";
-                
+                }
+
+                sql += @"
+LIMIT 50;";
+
                 using var conn = new MySqlConnection(connectionString);
                 conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@CurrentUserId", userId);
+                if (gameTypeId > 0)
+                {
+                    cmd.Parameters.AddWithValue("@GameTypeId", gameTypeId);
+                }
 
                 var users = new List<User>();
                 using var reader = cmd.ExecuteReader();

@@ -9,7 +9,6 @@ namespace MatchQuest.App.ViewModels
 {
     public partial class HomeViewModel : BaseViewModel
     {
-        private readonly IAuthService _authService;
         private readonly GlobalViewModel _global;
         private readonly IMatchService _matchService;
         private readonly IUserService _userService;
@@ -44,10 +43,23 @@ namespace MatchQuest.App.ViewModels
         
         public ImageSource CurrentProfileImage
             => GetProfileImageSource(CurrentMatch?.Matcher);
+        
+        public ObservableCollection<string> GameTypeOptions { get; } =
+            new ObservableCollection<string>(
+                new[] { "All" }.Concat(Enum.GetNames(typeof(GameType)))
+            );
+        
+        [ObservableProperty]
+        private int selectedGameTypeIndex = 0;
+        
+        // Selected GameType (nullable = empty option)
+        public GameType? SelectedGameType =>
+            SelectedGameTypeIndex == 0
+                ? null
+                : (GameType)(SelectedGameTypeIndex - 1);
 
-        public HomeViewModel(IAuthService authService, GlobalViewModel global, IMatchService matchService, IUserService userService, IReactionService reactionService)
+        public HomeViewModel(GlobalViewModel global, IMatchService matchService, IUserService userService, IReactionService reactionService)
         {
-            _authService = authService;
             _global = global;
             _matchService = matchService;
             _chatRepo = new ChatRepository();
@@ -60,7 +72,7 @@ namespace MatchQuest.App.ViewModels
 
         private void LoadMatchPool()
         {
-            MatchPool = _userService.GetUserMatchPool(_global.Client);
+            MatchPool = _userService.GetUserMatchPool(_global.Client, SelectedGameType);
 
             if (MatchPool.Count > 0)
             {
@@ -112,17 +124,19 @@ namespace MatchQuest.App.ViewModels
         {
             if (CurrentMatch == null) return;
 
-            var currentIndex = MatchPool.IndexOf(CurrentMatch);
-            if (currentIndex >= 0 && currentIndex < MatchPool.Count - 1)
+            var currentIndex = MatchPool?.IndexOf(CurrentMatch) ?? -1;
+            var lastIndex = (MatchPool?.Count ?? 0) - 1;
+            
+            if (currentIndex >= 0 && currentIndex < lastIndex)
             {
                 CurrentMatch = MatchPool[currentIndex + 1];
+                OnPropertyChanged(nameof(CurrentMatchAge));
             }
             else
             {
-                CurrentMatch = null; 
+                // We consumed the last match — refresh the pool to fetch new matches.
+                LoadMatchPool();
             }
-            
-            OnPropertyChanged(nameof(CurrentMatchAge));
         }
         
         private ImageSource GetProfileImageSource(User? user)
@@ -141,7 +155,7 @@ namespace MatchQuest.App.ViewModels
             }
         }
         
-        public void ShowToast(string message, bool isSuccess)
+        private void ShowToast(string message, bool isSuccess)
         {
             // Cancel previous timer if exists
             _toastCts?.Cancel();
@@ -279,6 +293,11 @@ namespace MatchQuest.App.ViewModels
             OnPropertyChanged(nameof(CurrentMatchAge));
             OnPropertyChanged(nameof(CurrentProfileImage));
             OnPropertyChanged(nameof(HasMatch)); 
+        }
+        
+        partial void OnSelectedGameTypeIndexChanged(int value)
+        {
+            LoadMatchPool();
         }
     }
 }

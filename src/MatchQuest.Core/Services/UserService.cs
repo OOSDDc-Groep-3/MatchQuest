@@ -50,20 +50,22 @@ namespace MatchQuest.Core.Services
             }
         }
         
-        public List<MatchingScore> GetUserMatchPool(User matcher)
+        public List<MatchingScore> GetUserMatchPool(User matcher, GameType? gameType)
         {
             try
             {
                 var matchPool = new List<MatchingScore>();
-                var users = _userRepository.GetUsersWithMatchingGameType(matcher.Id);
-
+                
+                var gameTypeValue = gameType.HasValue ? (int)gameType.Value : -1;
+                
+                var users = _userRepository.GetUsersWithMatchingGameType(matcher.Id, gameTypeValue);
+                
                 foreach (var user in users)
                 {
                     var mscore = AlgorithmHelper.CalculateMatchScore(user, matcher);
                     matchPool.Add(mscore);
 
                     user.Games = _gameService.ListByUserId(user.Id);
-                    user.Reactions = _reactionService.ListByUserId(user.Id);
                 }
                 
                 // sort matchPool by Score descending
@@ -73,7 +75,7 @@ namespace MatchQuest.Core.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"UserService.GetUsersWithMatchingGameType: Exception: {ex}");
-                return new List<MatchingScore>();
+                return [];
             }
         }
 

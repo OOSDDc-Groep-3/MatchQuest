@@ -78,7 +78,7 @@
                  HorizontalOptions="Fill"
                  VerticalOptions="Fill"
                  InputTransparent="True"
-                 Opacity="1"/>
+                 Opacity="0.8"/>
 
         <!-- Left: Matches list (sidebar) - matching ChatView structure -->
         <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
@@ -195,16 +195,14 @@
         <Grid Grid.Column="1" Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="*,Auto" RowDefinitions="Auto">
             <Label Grid.Column="0" Text="FIND A MATCH" FontSize="32" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" VerticalOptions="Center" HorizontalOptions="Start" />
             <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
-                <Picker x:Name="NewMatchesFilter" 
-                        TextColor="{StaticResource AccentColor}" 
-                        FontAttributes="Bold" 
-                        SelectedIndex="0" 
-                        BackgroundColor="#192126" 
-                        WidthRequest="140">
-                    <Picker.Items>
-                        <x:String>FILTER</x:String>
-                    </Picker.Items>
-                </Picker>
+                <Picker
+                    x:Name="GameFilter"
+                    ItemsSource="{Binding GameTypeOptions}"
+                    SelectedIndex="{Binding SelectedGameTypeIndex}"
+                    TextColor="{StaticResource AccentColor}"
+                    FontAttributes="Bold"
+                    BackgroundColor="#192126"
+                    WidthRequest="140" />
 
                 <ImageButton x:Name="SettingsButton"
                              Source="settings.png"
@@ -275,7 +273,6 @@
                                 </HorizontalStackLayout> 
                             <Label Text="{Binding CurrentMatch.Matcher.Region}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start" Margin="0,3" />
                                 </HorizontalStackLayout>
-                            <Label Text="Catan, Chess" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" Margin="0,3" HorizontalOptions="Start" />
                             <BoxView Style="{StaticResource SeparatorStyle}" />
 
                             <Border BackgroundColor="#192126" Padding="12" HorizontalOptions="Fill">

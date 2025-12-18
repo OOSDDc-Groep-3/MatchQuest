@@ -8,7 +8,7 @@ namespace MatchQuest.Core.Interfaces.Services
         User? Get(int id);
         List<User> GetAll();
         User? Create(User client);
-        List<MatchingScore> GetUserMatchPool(User user);
+        List<MatchingScore> GetUserMatchPool(User user, GameType? gameType);
         User? Update(User user);
     }
 }

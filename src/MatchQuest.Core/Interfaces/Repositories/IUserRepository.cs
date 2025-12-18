@@ -11,7 +11,7 @@ namespace MatchQuest.Core.Interfaces.Repositories
         List<User> GetAll();
         User? Add(User client);
         User? Update(User client);
-        List<User> GetUsersWithMatchingGameType(int userId);
+        List<User> GetUsersWithMatchingGameType(int userId, int gameType);
         User? MapUser(DbDataReader reader);
     }
 }

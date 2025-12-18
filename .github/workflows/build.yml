@@ -24,7 +24,7 @@ jobs:
         shell: pwsh
 
       - name: Restore NuGet packages
-        run: dotnet restore src/MatchQuest.App/MatchQuest.App.csproj --framework net10.0-windows10.0.19041.0
+        run: dotnet restore src/MatchQuest.App/MatchQuest.App.csproj /p:TargetFramework=net10.0-windows10.0.19041.0
         shell: pwsh
 
       - name: Build Windows app

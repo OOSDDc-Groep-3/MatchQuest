@@ -1,32 +1,32 @@
 name: Build MAUI App (Windows only)
 
 on:
-  pull_request:
+  pull_request: 
     branches: [ "*" ]
   push:
-    branches: [ main ]
+    branches:  [ main ]
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on:  windows-latest
 
-    steps:
+    steps: 
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET 10
+      - name: Setup . NET 10
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install MAUI workloads for Windows
-        run: dotnet workload install maui-windows maui-android
+      - name: Install MAUI workloads
+        run: dotnet workload install maui-windows maui-android ios
         shell: pwsh
 
       - name: Restore NuGet packages
-        run: dotnet restore src/MatchQuest.App/MatchQuest.App.csproj
+        run: dotnet restore src/MatchQuest.App/MatchQuest.App. csproj
         shell: pwsh
 
       - name: Build Windows app
-        run: dotnet build src/MatchQuest.App/MatchQuest.App.csproj -c Release -f net10.0-windows10.0.19041.0
+        run: dotnet build src/MatchQuest.App/MatchQuest.App. csproj -c Release -f net10.0-windows10.0.19041.0
         shell: pwsh

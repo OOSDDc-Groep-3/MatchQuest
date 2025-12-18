@@ -49,11 +49,13 @@ namespace MatchQuest.App.ViewModels
             LoadMatches();
             InitializeChatFromDatabase();
 
+            // Poll for new messages every 4 seconds
             _pollTimer = new System.Timers.Timer(4000) { AutoReset = true };
             _pollTimer.Elapsed += (s, e) => PollNewMessages();
             _pollTimer.Start();
         }
 
+        // Load all matches for the current user with message previews
         private void LoadMatches()
         {
             Matches.Clear();
@@ -68,16 +70,19 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
+        // Initialize chat from database (either selected match or first available match)
         private void InitializeChatFromDatabase()
         {
+            // If a match was selected from another view, open that chat
             if (_global?.SelectedMatch is not null)
             {
                 var preview = _chatService.GetLastMessagePreview(CurrentUserId, _global.SelectedMatch);
                 var matchItem = new MatchChatItemViewModel(_global.SelectedMatch, preview);
-                OpenChatForInternal(matchItem);
+                OpenChat(matchItem);
                 return;
             }
 
+            // Otherwise, load the first match for the current user
             var matchId = CurrentUserId == 0 ? 0 : _chatService.GetMatchIdForUser(CurrentUserId);
 
             if (matchId == 0)
@@ -96,6 +101,7 @@ namespace MatchQuest.App.ViewModels
 
             ChatId = _chatService.GetOrCreateChatByMatchId(matchId);
 
+            // Load all messages and set profile pictures
             var msgs = _chatService.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
             Messages.Clear();
             foreach (var m in msgs)
@@ -118,6 +124,7 @@ namespace MatchQuest.App.ViewModels
             _lastMessageId = msgs.Any() ? msgs.Max(m => m.Id) : 0;
         }
 
+        // Poll for new messages and add them to the UI
         private async void PollNewMessages()
         {
             try
@@ -132,11 +139,13 @@ namespace MatchQuest.App.ViewModels
 
                 if (newMsgs == null || newMsgs.Count == 0) return;
 
+                // Mark messages as outbound or inbound
                 foreach (var m in newMsgs)
                     m.IsOutbound = (m.SenderId == CurrentUserId);
 
                 _lastMessageId = newMsgs.Max(m => m.Id);
 
+                // Update UI on main thread
                 await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     foreach (var m in newMsgs.OrderBy(m => m.CreatedAt))
@@ -161,7 +170,8 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
-        private void OpenChatForInternal(MatchChatItemViewModel matchItem)
+        // Open a chat with a specific match
+        private void OpenChat(MatchChatItemViewModel matchItem)
         {
             if (matchItem?.User is null || CurrentUserId == 0) return;
             
@@ -172,6 +182,7 @@ namespace MatchQuest.App.ViewModels
             var matchId = _chatService.GetMatchIdBetween(CurrentUserId, user.Id);
             if (matchId == 0)
             {
+                // No match found, display empty chat
                 ChatId = 0;
                 PartnerName = user.Name ?? string.Empty;
                 Messages.Clear();
@@ -182,6 +193,7 @@ namespace MatchQuest.App.ViewModels
             PartnerName = user.Name ?? string.Empty;
             ChatId = _chatService.GetOrCreateChatByMatchId(matchId);
 
+            // Load all messages and set profile pictures
             var msgs = _chatService.GetMessagesByChatId(ChatId).OrderBy(m => m.CreatedAt).ToList();
             Messages.Clear();
             foreach (var m in msgs)
@@ -204,13 +216,15 @@ namespace MatchQuest.App.ViewModels
             _lastMessageId = msgs.Any() ? msgs.Max(m => m.Id) : 0;
         }
 
+        // Command to open a chat when a match is selected from the list
         [RelayCommand]
         private async Task OpenMatch(MatchChatItemViewModel? matchItem)
         {
             if (matchItem is null) return;
-            await MainThread.InvokeOnMainThreadAsync(() => OpenChatForInternal(matchItem));
+            await MainThread.InvokeOnMainThreadAsync(() => OpenChat(matchItem));
         }
 
+        // Command to send a message
         [RelayCommand]
         private async Task SendMessage()
         {
@@ -238,6 +252,7 @@ namespace MatchQuest.App.ViewModels
             MessageText = string.Empty;
         }
 
+        // Command to navigate back to the home page
         [RelayCommand]
         private async Task Back()
         {
@@ -256,6 +271,7 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
+        // Command to view the partner's profile
         [RelayCommand]
         private async Task ViewPartnerProfile()
         {
@@ -276,6 +292,7 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
+        // Clean up resources when view model is disposed
         public void Dispose()
         {
             _pollTimer?.Stop();

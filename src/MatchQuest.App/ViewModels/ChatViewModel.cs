@@ -295,7 +295,7 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task OpenSettings()
         {
-            // Navigate to the registered "Register" route using Shell.
+            // Navigate to the registered "UserProfile" route using Shell.
             // If Shell.Current is not available yet, ensure AppShell is attached.
             if (Shell.Current is null)
             {

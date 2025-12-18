@@ -292,6 +292,26 @@ namespace MatchQuest.App.ViewModels
             }
         }
 
+        [RelayCommand]
+        private async Task OpenSettings()
+        {
+            // Navigate to the registered "UserProfile" route using Shell.
+            // If Shell.Current is not available yet, ensure AppShell is attached.
+            if (Shell.Current is null)
+            {
+                if (Application.Current?.MainPage is not AppShell)
+                {
+                    Application.Current!.MainPage = new AppShell();
+                    await Task.Yield();
+                }
+            }
+
+            if (Shell.Current is not null)
+            {
+                await Shell.Current.GoToAsync("UserProfile");
+            }
+        }
+
         // Clean up resources when view model is disposed
         public void Dispose()
         {

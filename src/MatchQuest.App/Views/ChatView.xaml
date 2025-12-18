@@ -225,7 +225,12 @@
                         <x:String>FILTER</x:String>
                     </Picker.Items>
                 </Picker>
-                <ImageButton Source="settings.png" CornerRadius="28" WidthRequest="32" HeightRequest="32" />
+                <ImageButton x:Name="SettingsButton"
+                             Source="settings.png"
+                             CornerRadius="28"
+                             WidthRequest="32"
+                             HeightRequest="32"
+                             Command="{Binding OpenSettingsCommand}"/>
             </HorizontalStackLayout>
 
             <!-- header divider -->

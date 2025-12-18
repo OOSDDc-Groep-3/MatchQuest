@@ -20,7 +20,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Install MAUI workloads
-        run: dotnet workload install maui-windows maui-android ios
+        run: dotnet workload install maui-windows maui-android maui-ios maui-maccatalyst
         shell: pwsh
 
       - name: Restore NuGet packages

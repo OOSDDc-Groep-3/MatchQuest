@@ -30,7 +30,9 @@ namespace MatchQuest.App.ViewModels
         
         private int CurrentUserId => _global?.Client?.Id ?? 0;
 
-        public ObservableCollection<User> Matches { get; } = new ObservableCollection<User>();
+        // Change the Matches collection type
+        public ObservableCollection<MatchChatItemViewModel> Matches { get; } = new();
+
         private List<MatchingScore> MatchPool { get; set; }
         
         [ObservableProperty]
@@ -76,17 +78,16 @@ namespace MatchQuest.App.ViewModels
         
         private void LoadMatches()
         {
-            if (_global?.Client == null)
-                return;
+            if (_global?.Client == null) return;
 
             var list = _matchService.GetAllMatchesFromUserId(_global.Client.Id);
             Matches.Clear();
 
             foreach (var u in list)
             {
-                // Populate UI-only preview property with the last message (if any)
-                u.LastMessagePreview = GetLastMessagePreview(u);
-                Matches.Add(u);
+                var preview = GetLastMessagePreview(u);
+                var matchItem = new MatchChatItemViewModel(u, preview);
+                Matches.Add(matchItem);
             }
         }
 
@@ -203,12 +204,11 @@ namespace MatchQuest.App.ViewModels
 
         // Called when a match is selected in the UI: set global selected match and navigate to Chat.
         [RelayCommand]
-        private async Task OpenChatFor(User? user)
+        private async Task OpenChatFor(MatchChatItemViewModel? matchItem)
         {
-            if (user is null)
-                return;
+            if (matchItem?.User is null) return;
 
-            _global.SelectedMatch = user;
+            _global.SelectedMatch = matchItem.User;
 
             // Ensure Shell is available (same pattern used elsewhere)
             if (Shell.Current is null)

@@ -18,7 +18,7 @@ namespace MatchQuest.App.ViewModels
         public int Id => _game.Id;
         public string Name => _game.Name;
 
-        // ImageSource property voor binding in XAML
+        // ImageSource property for binding in XAML
         public ImageSource ImageSource
         {
             get

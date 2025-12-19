@@ -7,7 +7,7 @@ using MatchQuest.Core.Helpers;
 namespace MatchQuest.Test;
 
 [TestFixture]
-public class UserTests
+public class LoginTest
 {
     private Mock<IUserService> _mockUserService;
     private AuthService _authService;

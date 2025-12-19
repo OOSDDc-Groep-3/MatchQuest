@@ -108,6 +108,7 @@
 
                 <!-- Logout button at bottom -->
                 <Button Text="LOG OUT"
+                        Command="{Binding LogoutCommand}" 
                         Grid.Row="2"
                         FontSize="20"
                         BackgroundColor="#E37272"

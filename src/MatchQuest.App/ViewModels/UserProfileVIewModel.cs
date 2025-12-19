@@ -1,16 +1,10 @@
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Helpers;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
 
 namespace MatchQuest.App.ViewModels
 {
@@ -216,7 +210,7 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Back()
         {
-            //
+            
             if (Shell.Current is null)
             {
                 if (Application.Current?.MainPage is not AppShell)
@@ -234,19 +228,20 @@ namespace MatchQuest.App.ViewModels
         
         private void LoadGames()
         {
-            if (_global?.Client == null) return;
 
             // All games from database
             var allGames = _gameService.GetAll();
 
             // Games the user has already added
             var userGames = _gameService.ListByUserId(_global.Client.Id);
-
+            
+            // Populate UserGames collection
             UserGames.Clear();
             foreach (var game in userGames)
                 UserGames.Add(game);
 
             Games.Clear();
+            // Add only games not already in user's list
             foreach (var game in allGames)
             {
                 if (UserGames.All(ug => ug.Id != game.Id))
@@ -255,5 +250,21 @@ namespace MatchQuest.App.ViewModels
                 }
             }
         }
+        
+        [RelayCommand]
+        private async Task Logout()
+        {
+            // Verwijder opgeslagen login info
+            Preferences.Remove("current user");
+            _global.Client = null;
+
+            // Reset de AppShell en navigeer naar Login
+            Application.Current.MainPage = new AppShell();
+
+            // Navigeer naar Login route (zonder //)
+            await Shell.Current.GoToAsync("Login");
+        }
+
+        
     }
 }

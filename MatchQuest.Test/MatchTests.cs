@@ -5,6 +5,7 @@ using MatchQuest.Core.Services;
 using MatchQuest.Core.Interfaces.Repositories;
 using Moq;
 using NUnit.Framework;
+using Match = MatchQuest.Core.Models.Match;
 
 namespace MatchQuest.Tests
 {
@@ -39,9 +40,9 @@ namespace MatchQuest.Tests
             var result = _matchService.GetAllMatchesFromUserId(userId);
 
             // Assert
-            Assert.AreEqual(2, result.Count);
-            Assert.AreEqual("Alice", result[0].Name);
-            Assert.AreEqual("Bob", result[1].Name);
+            Assert.That(result.Count, Is.EqualTo(2));
+            Assert.That(result[0].Name, Is.EqualTo("Alice"));
+            Assert.That(result[1].Name, Is.EqualTo("Bob"));
         }
 
         [Test]
@@ -62,9 +63,9 @@ namespace MatchQuest.Tests
             var result = _matchService.CreateIfNotExists(userId1, userId2);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userId1, result!.User1Id);
-            Assert.AreEqual(userId2, result.User2Id);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.User1Id, Is.EqualTo(userId1));
+            Assert.That(result.User2Id, Is.EqualTo(userId2));
             _mockRepository.Verify(r => r.CreateMatch(userId1, userId2), Times.Once);
         }
 
@@ -83,7 +84,7 @@ namespace MatchQuest.Tests
             var result = _matchService.CreateIfNotExists(userId1, userId2);
 
             // Assert
-            Assert.IsNull(result);
+            Assert.That(result, Is.Null);
             _mockRepository.Verify(r => r.CreateMatch(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
         }
     }

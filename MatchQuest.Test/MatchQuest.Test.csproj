@@ -16,13 +16,9 @@
         <PackageReference Include="NUnit.Analyzers" Version="4.7.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="5.0.0"/>
     </ItemGroup>
-
+    
     <ItemGroup>
-        <Using Include="NUnit.Framework"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\src\MatchQuest.Core\MatchQuest.Core.csproj" />
+        <ProjectReference Include="..\src\MatchQuest.Core\MatchQuest.Core.csproj" />
     </ItemGroup>
 
 </Project>

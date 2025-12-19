@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -45,56 +46,48 @@ namespace MatchQuest.App.ViewModels
 
             LoadGames();
         }
-  
+        
         public string Name
         {
-            get => _global.Client?.Name ?? string.Empty;
+           // Access the global client's name
+           
+            get => _global.Client.Name;
             set
             {
-                if (_global.Client != null)
-                {
-                    _global.Client.Name = value;
-                    OnPropertyChanged();
-                }
+                _global.Client.Name = value;
+                OnPropertyChanged();
             }
         }
-
         public DateOnly BirthDate
         {
+            // Access the global client's birth date
             get => _global.Client?.BirthDate ?? DateOnly.FromDateTime(DateTime.Now);
             set
             {
-                if (_global.Client != null)
-                {
                     _global.Client.BirthDate = value;
                     OnPropertyChanged();
-                }
             }
         }
 
         public string Region
         {
+            // Access the global client's region
             get => _global.Client?.Region ?? string.Empty;
             set
             {
-                if (_global.Client != null)
-                {
                     _global.Client.Region = value;
                     OnPropertyChanged();
-                }
             }
         }
 
         public string Biography
         {
+            // Access the global client's biography
             get => _global.Client?.Biography ?? string.Empty;
             set
             {
-                if (_global.Client != null)
-                {
                     _global.Client.Biography = value;
                     OnPropertyChanged();
-                }
             }
         }
 
@@ -119,6 +112,7 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task AddGame()
         {
+            // Validate selection
             if (SelectedGame == null)
             {
                 AddGameStatus = "Please select a game to add.";
@@ -126,9 +120,7 @@ namespace MatchQuest.App.ViewModels
 
                 return;
             }
-
-         
-
+            
             try
             {
                 // Add the game to the database
@@ -139,12 +131,14 @@ namespace MatchQuest.App.ViewModels
                 LoadGames();
 
                 AddGameStatus = "Game added successfully!";
+                // Clear status after delay
                 await ClearStatusAfterDelay(nameof(AddGameStatus), 3000);
 
             }
             catch (Exception ex)
             {
                 AddGameStatus = $"Error adding game: {ex.Message}";
+                // Clear status after delay
                 await ClearStatusAfterDelay(nameof(AddGameStatus), 3000);
 
             }
@@ -163,12 +157,15 @@ namespace MatchQuest.App.ViewModels
                 // Reload games to update both collections
                 LoadGames();
                 RemoveGameStatus = "Game removed successfully!";
+                // Clear status after delay
+
                 await ClearStatusAfterDelay(nameof(RemoveGameStatus), 1000);
 
             }
             catch (Exception ex)
             {
                 RemoveGameStatus = $"Error removing game: {ex.Message}";
+                // Clear status after delay
                 await ClearStatusAfterDelay(nameof(RemoveGameStatus), 1000);
                 
             }
@@ -177,28 +174,26 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task SaveProfile()
         {
-            if (_global.Client == null) return;
-            
-            // Update profile
-            var user = _userService.Update(_global.Client);
-            if (user != null)
-                _global.Client = user;
+            // Update the user profile in the database
+            _global.Client = _userService.Update(_global.Client);
 
             SaveProfileStatus = "Your profile has been updated!";
+            // Clear status after delay
             await ClearStatusAfterDelay(nameof(SaveProfileStatus), 4000);
-
         }
+        
+        // Helper method to clear status messages after a delay
         private async Task ClearStatusAfterDelay(string propertyName, int milliseconds)
         {
             await Task.Delay(milliseconds);
-    
-            // Gebruik reflection om de juiste property leeg te maken
+            
+            // Use reflection to set the property to an empty string
             var prop = GetType().GetProperty(propertyName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
             if (prop != null && prop.CanWrite)
                 prop.SetValue(this, string.Empty);
         }
 
-
+        // Command to upload a profile photo
         [RelayCommand]
         private async Task UploadProfilePhoto()
         {
@@ -207,7 +202,8 @@ namespace MatchQuest.App.ViewModels
                 PickerTitle = "Select a profile picture",
                 FileTypes = FilePickerFileType.Images
             });
-
+            
+            // If the user canceled the picking
             if (result != null && _global.Client != null)
             {
                 var base64 = FileHelper.ImageToBase64(result.FullPath);
@@ -220,6 +216,7 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Back()
         {
+            //
             if (Shell.Current is null)
             {
                 if (Application.Current?.MainPage is not AppShell)

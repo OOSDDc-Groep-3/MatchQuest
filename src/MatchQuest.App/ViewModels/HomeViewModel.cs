@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
-using MatchQuest.Core.Data.Repositories;
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -12,7 +11,7 @@ namespace MatchQuest.App.ViewModels
         private readonly GlobalViewModel _global;
         private readonly IMatchService _matchService;
         private readonly IUserService _userService;
-        private readonly ChatRepository _chatRepo;
+        private readonly IChatService _chatService;
         private readonly IReactionService _reactionService;
 
         [ObservableProperty]
@@ -58,11 +57,16 @@ namespace MatchQuest.App.ViewModels
                 ? null
                 : (GameType)(SelectedGameTypeIndex - 1);
 
-        public HomeViewModel(GlobalViewModel global, IMatchService matchService, IUserService userService, IReactionService reactionService)
+        public HomeViewModel(
+            GlobalViewModel global, 
+            IMatchService matchService, 
+            IUserService userService, 
+            IChatService chatService, 
+            IReactionService reactionService)
         {
             _global = global;
             _matchService = matchService;
-            _chatRepo = new ChatRepository();
+            _chatService = chatService;
             _userService = userService;
             _reactionService = reactionService;
 
@@ -97,27 +101,10 @@ namespace MatchQuest.App.ViewModels
 
             foreach (var u in list)
             {
-                var preview = GetLastMessagePreview(u);
+                var preview = _chatService.GetLastMessagePreview(CurrentUserId, u);
                 var matchItem = new MatchChatItemViewModel(u, preview);
                 Matches.Add(matchItem);
             }
-        }
-
-        private string? GetLastMessagePreview(User user)
-        {
-            if (user == null || CurrentUserId == 0) return null;
-
-            // Find the match row for the two users
-            var matchId = _chatRepo.GetMatchIdBetween(CurrentUserId, user.Id);
-            if (matchId == 0) return null;
-
-            // Get or create chat for the match and fetch messages (repo returns ordered ASC)
-            var chatId = _chatRepo.GetOrCreateChatByMatchId(matchId);
-            var msgs = _chatRepo.GetMessagesByChatId(chatId);
-            if (msgs == null || msgs.Count == 0) return null;
-
-            // Return the last message text
-            return msgs.Last().MessageText;
         }
         
         private void NextMatch()

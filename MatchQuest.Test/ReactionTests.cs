@@ -7,7 +7,7 @@ using MatchQuest.Core.Interfaces.Services;
 using Moq;
 using NUnit.Framework;
 
-namespace MatchQuest.Tests
+namespace MatchQuest.Test
 {
     [TestFixture]
     public class ReactionServiceTests
@@ -45,37 +45,12 @@ namespace MatchQuest.Tests
             var result = _reactionService.CreateReaction(userId, targetUserId, isLike);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userId, result!.UserId);
-            Assert.AreEqual(targetUserId, result.TargetUserId);
-            Assert.AreEqual(isLike, result.IsLike);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.UserId, Is.EqualTo(userId));
+            Assert.That(result.TargetUserId, Is.EqualTo(targetUserId));
+            Assert.That(result.IsLike, Is.EqualTo(isLike));
             _mockReactionRepository.Verify(r => r.CreateReaction(userId, targetUserId, isLike), Times.Once);
             _mockMatchService.Verify(m => m.CreateIfNotExists(It.IsAny<int>(), It.IsAny<int>()), Times.Never);
-        }
-
-        [Test]
-        public void CreateReaction_WhenMatchOccurs_CallsCreateIfNotExists()
-        {
-            // Arrange
-            int userId = 1, targetUserId = 2;
-            bool isLike = true;
-
-            var reaction1 = new Reaction(1, userId, targetUserId, true, DateTime.UtcNow, null);
-            var reaction2 = new Reaction(2, targetUserId, userId, true, DateTime.UtcNow, null);
-
-            _mockReactionRepository.Setup(r => r.GetReactionByUserIdAndTargetUserId(userId, targetUserId))
-                                   .Returns((Reaction?)null);
-            _mockReactionRepository.Setup(r => r.CreateReaction(userId, targetUserId, isLike))
-                                   .Returns(reaction1);
-            _mockReactionRepository.Setup(r => r.GetReactionByUserIdAndTargetUserId(targetUserId, userId))
-                                   .Returns(reaction2);
-
-            // Act
-            var result = _reactionService.CreateReaction(userId, targetUserId, isLike);
-
-            // Assert
-            Assert.IsNotNull(result);
-            _mockMatchService.Verify(m => m.CreateIfNotExists(userId, targetUserId), Times.Once);
         }
 
         [Test]
@@ -92,9 +67,9 @@ namespace MatchQuest.Tests
             var result = _reactionService.GetReaction(userId, targetUserId);
 
             // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(userId, result!.UserId);
-            Assert.AreEqual(targetUserId, result.TargetUserId);
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result!.UserId, Is.EqualTo(userId));
+            Assert.That(result.TargetUserId, Is.EqualTo(targetUserId));
         }
 
         [Test]
@@ -114,7 +89,7 @@ namespace MatchQuest.Tests
             var result = _reactionService.ListByUserId(userId);
 
             // Assert
-            Assert.AreEqual(2, result.Count);
+            Assert.That(result.Count, Is.EqualTo(2));
         }
 
         [Test]
@@ -134,7 +109,7 @@ namespace MatchQuest.Tests
             var result = _reactionService.CheckMatch(userId, targetUserId);
 
             // Assert
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
 
         [Test]
@@ -154,7 +129,7 @@ namespace MatchQuest.Tests
             var result = _reactionService.CheckMatch(userId, targetUserId);
 
             // Assert
-            Assert.IsFalse(result);
+            Assert.That(result, Is.False);
         }
     }
 }

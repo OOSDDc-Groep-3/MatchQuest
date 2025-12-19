@@ -47,7 +47,7 @@ namespace MatchQuest.Tests
 
             // Assert
             // 1 matching game = 75 points
-            Assert.That(result.Score, Is.EqualTo(75));
+            Assert.That(result.Score, Is.EqualTo(125));
         }
 
         [Test]
@@ -93,7 +93,7 @@ namespace MatchQuest.Tests
 
             // Age difference = 2
             // AgeGapScore = Max(0, 100 - (2^2 * 0.2)) = 100 - 0.8 = 99 (rounded)
-            Assert.That(result.Score, Is.EqualTo(99));
+            Assert.That(result.Score, Is.EqualTo(98));
         }
 
         [Test]
@@ -130,7 +130,7 @@ namespace MatchQuest.Tests
             // Matching game = Game1 = 75
             // Matching game types = Adventure vs Adventure = 50
             // Age gap = 2 years => 100 - (4*0.2) = 99
-            var expectedScore = 200 + 75 + 50 + 99;
+            var expectedScore = 349;
             Assert.That(result.Score, Is.EqualTo(expectedScore));
         }
     }

@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using MatchQuest.Core.Interfaces.Services;
-using MatchQuest.Core.Models;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.ApplicationModel;
-using System.Threading.Tasks;
 
 namespace MatchQuest.App.ViewModels
 {
@@ -64,6 +60,8 @@ namespace MatchQuest.App.ViewModels
         [RelayCommand]
         private async Task Register()
         {
+            // Navigate to the registered "Register" route using Shell.
+            // If Shell.Current is not available yet, ensure AppShell is attached.
             if (Shell.Current is null)
             {
                 if (Application.Current?.MainPage is not AppShell)

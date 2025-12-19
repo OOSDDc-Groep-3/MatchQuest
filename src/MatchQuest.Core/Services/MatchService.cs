@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using MatchQuest.Core.Interfaces.Repositories;
+﻿using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Models;
 
@@ -15,42 +12,21 @@ namespace MatchQuest.Core.Services
             _matchRepository = matchRepository;
         }
 
-        public User? Get(string email)
+        public List<User> GetAllMatchesFromUserId(int userId)
         {
-            var result = _matchRepository.Get(email);
-            return result;
+            return _matchRepository.GetAllMatchesFromUserId(userId);
         }
 
-        public User? Get(int id)
+        public Match? CreateIfNotExists(int userId1, int userId2)
         {
-            var result = _matchRepository.Get(id);
-            return result;
-        }
+            var exists = (_matchRepository.GetByUserIds(userId1, userId2) != null);
 
-        public List<User> GetAll()
-        {
-            var clients = _matchRepository.GetAll();
-            return clients;
-        }
-
-        public List<User> GetAll(int userId)
-        {
-            var matches = _matchRepository.GetAll(userId);
-            return matches;
-        }
-
-        public User? Create(User client)
-        {
-            try
+            if (!exists)
             {
-                var created = _matchRepository.Add(client);
-                return created;
+                return _matchRepository.CreateMatch(userId1, userId2);
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"ClientService.Create: Exception: {ex}");
-                return null;
-            }
+
+            return null;
         }
     }
 }

@@ -1,0 +1,41 @@
+name: Build MAUI App (Windows)
+
+on:
+  pull_request: 
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on:  windows-latest
+
+    steps: 
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI workloads
+        run: dotnet workload install maui-windows maui-maccatalyst
+        shell: pwsh
+
+      - name: Restore NuGet packages
+        run: dotnet restore src/MatchQuest.App/MatchQuest.App.csproj /p:TargetFramework=net10.0-windows10.0.19041.0
+        shell: pwsh
+
+      - name: Build Windows app
+        run: dotnet build src/MatchQuest.App/MatchQuest.App.csproj -c Release -f net10.0-windows10.0.19041.0
+        shell: pwsh
+      
+      - name: Run Unit Tests
+        run: dotnet test MatchQuest.Test/MatchQuest.Test.csproj -c Release --results-directory TestResults --logger "trx;LogFileName=testresults.trx"      
+        
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/testresults.trx

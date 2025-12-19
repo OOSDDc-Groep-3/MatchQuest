@@ -4,9 +4,11 @@ namespace MatchQuest.Core.Interfaces.Services
 {
     public interface IUserService
     {
-        public User? Get(string email);
-        public User? Get(int id);
-        public List<User> GetAll();
-        public User? Create(User client);
+        User? Get(string email);
+        User? Get(int id);
+        List<User> GetAll();
+        User? Create(User client);
+        List<MatchingScore> GetUserMatchPool(User user, GameType? gameType);
+        User? Update(User user);
     }
 }

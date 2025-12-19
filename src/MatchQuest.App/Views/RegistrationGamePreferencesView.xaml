@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+             xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="MatchQuest.App.Views.RegistrationGamePreferencesView"
+             x:DataType="vm:RegistrationGamePreferencesViewModel"
+             x:Name="PreferencesPage"
+             BackgroundImageSource="background.png"
+             BackgroundColor="Transparent">
+
+    <Grid RowDefinitions="*" ColumnDefinitions="*">
+        <BoxView Margin="0"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 Color="#202022"
+                 Opacity="0.7"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill"
+                 InputTransparent="True" />
+
+        <Border Margin="40"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Background="#202022"
+                Opacity="0.8"
+                Stroke="#c0ffee"
+                StrokeShape="RoundRectangle 30"
+                StrokeThickness="3"
+                HorizontalOptions="Fill"
+                VerticalOptions="Fill"
+                InputTransparent="True" />
+
+        <Image Margin="-1200,-700,-50,-50" Source="matchquest.png" VerticalOptions="Center" HorizontalOptions="Center" WidthRequest="250" HeightRequest="250"/>
+
+        <ScrollView>
+            <StackLayout Spacing="20" Padding="450,-100,450,100" VerticalOptions="Center">
+                <Label Text="GAME PREFERENCES" Margin="0,130,0,30" FontAttributes="Bold" TextColor="#c0ffee" FontSize="40" VerticalOptions="Center" HorizontalOptions="Center" />
+
+                <!-- Select Game Section -->
+                <Label Text="Select games" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" />
+                
+                <Picker ItemsSource="{Binding Games}" 
+                        SelectedItem="{Binding SelectedGame}"
+                        ItemDisplayBinding="{Binding Name}"
+                        FontAttributes="Bold" 
+                        TextColor="#383535" 
+                        BackgroundColor="#C6C2C2"
+                        Title="Pick a game..."
+                        HeightRequest="80"/>
+
+                <Button BackgroundColor="#c0ffee" 
+                        FontSize="18" 
+                        FontAttributes="Bold" 
+                        TextColor="#383535" 
+                        Text="Add Game" 
+                        Command="{Binding AddGameCommand}" />
+
+                <!-- User's Selected Games Display -->
+                <Label Text="Your selected games" FontAttributes="Bold" TextColor="#FFFFFF" FontSize="20" HorizontalOptions="Start" Margin="0,20,0,0" />
+                
+                <CollectionView ItemsSource="{Binding UserGames}"
+                                SelectionMode="None"
+                                MinimumHeightRequest="200"
+                                MaximumHeightRequest="200">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Game">
+                            <Border BackgroundColor="#383535" 
+                                    Padding="12" 
+                                    Margin="4"
+                                    StrokeThickness="1"
+                                    Stroke="#c0ffee">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Grid.Column="0"
+                                           Text="{Binding Name}" 
+                                           FontSize="16" 
+                                           TextColor="#c0ffee" 
+                                           VerticalOptions="Center" />
+                                    
+                                    <!-- Red X Button -->
+                                    <Button Grid.Column="1"
+                                            Text="✕"
+                                            FontSize="18"
+                                            FontAttributes="Bold"
+                                            TextColor="Black"
+                                            BackgroundColor="#E37272"
+                                            CornerRadius="12"
+                                            WidthRequest="30"
+                                            HeightRequest="30"
+                                            Padding="0"
+                                            VerticalOptions="Center"
+                                            Command="{Binding BindingContext.RemoveGameCommand, Source={x:Reference PreferencesPage}}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    
+                    <CollectionView.EmptyView>
+                        <Label Text="No games added yet. Please add at least one game." 
+                               FontSize="14" 
+                               FontAttributes="Italic"
+                               TextColor="#DADADA" 
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <!-- Confirm Button -->
+                <Button BackgroundColor="#c0ffee" 
+                        FontSize="20" 
+                        FontAttributes="Bold" 
+                        TextColor="#383535" 
+                        Text="Confirm" 
+                        Command="{Binding ConfirmCommand}" 
+                        Margin="0,20,0,0" />
+                
+                <!-- Error Message -->
+                <Label Text="{Binding LoginMessage}" 
+                       TextColor="Red" 
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       IsVisible="{Binding LoginMessage, Converter={StaticResource StringNotNullOrEmptyToBool}}" />
+            </StackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

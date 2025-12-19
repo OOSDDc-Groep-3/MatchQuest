@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:system="clr-namespace:System;assembly=netstandard"
+    xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
+    xmlns:converters="clr-namespace:MatchQuest.App.Converters"
+    xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+    x:Class="MatchQuest.App.Views.UserProfileView"
+    x:DataType="vm:UserProfileViewModel"
+    x:Name="ProfilePage"
+    BackgroundImageSource="background.png"
+    BackgroundColor="Transparent">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Converters -->
+            <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            
+            <!-- Colors (matching ChatView and HomeView) -->
+            <Color x:Key="AccentColor">#C0ffee</Color>
+            <Color x:Key="OverlayColor">#E91E1E1E</Color>
+            <Color x:Key="SecondaryText">#DADADA</Color>
+            <Color x:Key="CardStroke">#A4D5C7</Color>
+
+            <!-- Styles -->
+            <Style x:Key="SeparatorStyle" TargetType="BoxView">
+                <Setter Property="HeightRequest" Value="1" />
+                <Setter Property="BackgroundColor" Value="{StaticResource AccentColor}" />
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="Margin" Value="0,0,6,0" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="0.38*,0.62*">
+
+        <!-- Full-page semi-opaque overlay (matching ChatView and HomeView) -->
+        <BoxView Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" Grid.ColumnSpan="2"
+                 Color="{StaticResource OverlayColor}"
+                 HorizontalOptions="Fill"
+                 VerticalOptions="Fill"
+                 InputTransparent="True"
+                 Opacity="1"/>
+
+        <!-- Left: Sidebar (matching ChatView structure) -->
+        <Border Grid.Row="0" Grid.RowSpan="3" Grid.Column="0"
+                Margin="0"
+                BackgroundColor="Transparent"
+                Stroke="{StaticResource AccentColor}"
+                StrokeThickness="0.5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0" />
+            </Border.StrokeShape>
+
+            <Grid Padding="0" RowDefinitions="Auto,*,Auto">
+                <!-- Logo (matching ChatView positioning) -->
+                <Image Margin="0,20,450,0" Source="matchquest.png" WidthRequest="150" HeightRequest="141" />
+                
+                <!-- Header (matching ChatView) -->
+                <HorizontalStackLayout Grid.Row="0" Margin="0,34,12,6" Spacing="-30" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="SETTINGS"
+                           FontSize="32"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource AccentColor}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!-- Navigation buttons -->
+                <Grid Grid.Row="1" Padding="30,8,30,0">
+                    <VerticalStackLayout Spacing="35">
+                        <BoxView Style="{StaticResource SeparatorStyle}" />
+
+                        <VerticalStackLayout Spacing="15">
+                            <Button Text="MY PROFILE"
+                                    FontSize="20"
+                                    TextColor="{StaticResource AccentColor}"
+                                    FontAttributes="Bold"
+                                    HeightRequest="60"
+                                    CornerRadius="0"
+                                    BorderColor="{StaticResource AccentColor}"
+                                    BorderWidth="1"
+                                    BackgroundColor="#49192126"/>
+                            
+                            <Button Text="MY ACCOUNT"
+                                    FontSize="20"
+                                    TextColor="{StaticResource AccentColor}"
+                                    FontAttributes="Bold"
+                                    HeightRequest="60"
+                                    CornerRadius="0"
+                                    BorderColor="{StaticResource AccentColor}"
+                                    BorderWidth="1"
+                                    BackgroundColor="#49192126"/>
+                            
+
+                            <Button Text="ADMIN"
+                                    FontSize="20"
+                                    TextColor="{StaticResource AccentColor}"
+                                    FontAttributes="Bold"
+                                    HeightRequest="60"
+                                    CornerRadius="0"
+                                    BorderColor="{StaticResource AccentColor}"
+                                    BorderWidth="1"
+                                    BackgroundColor="#49192126"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Logout button at bottom -->
+                <Button Text="LOG OUT"
+                        Grid.Row="2"
+                        FontSize="20"
+                        BackgroundColor="#E37272"
+                        TextColor="Black"
+                        FontAttributes="Bold"
+                        HeightRequest="60"
+                        CornerRadius="0"
+                        BorderColor="Black"
+                        BorderWidth="1"
+                        Margin="31"/>
+            </Grid>
+        </Border>
+
+        <!-- Right column header with controls (matching ChatView structure) -->
+        <Grid Grid.Column="1" Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
+            <!-- Back Button (matching ChatView) -->
+            <ImageButton Grid.Column="0"
+                         BackgroundColor="Transparent" 
+                         Margin="10,5,20,10" 
+                         Source="back.png" 
+                         WidthRequest="38" 
+                         HeightRequest="38" 
+                         VerticalOptions="Center" 
+                         Command="{Binding BackCommand}" />
+            
+            <!-- Title -->
+            <Label Grid.Column="1" 
+                   Text="MY PROFILE" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource AccentColor}" 
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start" />
+            
+            <!-- Right side controls -->
+            <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
+                <Picker x:Name="ProfileFilter" 
+                        TextColor="{StaticResource AccentColor}" 
+                        FontAttributes="Bold" 
+                        SelectedIndex="0" 
+                        BackgroundColor="#192126" 
+                        WidthRequest="140">
+                    <Picker.Items>
+                        <x:String>FILTER</x:String>
+                    </Picker.Items>
+                </Picker>
+
+                <ImageButton x:Name="SettingsButton"
+                             Source="settings.png"
+                             CornerRadius="28"
+                             WidthRequest="32"
+                             HeightRequest="32"/>
+            </HorizontalStackLayout>
+
+            <!-- header divider (matching ChatView) -->
+            <BoxView Grid.Row="1" Grid.ColumnSpan="3" HeightRequest="1" BackgroundColor="{StaticResource AccentColor}" VerticalOptions="End" Margin="0,148,0,0" />
+        </Grid>
+
+        <!-- Right: Profile Form (matching ChatView card structure) -->
+        <Border Grid.Column="1" Grid.Row="1" Margin="32,12,32,12"
+                Stroke="{StaticResource AccentColor}"
+                StrokeThickness="0.5"
+                Padding="20,20,20,20"
+                BackgroundColor="Transparent">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10" />
+            </Border.StrokeShape>
+
+            <ScrollView>
+                <VerticalStackLayout Spacing="20">
+
+                    <!-- Profile Photo -->
+                    <Border HeightRequest="150" WidthRequest="150"
+                            BackgroundColor="Transparent"
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Padding="0"
+                            Stroke="Transparent">
+                        <Image Source="{Binding ProfileImageSource}"/>
+                    </Border>
+
+                    <Button Text="Upload"
+                            Command="{Binding UploadProfilePhotoCommand}"
+                            BackgroundColor="#192126"
+                            TextColor="{StaticResource AccentColor}"
+                            FontAttributes="Bold"
+                            CornerRadius="12"
+                            WidthRequest="200"
+                            HeightRequest="45"
+                            HorizontalOptions="Center"/>
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,10,0,10"/>
+
+                    <!-- Form Fields -->
+                    <Label Text="Name" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="16"/>
+                    <Entry Text="{Binding Name}"
+                           Placeholder="Enter your name..."
+                           TextColor="White"
+                           PlaceholderColor="{StaticResource SecondaryText}"
+                           BackgroundColor="#383535"/>
+
+                    <Label Text="Date of Birth" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="16"/>
+                    <DatePicker Date="{Binding BirthDate}"
+                                MaximumDate="{x:Static system:DateTime.Now}"
+                                TextColor="White"
+                                BackgroundColor="#383535"/>
+
+                    <Label Text="City" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="16"/>
+                    <Entry Text="{Binding Region}"
+                           Placeholder="Enter city..."
+                           TextColor="White"
+                           PlaceholderColor="{StaticResource SecondaryText}"
+                           BackgroundColor="#383535"/>
+
+                    <Label Text="Biography" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="16"/>
+                    <Editor Text="{Binding Biography}"
+                            Placeholder="Enter biography..."
+                            BackgroundColor="#383535"
+                            TextColor="White"
+                            HeightRequest="120"
+                            PlaceholderColor="{StaticResource SecondaryText}"/>
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,10,0,10"/>
+
+                    <!-- Add a Game Section -->
+                    <Label Text="Add a Game" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="18"/>
+                    
+                    <!-- Games Selection with Icons -->
+                    <Border BackgroundColor="#383535" 
+                            Padding="0" 
+                            StrokeThickness="1" 
+                            Stroke="{StaticResource SecondaryText}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8" />
+                        </Border.StrokeShape>
+                        
+                        <CollectionView ItemsSource="{Binding Games}"
+                                        SelectionMode="Single"
+                                        SelectedItem="{Binding SelectedGame}"
+                                        MaximumHeightRequest="200">
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate x:DataType="models:Game">
+                                    <Border Padding="10" 
+                                            Margin="2" 
+                                            BackgroundColor="Transparent">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                                Command="{Binding BindingContext.SelectGameCommand, Source={x:Reference ProfilePage}}"
+                                                CommandParameter="{Binding .}"/>
+                                        </Border.GestureRecognizers>
+                                        
+                                        <Grid ColumnDefinitions="Auto,*">
+                                            <!-- Game Image -->
+                                            <Image Grid.Column="0"
+                                                   Source="{Binding Image, Converter={StaticResource ProfilePictureConverter}}"
+                                                   WidthRequest="32" 
+                                                   HeightRequest="32" 
+                                                   Aspect="AspectFill"
+                                                   VerticalOptions="Center">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Center="16,16" RadiusX="16" RadiusY="16" />
+                                                </Image.Clip>
+                                            </Image>
+                                            
+                                            <!-- Game Name -->
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   TextColor="White"
+                                                   FontSize="15"
+                                                   VerticalOptions="Center"
+                                                   Margin="12,0,0,0"/>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                            
+                            <CollectionView.EmptyView>
+                                <Label Text="All games have been added!" 
+                                       FontSize="14" 
+                                       FontAttributes="Italic"
+                                       TextColor="{StaticResource SecondaryText}" 
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Margin="10"/>
+                            </CollectionView.EmptyView>
+                        </CollectionView>
+                    </Border>
+                    <Label Text="{Binding AddGameStatus}" TextColor="Green" HorizontalOptions="Center" />
+
+                    <Button Text="Add Selected Game"
+                            Command="{Binding AddGameCommand}"
+                            BackgroundColor="#E91E1E1E"
+                            TextColor="#c0ffee"
+                            FontAttributes="Bold"
+                            CornerRadius="12"
+                            HeightRequest="45"
+                            FontSize="16"
+                            HorizontalOptions="Fill"/>
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,10,0,10"/>
+
+                    <!-- Your Games -->
+                    <Label Text="Your Games" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="{Binding RemoveGameStatus}" TextColor="Green" HorizontalOptions="Center" />
+
+                    <CollectionView ItemsSource="{Binding UserGames}" 
+                                    SelectionMode="None" 
+                                    MinimumHeightRequest="150"
+                                    MaximumHeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Game">
+                                <Border Padding="12" Margin="0,5,0,5" BackgroundColor="#383535" StrokeThickness="1" Stroke="{StaticResource AccentColor}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    
+                                    <Grid ColumnDefinitions="Auto,*,Auto">
+                                        <!-- Game Image with Converter -->
+                                        <Image Grid.Column="0"
+                                               Source="{Binding Image, Converter={StaticResource ProfilePictureConverter}}"
+                                               WidthRequest="40" 
+                                               HeightRequest="40" 
+                                               Aspect="AspectFill"
+                                               VerticalOptions="Center">
+                                            <Image.Clip>
+                                                <EllipseGeometry Center="20,20" RadiusX="20" RadiusY="20" />
+                                            </Image.Clip>
+                                        </Image>
+                                        
+                                        <!-- Game Name -->
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}" 
+                                               FontSize="16" 
+                                               TextColor="White" 
+                                               VerticalOptions="Center"
+                                               Margin="12,0,0,0"/>
+
+                                        
+                                        <!-- Remove Button (Red X) -->
+                                        <Button Grid.Column="2"
+                                                Text="✕"
+                                                FontSize="18"
+                                                FontAttributes="Bold"
+                                                TextColor="Black"
+                                                BackgroundColor="#E37272"
+                                                CornerRadius="12"
+                                                WidthRequest="30"
+                                                HeightRequest="30"
+                                                Padding="0"
+                                                VerticalOptions="Center"
+                                                Command="{Binding BindingContext.RemoveGameCommand, Source={x:Reference ProfilePage}}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                        
+                        <CollectionView.EmptyView>
+                            <Label Text="No games added yet. Please add at least one game." 
+                                   FontSize="14" 
+                                   FontAttributes="Italic"
+                                   TextColor="{StaticResource SecondaryText}" 
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Margin="0,20,0,20"/>
+                        </CollectionView.EmptyView>
+                    </CollectionView>
+
+                    <BoxView Style="{StaticResource SeparatorStyle}" Margin="0,20,0,10"/>
+                    <Label Text="{Binding SaveProfileStatus}" TextColor="Green" HorizontalOptions="Center" />
+
+
+
+                    <!-- Save Button -->
+                    <Button Command="{Binding SaveProfileCommand}"
+                            Text="Save Profile"
+                            BackgroundColor="{StaticResource AccentColor}"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            CornerRadius="12"
+                            HeightRequest="50"
+                            FontSize="16"/>
+                </VerticalStackLayout>
+                
+            </ScrollView>
+            
+        </Border>
+    </Grid>
+</ContentPage>

@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:MatchQuest.App.ViewModels"
              xmlns:models="clr-namespace:MatchQuest.Core.Models;assembly=MatchQuest.Core"
+             xmlns:converters="clr-namespace:MatchQuest.App.Converters"
              xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="MatchQuest.App.Views.ChatView"
              x:DataType="vm:ChatViewModel"
@@ -12,6 +13,10 @@
 
     <ContentPage.Resources>
         <ResourceDictionary>
+            
+            <!-- Converter for Base64 to image -->
+            <converters:ProfilePictureConverter x:Key="ProfilePictureConverter" />
+            
             <!-- Colors -->
             <Color x:Key="AccentColor">#C0ffee</Color>
             <Color x:Key="OverlayColor">#E91E1E1E</Color>
@@ -115,22 +120,19 @@
                            VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Matches collection (keeps binding to ChatViewModel.Matches and existing command usage) -->
-                <Grid Grid.Row="1" Padding="30,8,30,0">
+                <!-- Matches collection - wrapped in ScrollView for scrollability -->
+                <ScrollView Grid.Row="1" Padding="30,8,30,0" VerticalScrollBarVisibility="Always">
                     <VerticalStackLayout Spacing="35">
                         <BoxView Style="{StaticResource SeparatorStyle}" />
 
                         <CollectionView x:Name="MatchesCollection"
                                         ItemsSource="{Binding Matches}"
                                         SelectionMode="Single"
-                                        ItemsLayout="VerticalList"
                                         Margin="0,8,0,0"
-                                        BackgroundColor="Transparent"
-                                        ItemsUpdatingScrollMode="KeepScrollOffset">
+                                        BackgroundColor="Transparent">
                             <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:User">
-                                    <!-- Visible card (high contrast) so labels are readable over background image -->
-                                    <Border Margin="0" Padding="24,24,24,24" BackgroundColor="#49192126"  StrokeThickness="1" Stroke="#C0ffee">
+                                <DataTemplate x:DataType="vm:MatchChatItemViewModel">
+                                    <Border Margin="0,0,0,12" Padding="24,24,24,24" BackgroundColor="#49192126" StrokeThickness="1" Stroke="#C0ffee">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
                                                 Command="{Binding BindingContext.OpenMatchCommand, Source={x:Reference ChatPage}}"
@@ -139,7 +141,7 @@
                                         </Border.GestureRecognizers>
 
                                         <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                                            <Image Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}"
+                                            <Image Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}}"
                                                    WidthRequest="{StaticResource AvatarSize}"
                                                    HeightRequest="{StaticResource AvatarSize}"
                                                    Aspect="AspectFill"
@@ -184,7 +186,7 @@
                             </CollectionView.EmptyView>
                         </CollectionView>
                     </VerticalStackLayout>
-                </Grid>
+                </ScrollView>
 
                 <!-- Filter picker at bottom (keeps it visible like HomeView) -->
                 <Picker Grid.Row="2" x:Name="MyMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="220" Margin="31">
@@ -200,15 +202,33 @@
 
         <!-- Right: Chat area header -->
         <Grid Grid.Column="1" Grid.Row="0" Margin="10,-10,10,0" Padding="32" ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto">
-            <ImageButton Margin="10,5,20,10" Source="back.png" WidthRequest="38" HeightRequest="38" VerticalOptions="Center" Command="{Binding BackCommand}" />
-            <Label Grid.Column="1" Text="{Binding PartnerName}" FontSize="32" FontAttributes="Bold" TextColor="{StaticResource AccentColor}" VerticalOptions="Center" HorizontalOptions="Start" />
+            <ImageButton BackgroundColor="Transparent" Margin="10,5,20,10" Source="back.png" WidthRequest="38" HeightRequest="38" VerticalOptions="Center" Command="{Binding BackCommand}" />
+            
+            <!-- Replace the Label with this clickable version -->
+            <Label Grid.Column="1" 
+                   Text="{Binding PartnerName}" 
+                   FontSize="32" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource AccentColor}" 
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Start">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding ViewPartnerProfileCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+            
             <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center" HorizontalOptions="End">
                 <Picker x:Name="NewMatchesFilter" TextColor="{StaticResource AccentColor}" FontAttributes="Bold" SelectedIndex="0" BackgroundColor="#192126" WidthRequest="140">
                     <Picker.Items>
                         <x:String>FILTER</x:String>
                     </Picker.Items>
                 </Picker>
-                <ImageButton Source="settings.png" CornerRadius="28" WidthRequest="32" HeightRequest="32" />
+                <ImageButton x:Name="SettingsButton"
+                             Source="settings.png"
+                             CornerRadius="28"
+                             WidthRequest="32"
+                             HeightRequest="32"
+                             Command="{Binding OpenSettingsCommand}"/>
             </HorizontalStackLayout>
 
             <!-- header divider -->
@@ -257,7 +277,7 @@
                                                        LineBreakMode="WordWrap"
                                                        MaximumWidthRequest="600"/>
                                             </Border>
-                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>
@@ -267,7 +287,7 @@
                                     <!-- Inbound (left) -->
                                     <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding IsOutbound, Converter={StaticResource InverseBooleanConverter}}">
                                         <StackLayout Orientation="Horizontal" HorizontalOptions="Start" Spacing="8">
-                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
+                                            <Image VerticalOptions="End" Source="{Binding ProfilePicture, Converter={StaticResource ProfilePictureConverter}, FallbackValue='showcaseprofile.png'}" WidthRequest="48" HeightRequest="48">
                                                 <Image.Clip>
                                                     <EllipseGeometry Center="24,24" RadiusX="24" RadiusY="24" />
                                                 </Image.Clip>

@@ -1,126 +1,143 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFrameworks>net10.0-maccatalyst26.1</TargetFrameworks>
-        <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
-        <UseMaui>true</UseMaui>
+  <PropertyGroup>
+    <TargetFrameworks>net10.0-maccatalyst26.1</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
+      $(TargetFrameworks);net10.0-windows10.0.19041.0
+    </TargetFrameworks>
 
-        <!-- Note for MacCatalyst:
-        The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
-        When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
-        The Mac App Store will NOT accept apps with ONLY maccatalyst-arm64 indicated;
-        either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
-        <!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+    <OutputType>Exe</OutputType>
 
-        <OutputType>Exe</OutputType>
-        <RootNamespace>MatchQuest.App</RootNamespace>
-        <UseMaui>true</UseMaui>
-        <SingleProject>true</SingleProject>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+    <RootNamespace>MatchQuest.App</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
 
-        <!-- Display name -->
-        <ApplicationTitle>MatchQuest.App</ApplicationTitle>
+    <!-- App identity -->
+    <ApplicationTitle>MatchQuest.App</ApplicationTitle>
+    <ApplicationId>nl.windesheim.matchquest</ApplicationId>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
 
-        <!-- App Identifier -->
-        <ApplicationId>nl.windesheim.matchquest</ApplicationId>
+    <!-- Windows -->
+    <WindowsPackageType>None</WindowsPackageType>
 
-        <!-- Versions -->
-        <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
-        <ApplicationVersion>1</ApplicationVersion>
+    <!-- Platform minimum versions -->
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+      15.0
+    </SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+      15.0
+    </SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+      21.0
+    </SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+      10.0.17763.0
+    </SupportedOSPlatformVersion>
+    <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+      10.0.17763.0
+    </TargetPlatformMinVersion>
+  </PropertyGroup>
 
-        <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
-        <WindowsPackageType>None</WindowsPackageType>
+  <!-- MAUI resources -->
+  <ItemGroup>
+    <MauiIcon Include="Resources\AppIcon\appicon.svg"
+              ForegroundFile="Resources\AppIcon\appiconfg.svg"
+              Color="#512BD4" />
 
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
-        <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
-        <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
-    </PropertyGroup>
+    <MauiSplashScreen Include="Resources\Splash\splash.svg"
+                      Color="#512BD4"
+                      BaseSize="128,128" />
 
-    <ItemGroup>
-        <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+    <MauiImage Include="Resources\Images\*" />
+    <MauiImage Update="Resources\Images\dotnet_bot.png"
+               Resize="True"
+               BaseSize="300,185" />
 
-        <!-- Splash Screen -->
-        <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
+    <MauiFont Include="Resources\Fonts\*" />
 
-        <!-- Images -->
-        <MauiImage Include="Resources\Images\*" />
-        <MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+    <MauiAsset Include="Resources\Raw\**"
+               LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
 
-        <!-- Custom Fonts -->
-        <MauiFont Include="Resources\Fonts\*" />
+  <!-- Remove unused images -->
+  <ItemGroup>
+    <MauiImage Remove="Resources\Images\dislike-button-icon.png" />
+    <MauiImage Remove="Resources\Images\dislikebuttonicon.png" />
+    <MauiImage Remove="Resources\Images\like-button-icon.png" />
+    <MauiImage Remove="Resources\Images\likebuttonicon.png" />
+    <MauiImage Remove="Resources\Images\settingsicon.png" />
 
-        <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
-        <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
-    </ItemGroup>
+    <None Remove="Resources\Images\dislike-button-icon.png" />
+    <None Remove="Resources\Images\dislikebuttonicon.png" />
+    <None Remove="Resources\Images\like-button-icon.png" />
+    <None Remove="Resources\Images\likebuttonicon.png" />
+    <None Remove="Resources\Images\settings.png" />
+    <None Remove="Resources\Images\settingsicon.png" />
+  </ItemGroup>
 
+  <!-- Packages -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Maui.Essentials" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
-    </ItemGroup>
+  <!-- Project references -->
+  <ItemGroup>
+    <ProjectReference Include="..\MatchQuest.Core.Data\MatchQuest.Core.Data.csproj" />
+    <ProjectReference Include="..\MatchQuest.Core\MatchQuest.Core.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\MatchQuest.Core.Data\MatchQuest.Core.Data.csproj" />
-        <ProjectReference Include="..\MatchQuest.Core\MatchQuest.Core.csproj" />
-    </ItemGroup>
+  <!-- XAML code-behind -->
+  <ItemGroup>
+    <Compile Update="Views\HomeView.xaml.cs">
+      <DependentUpon>HomeView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ChatView.xaml.cs">
+      <DependentUpon>ChatView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationBiographyView.xaml.cs">
+      <DependentUpon>RegistrationBiographyView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationGamePreferencesView.xaml.cs">
+      <DependentUpon>RegistrationGamePreferencesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationProfilePictureView.xaml.cs">
+      <DependentUpon>RegistrationProfilePictureView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
+      <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\RegistrationView.xaml.cs">
+      <DependentUpon>RegistrationView.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\ViewMatchProfileView.xaml.cs">
+      <DependentUpon>ViewMatchProfileView.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-    <ItemGroup>
-        <Compile Update="Views\HomeView.xaml.cs">
-            <DependentUpon>HomeView.xaml</DependentUpon>
-        </Compile>
-        <Compile Update="Views\ChatView.xaml.cs">
-            <DependentUpon>ChatView.xaml</DependentUpon>
-        </Compile>
-        <Compile Update="Views\RegistrationPersonalInfoView.xaml.cs">
-            <DependentUpon>RegistrationPersonalInfoView.xaml</DependentUpon>
-        </Compile>
-        <Compile Update="Views\RegistrationView.xaml.cs">
-            <DependentUpon>RegistrationView.xaml</DependentUpon>
-        </Compile>
-    </ItemGroup>
+  <!-- XAML compilation -->
+  <ItemGroup>
+    <MauiXaml Update="Views\HomeView.xaml" />
+    <MauiXaml Update="Views\ChatView.xaml" />
+    <MauiXaml Update="Views\LoginView.xaml" />
+    <MauiXaml Update="Views\RegistrationBiographyView.xaml" />
+    <MauiXaml Update="Views\RegistrationGamePreferencesView.xaml" />
+    <MauiXaml Update="Views\RegistrationProfilePictureView.xaml" />
+    <MauiXaml Update="Views\RegistrationPersonalInfoView.xaml" />
+    <MauiXaml Update="Views\RegistrationView.xaml" />
+    <MauiXaml Update="Views\ViewMatchProfileView.xaml" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <MauiXaml Update="Views\ChatView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-        </MauiXaml>
-        <MauiXaml Update="Views\RegistrationPersonalInfoView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-        </MauiXaml>
-        <MauiXaml Update="Views\RegistrationView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-        </MauiXaml>
-        <MauiXaml Update="Views\LoginView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-        </MauiXaml>
-    </ItemGroup>
-
-    <ItemGroup>
-        <MauiImage Remove="Resources\Images\dislike-button-icon.png" />
-        <MauiImage Remove="Resources\Images\dislikebuttonicon.png" />
-        <MauiImage Remove="Resources\Images\like-button-icon.png" />
-        <MauiImage Remove="Resources\Images\likebuttonicon.png" />
-        <MauiImage Remove="Resources\Images\settingsicon.png" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="Resources\Images\dislike-button-icon.png" />
-        <None Remove="Resources\Images\dislikebuttonicon.png" />
-        <None Remove="Resources\Images\like-button-icon.png" />
-        <None Remove="Resources\Images\likebuttonicon.png" />
-        <None Remove="Resources\Images\settings.png" />
-        <None Remove="Resources\Images\settingsicon.png" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="..\MatchQuest.Migrations\appsettings.json">
-            <Link>appsettings.json</Link>
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
+  <!-- Linked appsettings -->
+  <ItemGroup>
+    <None Include="..\MatchQuest.Migrations\appsettings.json">
+      <Link>appsettings.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

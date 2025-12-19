@@ -6,6 +6,7 @@ using MatchQuest.Core.Interfaces.Services;
 using MatchQuest.Core.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.LifecycleEvents;
+using Microsoft.Maui.Platform;
 
 namespace MatchQuest.App;
 
@@ -28,19 +29,33 @@ public static class MauiProgram
         // repositories & services
         builder.Services.AddSingleton<IAuthService, AuthService>();
         builder.Services.AddSingleton<IUserService, UserService>();
-
+        builder.Services.AddSingleton<IMatchService, MatchService>();
+        builder.Services.AddSingleton<IReactionService, ReactionService>();
+        builder.Services.AddSingleton<IChatService, ChatService>();
+        builder.Services.AddSingleton<IGameService, GameService>();
         
         builder.Services.AddSingleton<IUserRepository, UserRepository>();
         builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
-        builder.Services.AddSingleton<IMatchService, MatchService>();
+        builder.Services.AddSingleton<IReactionRepository, ReactionRepository>();
+        builder.Services.AddSingleton<IChatRepository, ChatRepository>();
+        builder.Services.AddSingleton<IGameRepository, GameRepository>();
+        builder.Services.AddSingleton<IGameRepository, GameRepository>();
+        builder.Services.AddSingleton<IUserGameRepository, UserGameRepository>();
 
         builder.Services.AddSingleton<GlobalViewModel>();
-
         builder.Services.AddTransient<LoginView>().AddTransient<LoginViewModel>();
         builder.Services.AddTransient<RegistrationView>().AddTransient<RegistrationViewModel>();
         builder.Services.AddTransient<RegistrationPersonalInfoView>().AddTransient<RegistrationPersonalInfoViewModel>();
+
+        builder.Services.AddTransient<RegistrationProfilePictureView>().AddTransient<RegistrationProfilePictureViewModel>();
+        builder.Services.AddTransient<RegistrationBiographyView>().AddTransient<RegistrationBiographyViewModel>();
+        builder.Services.AddTransient<RegistrationGamePreferencesView>().AddTransient<RegistrationGamePreferencesViewModel>();
+        builder.Services.AddTransient<ViewMatchProfileView>().AddTransient<ViewMatchProfileViewModel>();
+
         builder.Services.AddTransient<HomeView>().AddTransient<HomeViewModel>();
         builder.Services.AddTransient<ChatView>().AddTransient<ChatViewModel>();
+        builder.Services.AddTransient<UserProfileView>().AddTransient<UserProfileViewModel>();
+
         //Fixed app launch screensize & lock screensize
 
 #if WINDOWS
@@ -77,7 +92,6 @@ public static class MauiProgram
             });
         });
 #endif
-
         return builder.Build();
     }
-}
+}   

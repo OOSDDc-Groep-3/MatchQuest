@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using MatchQuest.Core.Data.Helpers;
 using MatchQuest.Core.Interfaces.Repositories;
 using MatchQuest.Core.Models;
@@ -10,65 +8,14 @@ namespace MatchQuest.Core.Data.Repositories
 {
     public class MatchRepository : IMatchRepository
     {
-        public MatchRepository() { }
+        private readonly IUserRepository _userRepository;
 
-        public User? Get(string email)
+        public MatchRepository(IUserRepository userRepository)
         {
-            try
-            {
-                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
-                var sql = @"SELECT * FROM users WHERE email = @email;";
-
-                using var conn = new MySqlConnection(connectionString);
-                conn.Open();
-                using var cmd = new MySqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@email", email);
-
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    return MapUser(reader);
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"MatchRepository.Get(email): {ex}");
-                return null;
-            }
+            _userRepository = userRepository;
         }
 
-        // Return a user by id (reuses users table behaviour)
-        public User? Get(int id)
-        {
-            try
-            {
-                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
-                var sql = @"SELECT * FROM users WHERE user_id = @id;";
-
-                using var conn = new MySqlConnection(connectionString);
-                conn.Open();
-                using var cmd = new MySqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@id", id);
-
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    return MapUser(reader);
-                }
-
-                return null;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"MatchRepository.Get(id): {ex}");
-                return null;
-            }
-        }
-
-        // Return all users that appear in the matches table (deduplicated)
-        public List<User> GetAll()
+        public List<User> GetAllMatchesFromUserId(int userId)
         {
             try
             {
@@ -78,17 +25,21 @@ namespace MatchQuest.Core.Data.Repositories
 SELECT DISTINCT u.*
 FROM users u
 INNER JOIN matches m
-    ON u.user_id = m.user1_id OR u.user_id = m.user2_id;";
+    ON (
+        (m.user1_id = @userId AND u.user_id = m.user2_id)
+        OR (m.user2_id = @userId AND u.user_id = m.user1_id)
+    );";
 
                 using var conn = new MySqlConnection(connectionString);
                 conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@userId", userId);
                 using var reader = cmd.ExecuteReader();
 
                 var users = new List<User>();
                 while (reader.Read())
                 {
-                    var user = MapUser(reader);
+                    var user = _userRepository.MapUser(reader);
                     if (user != null) users.Add(user);
                 }
 
@@ -101,98 +52,82 @@ INNER JOIN matches m
             }
         }
 
-        // Return only matches for a specific user (the other user in each match)
-        public List<User> GetAll(int userId)
+        public Match? GetByUserIds(int userId, int userId2)
         {
             try
             {
                 var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
 
                 var sql = @"
-SELECT DISTINCT u.*
-FROM users u
-INNER JOIN matches m
-    ON (m.user1_id = @userId AND u.user_id = m.user2_id)
-    OR (m.user2_id = @userId AND u.user_id = m.user1_id);";
+SELECT *
+FROM Matches
+WHERE 
+    (user1_id = @userId AND user2_id = @userId2)
+ OR (user1_id = @userId2 AND user2_id = @userId);";
 
                 using var conn = new MySqlConnection(connectionString);
                 conn.Open();
                 using var cmd = new MySqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@userId", userId);
-
+                cmd.Parameters.AddWithValue("@userId2", userId2);
                 using var reader = cmd.ExecuteReader();
-                var users = new List<User>();
+
                 while (reader.Read())
                 {
-                    var user = MapUser(reader);
-                    if (user != null) users.Add(user);
+                    return MapMatch(reader);
                 }
 
-                return users;
+                return null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"MatchRepository.GetAll(userId): {ex}");
-                return new List<User>();
+                Debug.WriteLine($"GetByUserIds: {ex}");
+                return null;
             }
         }
 
-        // Not implemented: interface requires Add(User) but matches are a relation between two users.
-        // Returning null to indicate not created. Implement if you want ability to insert into matches table.
-        public User? Add(User client)
-        {
-            Debug.WriteLine("MatchRepository.Add: Not implemented for matches.");
-            return null;
-        }
-
-        // Duplicate of the UserRepository mapping logic so we can materialize User objects
-        private User? MapUser(MySqlDataReader reader)
+        public Match? CreateMatch(int userId1, int userId2)
         {
             try
             {
-                var id = reader.GetInt32("user_id");
-                var name = reader.GetString("name");
-                var emailAddr = reader.GetString("email");
-                var password = reader.IsDBNull(reader.GetOrdinal("password")) ? string.Empty : reader.GetString("password");
+                var connectionString = ConnectionHelper.ConnectionStringValue("DefaultConnection");
 
-                // role may be stored differently — attempt to read as int; fallback to None
-                int roleInt = 0;
-                try { roleInt = reader.IsDBNull(reader.GetOrdinal("role")) ? 0 : reader.GetInt32("role"); } catch { }
+                var sql = @"
+INSERT INTO matches(user1_id, user2_id)
+VALUES (@User1Id, @User2Id)";
 
-                DateTime? birthDateTime = reader.IsDBNull(reader.GetOrdinal("birth_date"))
-                    ? null
-                    : reader.GetDateTime("birth_date");
+                using var conn = new MySqlConnection(connectionString);
+                conn.Open();
+                using var cmd = new MySqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("@User1Id", userId1);
+                cmd.Parameters.AddWithValue("@User2Id", userId2);
 
-                var region = reader.IsDBNull(reader.GetOrdinal("region"))
-                    ? null
-                    : reader.GetString("region");
-
-                var bio = reader.IsDBNull(reader.GetOrdinal("bio"))
-                    ? null
-                    : reader.GetString("bio");
-
-                var profilePicture = reader.IsDBNull(reader.GetOrdinal("profile_picture"))
-                    ? null
-                    : reader.GetString("profile_picture");
-
-                var isActive = reader.IsDBNull(reader.GetOrdinal("is_active")) ? true : reader.GetBoolean("is_active");
-
-                DateOnly? birthDate = birthDateTime.HasValue
-                    ? DateOnly.FromDateTime(birthDateTime.Value)
-                    : null;
-
-                var client = new User(id, name, emailAddr, password, birthDate, region, bio, profilePicture, isActive)
+                var rowsAffected = cmd.ExecuteNonQuery();
+                if (rowsAffected > 0)
                 {
-                    Role = Enum.IsDefined(typeof(Role), (ushort)roleInt) ? (Role)roleInt : Role.None
-                };
+                    return GetByUserIds(userId1, userId2);
+                }
 
-                return client;
+                return null;
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"MatchRepository.MapUser: {ex}");
+                Debug.WriteLine($"CreateIfNotExists: {ex}");
                 return null;
             }
+        }
+
+        private Match? MapMatch(MySqlDataReader reader)
+        {
+            var id = reader.GetInt32("match_id");
+            var user1Id = reader.GetInt32("user1_id");
+            var user2Id = reader.GetInt32("user2_id");
+            var createdAt = reader.GetDateTime("created_at");
+            DateTime? updatedAt = reader.IsDBNull(reader.GetOrdinal("updated_at"))
+                ? null
+                : reader.GetDateTime("updated_at");
+
+            return new Match(id, user1Id, user2Id, createdAt, updatedAt);
         }
     }
 }
